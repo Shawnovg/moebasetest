@@ -1,0 +1,4 @@
+# Ablation: replace MIM by Switch load balancing (everything else fixed).
+base: sut_common6.yaml
+name: sut_common6_lb
+model: {params: {block: {miloss: 0.0, switchloss: 0.01}}}

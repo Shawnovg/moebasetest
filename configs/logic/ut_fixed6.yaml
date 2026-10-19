@@ -1,0 +1,9 @@
+# Universal Transformer, fixed depth: one shared dense block applied six times.
+base: _sut_block_common.yaml
+name: ut_fixed6
+family: UT
+model:
+  params:
+    share_layers: true
+    halting: false
+    block: {attn_num_expert: 1, attn_k: 1, attn_expert_dim: 128, ff_num_expert: 1, ff_k: 1, ff_expert_dim: 512, miloss: 0.0}

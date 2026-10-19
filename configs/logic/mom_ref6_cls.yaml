@@ -1,0 +1,14 @@
+# Encoder adaptation (labelled L3) of MoM [1-4-1], K1H4S, converted from mom_donor6_cls.
+base: _base_classifier.yaml
+name: mom_ref6_cls
+family: MoM (encoder adaptation)
+model:
+  kind: mom_classifier
+  params: {n_positions: 128, n_embd: 128, n_head: 4, n_inner: 512, n_layer: 6, activation_function: gelu_new,
+           resid_pdrop: 0.1, embd_pdrop: 0.1, attn_pdrop: 0.0,
+           chunks: 1, num_bottom_layers: 1, num_top_layers: 0, require_anchor_layer: true,
+           num_attn: 4, num_ffn: 4, depth_per_chunk: 4, routing_top_k: 1, enable_pause: true,
+           router_type: gru, router_dim: 256, router_softmax_temperature: 0.2,
+           output_router_logits: true, router_aux_loss_coef: 0.01}
+init_from: {checkpoint: REPLACE_WITH_DONOR_best.pt, convert: mom}
+train: {max_steps: 10000}

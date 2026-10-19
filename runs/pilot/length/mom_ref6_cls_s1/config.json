@@ -1,0 +1,68 @@
+{
+ "fidelity": "L3 controlled variant (common encoder-classifier interface)",
+ "data": {
+  "regime": "length",
+  "train_limit": null,
+  "valid_limit": 2000
+ },
+ "optim": {
+  "type": "adamw",
+  "lr": 0.001,
+  "betas": [
+   0.9,
+   0.98
+  ],
+  "eps": 1e-08,
+  "weight_decay": 0.01,
+  "schedule": "cosine",
+  "warmup_steps": 300,
+  "clip_norm": 1.0
+ },
+ "loss": {
+  "label_smoothing": 0.0,
+  "aux_reduction": "fairseq"
+ },
+ "train": {
+  "max_steps": 1500,
+  "batch_size": 64,
+  "eval_every": 500,
+  "eval_batch_size": 512,
+  "log_every": 50,
+  "patience": null,
+  "seed": 1
+ },
+ "name": "mom_ref6_cls",
+ "family": "MoM (encoder adaptation)",
+ "model": {
+  "kind": "mom_classifier",
+  "params": {
+   "n_positions": 128,
+   "n_embd": 128,
+   "n_head": 4,
+   "n_inner": 512,
+   "n_layer": 6,
+   "activation_function": "gelu_new",
+   "resid_pdrop": 0.1,
+   "embd_pdrop": 0.1,
+   "attn_pdrop": 0.0,
+   "chunks": 1,
+   "num_bottom_layers": 1,
+   "num_top_layers": 0,
+   "require_anchor_layer": true,
+   "num_attn": 4,
+   "num_ffn": 4,
+   "depth_per_chunk": 4,
+   "routing_top_k": 1,
+   "enable_pause": true,
+   "router_type": "gru",
+   "router_dim": 256,
+   "router_softmax_temperature": 0.2,
+   "output_router_logits": true,
+   "router_aux_loss_coef": 0.01
+  }
+ },
+ "init_from": {
+  "checkpoint": "/home/claude/work/MoE_Base_Test/runs/pilot/length/mom_donor6_cls_s1/best.pt",
+  "convert": "mom"
+ }
+}

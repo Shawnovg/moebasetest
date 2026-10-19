@@ -1,0 +1,9 @@
+# Encoder adaptation (labelled L3): bidirectional dense donor with <cls> readout, common panel optimiser.
+base: _base_classifier.yaml
+name: mom_donor6_cls
+family: Dense (MoM donor, encoder adaptation)
+model:
+  kind: gpt2_classifier
+  params: {n_positions: 128, n_embd: 128, n_head: 4, n_inner: 512, n_layer: 6, activation_function: gelu_new,
+           resid_pdrop: 0.1, embd_pdrop: 0.1, attn_pdrop: 0.0}
+train: {max_steps: 10000}

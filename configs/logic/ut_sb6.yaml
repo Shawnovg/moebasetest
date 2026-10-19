@@ -1,0 +1,4 @@
+# UT with SUT's stick-breaking halting (NOT the original UT ACT rule; that is a separate condition).
+base: ut_fixed6.yaml
+name: ut_sb6
+model: {params: {halting: true}}

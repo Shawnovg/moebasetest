@@ -1,0 +1,50 @@
+# SUT reference path (L2 mechanism reproduction, task as in the SUT paper: seq2seq, one-token label).
+# Expert geometry from SUT Table 6 / Sec. 4 for logical inference:
+#   Attention E=12, k=4, H=2 heads/expert, D=32 (expert_dim 64);  FFD E=12, k=4, D=128; halting on.
+# Scaled: embedding 512 -> 128 and 12+12 steps -> 6+6 (common budget). Use --set to restore 12/12.
+# Optimisation as fairseq scripts: Adam(0.9,0.98,1e-9), inverse_sqrt, warmup 4000 from 1e-7, no clipping,
+# label smoothing 0.1, dropout 0.5 / attention 0.2 / FFD 0.5 / gating 0.1 (Table 7). LR is illegible
+# in the extracted Table 7; 7e-4 is the WMT script value (to be tuned on validation).
+name: sut_ref_seq2seq
+family: SUT
+fidelity: "L2 reference units, reference seq2seq interface, scaled width/depth"
+data: {regime: length, train_limit: null, valid_limit: null}
+model:
+  kind: sut_seq2seq
+  params:
+    encoder_layers: 6
+    decoder_layers: 6
+    share_layers: true
+    halting: true
+    act_threshold: 0.999
+    halting_dropout: 0.0
+    actloss: 0.0
+    block:
+      embed_dim: 128
+      attn_num_expert: 12
+      attn_k: 4
+      attn_expert_dim: 64
+      head_dim: 32
+      ff_num_expert: 12
+      ff_k: 4
+      ff_expert_dim: 128
+      dropout: 0.5
+      attention_dropout: 0.2
+      activation_dropout: 0.5
+      gating_dropout: 0.1
+      miloss: 0.1
+      mim_variant: code
+      sample_topk: 0
+      normalize_before: false
+optim:
+  type: adam_fairseq
+  lr: 7.0e-4
+  betas: [0.9, 0.98]
+  eps: 1.0e-9
+  weight_decay: 0.0
+  schedule: inverse_sqrt
+  warmup_steps: 4000
+  warmup_init_lr: 1.0e-7
+  clip_norm: 0.0
+loss: {label_smoothing: 0.1, aux_reduction: fairseq}
+train: {max_steps: 50000, batch_size: 256, eval_every: 1000, eval_batch_size: 512, log_every: 100, patience: null, seed: 0}

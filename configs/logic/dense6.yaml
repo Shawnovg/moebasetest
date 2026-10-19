@@ -1,0 +1,10 @@
+# Dense Transformer: six untied blocks built from the audited SUT units with one expert per pool
+# (E=1,k=1: plain MHA with 4 heads x 32 and FFN 512; post-LN, sinusoidal + relative positions).
+base: _sut_block_common.yaml
+name: dense6
+family: Dense
+model:
+  params:
+    share_layers: false
+    halting: false
+    block: {attn_num_expert: 1, attn_k: 1, attn_expert_dim: 128, ff_num_expert: 1, ff_k: 1, ff_expert_dim: 512, miloss: 0.0}

@@ -1,0 +1,18 @@
+base: _base_classifier.yaml
+model:
+  kind: sut_classifier
+  params:
+    encoder_layers: 6
+    act_threshold: 0.999
+    halting_dropout: 0.0
+    actloss: 0.0
+    block:
+      embed_dim: 128
+      head_dim: 32
+      dropout: 0.1
+      attention_dropout: 0.0
+      activation_dropout: 0.0
+      gating_dropout: 0.0
+      normalize_before: false    # SUT default (post-LN)
+      mim_variant: code          # released sign; 'paper' is the -MI ablation
+      max_rel_positions: 64

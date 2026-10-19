@@ -1,0 +1,4 @@
+# Sparse UT, fixed depth (halting off): isolates expert multiplicity from adaptive depth.
+base: sut_common6.yaml
+name: sut_fixed6
+model: {params: {halting: false}}

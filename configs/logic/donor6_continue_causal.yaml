@@ -1,0 +1,5 @@
+# Essential control: keep training the dense donor for the same phase-2 budget.
+base: mom_donor6_causal.yaml
+name: donor6_continue_causal
+init_from: {checkpoint: REPLACE_WITH_DONOR_best.pt, convert: null}
+train: {max_steps: 10000}

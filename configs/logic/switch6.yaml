@@ -1,0 +1,10 @@
+# Switch-style: dense attention, top-1 FFN experts per (untied) layer, Switch load-balancing loss.
+# Unit = SUT MoE (MLP router, renormalised top-k gate); coefficient 0.01 as in Switch Transformers.
+base: _sut_block_common.yaml
+name: switch6
+family: Switch
+model:
+  params:
+    share_layers: false
+    halting: false
+    block: {attn_num_expert: 1, attn_k: 1, attn_expert_dim: 128, ff_num_expert: 4, ff_k: 1, ff_expert_dim: 512, switchloss: 0.01, miloss: 0.0}

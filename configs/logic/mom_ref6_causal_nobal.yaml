@@ -1,0 +1,4 @@
+# Paper variant: no balance loss ("we do not see a positive effect by adding a balance loss").
+base: mom_ref6_causal.yaml
+name: mom_ref6_causal_nobal
+model: {params: {router_aux_loss_coef: 0.0}}

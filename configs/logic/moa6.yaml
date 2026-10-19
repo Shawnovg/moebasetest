@@ -1,0 +1,10 @@
+# MoA-style: individual attention experts (1 head of 32 each, shared K/V), 4 of 8 selected -> 128 active
+# head dims; dense FFN; untied layers. Built from SUT's MoMHA unit (MoA's own repo is not ported: deviation D-FAM-1).
+base: _sut_block_common.yaml
+name: moa6
+family: MoA
+model:
+  params:
+    share_layers: false
+    halting: false
+    block: {attn_num_expert: 8, attn_k: 4, attn_expert_dim: 32, ff_num_expert: 1, ff_k: 1, ff_expert_dim: 512, miloss: 0.1}

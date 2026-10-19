@@ -1,0 +1,4 @@
+# Ablation: MIM with the paper's -MI sign instead of the released code's H(E|X)+H(E).
+base: sut_common6.yaml
+name: sut_common6_mim_paper
+model: {params: {block: {mim_variant: paper}}}

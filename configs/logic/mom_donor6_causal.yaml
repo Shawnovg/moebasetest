@@ -1,0 +1,9 @@
+# Phase 1: dense 6-layer GPT-2 donor (same objective and data as phase 2).
+base: _base_mom.yaml
+name: mom_donor6_causal
+family: Dense (MoM donor)
+model:
+  kind: gpt2_causal
+  params: {n_positions: 128, n_embd: 128, n_head: 4, n_inner: 512, n_layer: 6, activation_function: gelu_new,
+           resid_pdrop: 0.0, embd_pdrop: 0.0, attn_pdrop: 0.0}
+train: {max_steps: 10000}

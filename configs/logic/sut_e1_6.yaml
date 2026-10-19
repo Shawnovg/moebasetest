@@ -1,0 +1,4 @@
+# Single-expert recurrent control: E=1, k=1 in both pools, per-expert widths unchanged (NOT compute matched).
+base: sut_common6.yaml
+name: sut_e1_6
+model: {params: {block: {attn_num_expert: 1, attn_k: 1, ff_num_expert: 1, ff_k: 1, miloss: 0.0}}}

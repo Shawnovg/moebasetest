@@ -1,0 +1,4 @@
+# Ablation: halting with the ACT penalty as in the SUT-big script (ACTLOSS=1; base uses 0).
+base: sut_common6.yaml
+name: sut_common6_act
+model: {params: {actloss: 1.0}}

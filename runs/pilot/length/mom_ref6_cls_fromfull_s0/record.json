@@ -1,0 +1,128 @@
+{
+ "name": "mom_ref6_cls_fromfull",
+ "config": {
+  "fidelity": "L3 controlled variant (common encoder-classifier interface)",
+  "data": {
+   "regime": "length",
+   "train_limit": null,
+   "valid_limit": 2000
+  },
+  "optim": {
+   "type": "adamw",
+   "lr": 0.001,
+   "betas": [
+    0.9,
+    0.98
+   ],
+   "eps": 1e-08,
+   "weight_decay": 0.01,
+   "schedule": "cosine",
+   "warmup_steps": 300,
+   "clip_norm": 1.0
+  },
+  "loss": {
+   "label_smoothing": 0.0,
+   "aux_reduction": "fairseq"
+  },
+  "train": {
+   "max_steps": 1500,
+   "batch_size": 64,
+   "eval_every": 500,
+   "eval_batch_size": 512,
+   "log_every": 50,
+   "patience": null,
+   "seed": 0
+  },
+  "name": "mom_ref6_cls_fromfull",
+  "family": "MoM (encoder adaptation)",
+  "model": {
+   "kind": "mom_classifier",
+   "params": {
+    "n_positions": 128,
+    "n_embd": 128,
+    "n_head": 4,
+    "n_inner": 512,
+    "n_layer": 6,
+    "activation_function": "gelu_new",
+    "resid_pdrop": 0.1,
+    "embd_pdrop": 0.1,
+    "attn_pdrop": 0.0,
+    "chunks": 1,
+    "num_bottom_layers": 1,
+    "num_top_layers": 0,
+    "require_anchor_layer": true,
+    "num_attn": 4,
+    "num_ffn": 4,
+    "depth_per_chunk": 4,
+    "routing_top_k": 1,
+    "enable_pause": true,
+    "router_type": "gru",
+    "router_dim": 256,
+    "router_softmax_temperature": 0.2,
+    "output_router_logits": true,
+    "router_aux_loss_coef": 0.01
+   }
+  },
+  "init_from": {
+   "checkpoint": "/home/claude/work/MoE_Base_Test/runs/pilot/length/mom_donor6_cls_full_s0/best.pt",
+   "convert": "mom"
+  }
+ },
+ "config_hash": "7859ce1dd0ad",
+ "code_hash": "72fa344303e4f4c7",
+ "upstream": {
+  "SUT": {
+   "url": "https://github.com/shawntan/SUT",
+   "commit": "192cbd3ed567e45e6ec6d33eb1ea9c3b331bc2b0",
+   "license": "no LICENSE file; source files carry the fairseq (Facebook, MIT) header"
+  },
+  "Mixture-of-Modules": {
+   "url": "https://github.com/gzhch/Mixture-of-Modules",
+   "commit": "2ed1d28c320c0a8d114b203b2c68675ffa489d45",
+   "license": "no LICENSE file; source files carry the HuggingFace Apache-2.0 header"
+  },
+  "Ordered-Memory": {
+   "url": "https://github.com/yikangshen/Ordered-Memory",
+   "commit": "2a0d3a22fb70216993a7faf25de3515f42e10431",
+   "license": "MIT"
+  }
+ },
+ "data_dir": "/home/claude/work/MoE_Base_Test/data/logic-v1",
+ "seed": 0,
+ "device": "cpu",
+ "torch": "2.5.0a0+gita8d6afb",
+ "python": "3.13.16",
+ "platform": "Linux-6.18.44-fc-v139-x86_64-with-glibc2.39",
+ "n_params": 1805585,
+ "init_report": {
+  "copied": 74,
+  "not_copied": [
+   "transformer.h.1.mot_attn.router.router.weight",
+   "transformer.h.1.mot_attn.router.router.bias",
+   "transformer.h.1.mot_attn.router.h2h.weight",
+   "transformer.h.1.mot_attn.router.h2h.bias",
+   "transformer.h.1.mot_attn.router.x2h.weight",
+   "transformer.h.1.mot_attn.router.x2h.bias",
+   "transformer.h.1.mot_ffn.router.router.weight",
+   "transformer.h.1.mot_ffn.router.router.bias",
+   "transformer.h.1.mot_ffn.router.h2h.weight",
+   "transformer.h.1.mot_ffn.router.h2h.bias",
+   "transformer.h.1.mot_ffn.router.x2h.weight",
+   "transformer.h.1.mot_ffn.router.x2h.bias",
+   "transformer.ln_f.weight",
+   "transformer.ln_f.bias",
+   "head.weight",
+   "head.bias"
+  ],
+  "donor_unused": [
+   "transformer.ln_f.weight",
+   "transformer.ln_f.bias",
+   "head.weight",
+   "head.bias"
+  ]
+ },
+ "metric_definitions": {
+  "brier": "mean over examples and 7 classes of (p - onehot)^2",
+  "selection": "min validation brier"
+ }
+}

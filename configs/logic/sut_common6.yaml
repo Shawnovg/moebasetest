@@ -1,0 +1,10 @@
+# SUT, common-backbone scale (plan sec. 7): shared block, 4 attention experts x (2 heads x 32), top-2;
+# 4 FFN experts x 256, top-2; MIM 0.1 (released sign); stick-breaking halting, cap 6 steps.
+base: _sut_block_common.yaml
+name: sut_common6
+family: SUT
+model:
+  params:
+    share_layers: true
+    halting: true
+    block: {attn_num_expert: 4, attn_k: 2, attn_expert_dim: 64, ff_num_expert: 4, ff_k: 2, ff_expert_dim: 256, miloss: 0.1}

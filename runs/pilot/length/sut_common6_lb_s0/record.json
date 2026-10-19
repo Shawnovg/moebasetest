@@ -1,0 +1,100 @@
+{
+ "name": "sut_common6_lb",
+ "config": {
+  "fidelity": "L3 controlled variant (common encoder-classifier interface)",
+  "data": {
+   "regime": "length",
+   "train_limit": null,
+   "valid_limit": 2000
+  },
+  "optim": {
+   "type": "adamw",
+   "lr": 0.001,
+   "betas": [
+    0.9,
+    0.98
+   ],
+   "eps": 1e-08,
+   "weight_decay": 0.01,
+   "schedule": "cosine",
+   "warmup_steps": 300,
+   "clip_norm": 1.0
+  },
+  "loss": {
+   "label_smoothing": 0.0,
+   "aux_reduction": "fairseq"
+  },
+  "train": {
+   "max_steps": 3000,
+   "batch_size": 64,
+   "eval_every": 500,
+   "eval_batch_size": 512,
+   "log_every": 50,
+   "patience": null,
+   "seed": 0
+  },
+  "model": {
+   "kind": "sut_classifier",
+   "params": {
+    "encoder_layers": 6,
+    "act_threshold": 0.999,
+    "halting_dropout": 0.0,
+    "actloss": 0.0,
+    "block": {
+     "embed_dim": 128,
+     "head_dim": 32,
+     "dropout": 0.1,
+     "attention_dropout": 0.0,
+     "activation_dropout": 0.0,
+     "gating_dropout": 0.0,
+     "normalize_before": false,
+     "mim_variant": "code",
+     "max_rel_positions": 64,
+     "attn_num_expert": 4,
+     "attn_k": 2,
+     "attn_expert_dim": 64,
+     "ff_num_expert": 4,
+     "ff_k": 2,
+     "ff_expert_dim": 256,
+     "miloss": 0.0,
+     "switchloss": 0.01
+    },
+    "share_layers": true,
+    "halting": true
+   }
+  },
+  "name": "sut_common6_lb",
+  "family": "SUT"
+ },
+ "config_hash": "17cbec0c89c2",
+ "code_hash": "72fa344303e4f4c7",
+ "upstream": {
+  "SUT": {
+   "url": "https://github.com/shawntan/SUT",
+   "commit": "192cbd3ed567e45e6ec6d33eb1ea9c3b331bc2b0",
+   "license": "no LICENSE file; source files carry the fairseq (Facebook, MIT) header"
+  },
+  "Mixture-of-Modules": {
+   "url": "https://github.com/gzhch/Mixture-of-Modules",
+   "commit": "2ed1d28c320c0a8d114b203b2c68675ffa489d45",
+   "license": "no LICENSE file; source files carry the HuggingFace Apache-2.0 header"
+  },
+  "Ordered-Memory": {
+   "url": "https://github.com/yikangshen/Ordered-Memory",
+   "commit": "2a0d3a22fb70216993a7faf25de3515f42e10431",
+   "license": "MIT"
+  }
+ },
+ "data_dir": "/home/claude/work/MoE_Base_Test/data/logic-v1",
+ "seed": 0,
+ "device": "cpu",
+ "torch": "2.5.0a0+gita8d6afb",
+ "python": "3.13.16",
+ "platform": "Linux-6.18.44-fc-v139-x86_64-with-glibc2.39",
+ "n_params": 409031,
+ "init_report": null,
+ "metric_definitions": {
+  "brier": "mean over examples and 7 classes of (p - onehot)^2",
+  "selection": "min validation brier"
+ }
+}

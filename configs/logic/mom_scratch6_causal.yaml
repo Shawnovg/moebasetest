@@ -1,0 +1,5 @@
+# Control: same MoM, random initialisation, given the donor+phase-2 total budget (10k + 10k steps).
+base: mom_ref6_causal.yaml
+name: mom_scratch6_causal
+init_from: null
+train: {max_steps: 20000}

@@ -1,0 +1,4 @@
+# Paper's performance-style setting scaled: K=2 (one slot may be SKIP), H=4.
+base: mom_ref6_causal.yaml
+name: mom_ref6_causal_k2
+model: {params: {routing_top_k: 2}}

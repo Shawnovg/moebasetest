@@ -1,0 +1,21 @@
+# Phase 2: MoM converted from the 6-layer donor. Legal upstream layout [1-4-1]:
+#   1 bottom MoTLayer <- donor layer 0; MoTBlock with 4 attention + 4 FFN modules <- donor layers 1..4;
+#   anchor MoTLayer <- donor layer 5; no top layer.  Assembly depth H=4, top-K=1, SKIP enabled (K1H4S).
+#   Block applications = 1 + 4 + 1 = 6 (same execution depth as the donor).
+# Router: GRU (paper Eq. 7-8: raw scores, no softmax), router_dim 256 (upstream default), balance
+# loss coefficient 0.01 (upstream scripts; the paper reports no balance loss -> see mom_ref6_causal_nobal).
+# Set init_from.checkpoint to the donor's best.pt.
+base: _base_mom.yaml
+name: mom_ref6_causal
+family: MoM
+model:
+  kind: mom_causal
+  params: {n_positions: 128, n_embd: 128, n_head: 4, n_inner: 512, n_layer: 6, activation_function: gelu_new,
+           resid_pdrop: 0.0, embd_pdrop: 0.0, attn_pdrop: 0.0,
+           chunks: 1, num_bottom_layers: 1, num_top_layers: 0, require_anchor_layer: true,
+           num_attn: 4, num_ffn: 4, depth_per_chunk: 4, routing_top_k: 1, enable_pause: true,
+           router_type: gru, router_dim: 256, router_softmax_temperature: 0.2,
+           weighted_qkv: false, use_ste: false, routing_all_possible_path: false,
+           output_router_logits: true, router_aux_loss_coef: 0.01, depthwise_bal_loss: false}
+init_from: {checkpoint: REPLACE_WITH_DONOR_best.pt, convert: mom}
+train: {max_steps: 10000}

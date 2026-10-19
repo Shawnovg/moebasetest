@@ -1,0 +1,6 @@
+torch>=2.1
+numpy
+pyyaml
+pytest
+# optional, only for MoM upstream parity tests (tests/test_parity_upstream.py::test_mom_block_parity):
+# transformers>=4.40,<4.50
