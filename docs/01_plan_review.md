@@ -70,7 +70,7 @@ at this scale.
 |---|---|
 | Operator count per clause or per pair? | Per clause: file index = `min(max(ops(lhs), ops(rhs)), 12)`, where ops counts and/or/not (generator `get_len`; verified for every released line) |
 | Contradictions and tautologies? | Rejected by the generator (`sat == worlds or empty → continue`); 0 degenerate clauses found |
-| Label spellings | `< > = ^ \| # v`, loader order `list('<>=^|#v')`; all 249,238 labels verified against exhaustive truth tables |
+| Label spellings | `< > = ^ \| # v`, loader order `list('<>=^|#v')`; all 249,069 labels verified against exhaustive truth tables |
 | A/B/C exclusions | Serialized-string patterns `( and ( not a ) )`, `( and ( not `, plus `( or ( not `. The filtered training sets are **128,969 / 87,948 / 51,896**, exactly Ordered Memory Table 2 |
 | Validation split | Ordered-Memory loader: every 10th example of train0..6 |
 | Class balance | `#` is about 54% (majority baseline 54%). The 48–53% "Transformer" row in SUT Table 5 sits at or below the majority rate |

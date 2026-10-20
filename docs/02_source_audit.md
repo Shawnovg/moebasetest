@@ -75,6 +75,6 @@ Pinned commits (also in `src/moebase/paths.py`):
 ## Logical inference data (Ordered Memory)
 
 Verified by `scripts/prepare_logic_data.py` (written to the manifest) and `tests/test_data.py`:
-all 249,238 labels match exhaustive truth tables over 2^6 worlds; 0 degenerate clauses; 0 file-index
+all 249,069 labels match exhaustive truth tables over 2^6 worlds; 0 degenerate clauses; 0 file-index
 mismatches; A/B/C training sizes equal Ordered Memory Table 2; no exact train/test pair overlap; order-swapped
 near-duplicates flagged per record (`swap_dup`).
