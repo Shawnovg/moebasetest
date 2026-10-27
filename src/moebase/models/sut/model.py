@@ -143,6 +143,13 @@ class SUTEncoder(nn.Module):
                                                       halting_dropout=cfg.halting_dropout)
         self.actloss = cfg.actloss
         self.layer_norm = nn.LayerNorm(b.embed_dim) if b.normalize_before else None
+        # analysis hooks (None in normal use):
+        #   step_hook(i, st) -> st, st = {"x", "soft", "act", "p_never_halt"} (T x B layout); i = -1 for the
+        #   embeddings, 0.. for block steps. "act" is the ACT state (step, log_never_halt, acc_h, acc_depth)
+        #   so a hook can patch the full halting state, not only the hidden vectors.
+        #   run_steps: run only the first k block applications (depth ablation)
+        self.step_hook = None
+        self.run_steps = None
 
     def layer(self, i):
         return self.universal_layer if self.layers is None else self.layers[i]
@@ -162,8 +169,12 @@ class SUTEncoder(nn.Module):
         act_state = None
         act_loss = 0.0
         active_per_step: List[torch.Tensor] = []
-        for i in range(self.num_layers):
+        if self.step_hook is not None:
+            x = self.step_hook(-1, {"x": x, "soft": None, "act": None, "p_never_halt": None})["x"]
+        n_steps = self.num_layers if self.run_steps is None else min(self.run_steps, self.num_layers)
+        for i in range(n_steps):
             pad = encoder_padding_mask if has_pads else None
+            p_never_halt = None
             if self.halting:
                 act_state, lr, soft_halt_x, act_loss, p_never_halt = self.halting_universal_layer(
                     act_state, x, soft_halt_x, halt_mask, i, encoder_padding_mask=pad)
@@ -172,6 +183,9 @@ class SUTEncoder(nn.Module):
                 lr = self.layer(i)(x, soft_halt_x, halt_mask, i, encoder_padding_mask=pad)
                 active_per_step.append(halt_mask.sum().detach())
             x = lr[0]
+            if self.step_hook is not None:
+                st = self.step_hook(i, {"x": x, "soft": soft_halt_x, "act": act_state, "p_never_halt": p_never_halt})
+                x, soft_halt_x, act_state = st["x"], st["soft"], st["act"]
         total_encoder_loss = 0.0
         depth_tokens = None
         if self.halting:

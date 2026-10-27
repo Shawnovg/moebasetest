@@ -1,0 +1,16 @@
+model,ablation,acc,kl
+mom_ref6_cls_fromfull,none,0.5404999852180481,0.0
+mom_ref6_cls_fromfull,forced SKIP (attn+ffn),0.5400000214576721,0.06361379474401474
+mom_ref6_cls_fromfull,forced SKIP (ffn),0.5115000009536743,0.04503089189529419
+mom_ref6_cls_fromfull,never SKIP,0.5404999852180481,0.002146563259884715
+mom_ref6_cls_fromfull,knockout attn 0,0.5419999957084656,0.013640765100717545
+mom_ref6_cls_fromfull,knockout attn 1,0.5245000123977661,0.04853347688913345
+mom_ref6_cls_fromfull,knockout attn 2,0.5385000109672546,0.009511901065707207
+mom_ref6_cls_fromfull,knockout attn 3,0.5410000085830688,0.01351427473127842
+mom_ref6_cls_fromfull,knockout ffn 0,0.5394999980926514,4.179214738542214e-05
+mom_ref6_cls_fromfull,knockout ffn 1,0.5404999852180481,7.784499030094594e-05
+mom_ref6_cls_fromfull,knockout ffn 2,0.5214999914169312,0.0376490019261837
+mom_ref6_cls_fromfull,knockout ffn 3,0.5400000214576721,8.042949775699526e-05
+mom_ref6_cls_fromfull,random routes,0.5350000262260437,0.10206698626279831
+mom_donor6_cls_full,"donor (dense, no routing)",0.5475000143051147,0.0245357733219862
+-,majority class,0.5410000085830688,

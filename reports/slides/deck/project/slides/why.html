@@ -1,0 +1,33 @@
+<section id="why" data-transition="fade" style="background:#efebe3;color:#1d1d1b;font-family:'IBM Plex Sans', Arial, sans-serif;padding:88px 112px 104px;display:flex;flex-direction:column;gap:22px">
+<p style="font-size:24px;font-weight:600;color:#c2410c;letter-spacing:2px;text-transform:uppercase">Ablations · why SUT and MoM are worse</p>
+<h1 style="font-size:52px;font-weight:600;line-height:1.1">SUT halts too early; MoM inherits a donor that never learned</h1>
+<img src="/_blob/979c3b60af932d8e7526d3a2e8028cd6" alt="Depth truncation accuracy versus steps executed, halting threshold sweep accuracy versus mean halting step, and accuracy change under expert knockout and random routing" style="width:1696px;height:460px;object-fit:contain">
+<div style="display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:24px">
+<div style="background:#fbfaf6;border:1px solid #ddd8cc;border-radius:14px;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+<h3 style="font-size:28px;font-weight:600">1 · Depth ≈ 1.5 steps</h3>
+<p style="font-size:24px;line-height:1.35;color:#4a4843">SUT at 1 step: 0.54 vs 0.56 at 6. Dense: 0.29 → 0.76. Changing τ adds nothing.</p>
+</div>
+<div style="background:#fbfaf6;border:1px solid #ddd8cc;border-radius:14px;padding:18px 22px;display:flex;flex-direction:row;gap:16px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:6px;width:270px">
+<h3 style="font-size:28px;font-weight:600">2 · MIM sign</h3>
+<p style="font-size:24px;line-height:1.35;color:#4a4843">Routing collapses (entropy 0.09 vs 0.86); the loss reaches the halting gate.</p>
+</div>
+<img src="/_blob/3f2c7f0f74c1a1d127d1fd4dd27c84c3" alt="MIM loss weighted by the probability that a token has not halted" style="width:330px;height:76px;object-fit:contain">
+</div>
+<div style="background:#fbfaf6;border:1px solid #ddd8cc;border-radius:14px;padding:18px 22px;display:flex;flex-direction:column;gap:6px">
+<h3 style="font-size:28px;font-weight:600">3 · MoM has nothing to route</h3>
+<p style="font-size:24px;line-height:1.35;color:#4a4843">Donor at 0.547 ≈ majority; forcing SKIP everywhere changes 0.05 pts.</p>
+</div>
+</div>
+<aside>Left: depth truncation. Running only the first k steps and reading the classifier there. The released SUT is already at 0.540 after one step and reaches only 0.560 after six: it is effectively a one-to-two-step model. Dense goes from 0.29 to 0.76 and needs every layer. The 3x-budget SUT uses up to three steps (0.63 at k = 3, 0.69 at k = 6).
+
+Middle: the authors' post-training halting-threshold sweep. Lowering tau from 0.999 to 0.5 saves compute but costs almost no accuracy, and raising it does not help either: the learned halting probabilities put almost all their mass on the first one or two steps (mean expected halting step 1.45 for the released SUT, 0.97 with the paper MIM sign, 2.69 with 3x budget). The threshold only decides when an already-negligible remainder stops being computed.
+
+Right: routing ablations. SUT fixed-depth and SUT 3x budget depend heavily on their learned routing (random routing costs 50 and 20 points), so experts are not useless; the released SUT barely depends on it (3 points), because the released MIM sign collapses routing onto one expert (normalised entropy 0.09; paper sign 0.86, which also gains 4 points of accuracy).
+
+Why MIM affects halting: the MIM weights each token by p_x(t), its probability of not having halted, without a stop-gradient, so the MIM gradient flows into the halting gate. We measured that gradient at more than 1,000 times the gradient the load-balancing loss sends there.
+
+MoM: the dense GPT-2-style donor never learned the task in the pilot budget (0.547, majority 0.541), so the converted modules carry nothing useful. Its routers are near-uniform (entropy 0.96 to 1.0) and ignore token type, and forcing SKIP for the whole 4-step block changes accuracy by 0.05 points. MoM's result here is a statement about the donor, not about routing.
+
+Caveats: CPU pilot, one seed per model for these analyses, 3,000 training steps (MoM 10,000). The GPU run should re-test SUT with the paper MIM sign, a stop-gradient on the MIM weighting, and a donor that actually learns.</aside>
+</section>

@@ -71,3 +71,18 @@ notebooks/                       11_audit_and_data, 14_train_and_compare
   The technical report is a Claude doc linked from the session; `docs/01_plan_review.md` lists the plan changes.
 * **To reproduce or scale up:** open `notebooks/MoE_Experiment.ipynb`, set `PROFILE = "full"` (GPU) and run all cells.
   Finished runs are skipped.
+
+## Mechanistic analysis (27 Oct 2026)
+
+`notebooks/MoE_Analysis.ipynb` looks inside the trained pilot checkpoints:
+* linear probing of every step (label, region bits, truth tables, syntax; random-init controls);
+* activation patching with minimal pairs;
+* a sparse autoencoder on the `<cls>` readout;
+* routing statistics;
+* the authors' kinds of ablation: depth truncation, halting-threshold sweep, expert knockout, random routing, and MoM forced SKIP / module knockout.
+
+Every unit defines its own functions and caches its results, and each figure has its own unit. Findings: `reports/analysis_summary.md`. Slides: `reports/slides/` (deck sources, figures, LaTeX equations).
+
+The notebook needs the seed-0 `best.pt` checkpoints under `runs/pilot/length/`. They are not in git; the local copy on the D: drive includes them.
+
+The models expose a `step_hook` (SUT encoder, MoM/GPT-2 transformer). It is `None` in training, and lets the notebook capture or patch the hidden state after every block application.

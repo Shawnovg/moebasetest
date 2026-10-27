@@ -1,0 +1,13 @@
+{
+ "sl_task": "S_A=\\{\\,w\\in\\{0,1\\}^6 : A(w)=1\\,\\},\\qquad y\\in\\{<,\\,>,\\,=,\\,\\wedge,\\,|,\\,\\#,\\,\\vee\\}",
+ "sl_regions": "\\begin{aligned} y&=g(r_1,r_2,r_3,r_4)\\\\ r_1&=[S_A\\cap S_B\\neq\\varnothing],\\quad r_2=[S_A\\setminus S_B\\neq\\varnothing]\\\\ r_3&=[S_B\\setminus S_A\\neq\\varnothing],\\quad r_4=[\\overline{S_A\\cup S_B}\\neq\\varnothing]\\end{aligned}",
+ "sl_moe": "\\mathrm{MoE}(h)=\\sum_{e\\in\\mathrm{Top}k(G(h))}\\frac{G_e(h)}{\\sum_{e'\\in\\mathrm{Top}k}G_{e'}(h)}\\,E_e(h)",
+ "sl_halt": "p_t^{(l)}=\\alpha_t^{(l)}\\prod_{l'<l}\\bigl(1-\\alpha_t^{(l')}\\bigr),\\qquad \\tilde h_t=\\sum_{l} p_t^{(l)}\\,h_t^{(l)}",
+ "sl_mim": "\\begin{aligned}\\mathcal L_{\\mathrm{MIM}}&=H(E\\mid X)-H(E)&&\\text{paper}\\\\ &=H(E\\mid X)\\textcolor{acc}{\\,+\\,H(E)}&&\\textcolor{acc}{\\text{released code}}\\end{aligned}",
+ "sl_mom": "\\begin{aligned} h^{(s+1)}&=h^{(s)}+\\mathrm{Attn}_{a_s}\\bigl(h^{(s)}\\bigr)+\\mathrm{FFN}_{f_s}(\\cdot),\\qquad s=1..4\\\\ (a_s,f_s)&=\\mathrm{GRU\\ router}\\bigl(h^{(s)}\\bigr)\\in\\{1..4\\}\\cup\\{\\textsc{skip}\\}\\end{aligned}",
+ "sl_probe": "\\hat y=\\mathrm{softmax}\\bigl(W z^{(i)}+b\\bigr),\\qquad \\mathrm{BA}=\\frac{1}{|C|}\\sum_{c\\in C}\\Pr(\\hat y=c\\mid y=c)",
+ "sl_patch": "R(i,g)=\\frac{\\sum\\bigl[\\Delta(\\text{patched}_{i,g})-\\Delta(\\text{corrupt})\\bigr]}{\\sum\\bigl[\\Delta(\\text{clean})-\\Delta(\\text{corrupt})\\bigr]},\\qquad \\Delta=\\ell_{y}-\\ell_{y'}",
+ "sl_sae": "\\begin{aligned} f&=\\mathrm{ReLU}\\bigl(W_e(z-b_d)+b_e\\bigr),\\qquad \\hat z=W_d f+b_d\\\\ \\mathcal L&=\\lVert z-\\hat z\\rVert_2^2+\\lambda\\sum_j f_j\\,\\lVert W_{d,:j}\\rVert_2\\end{aligned}",
+ "sl_ablate": "\\begin{aligned}&\\text{depth: }\\ \\mathrm{acc}(k)=\\mathrm{acc}\\bigl(\\mathrm{readout}(\\tilde h^{(k)})\\bigr),\\ k=1..6\\\\ &\\text{routing: }\\ G_e(h)\\leftarrow-10^{4}\\ \\text{(knockout)},\\quad G(h)\\leftarrow\\epsilon\\sim\\mathcal N(0,I)\\ \\text{(random)}\\end{aligned}",
+ "sl_mimgrad": "\\begin{aligned}\\mathcal L_{\\mathrm{MIM}}&=\\sum_t p_x(t)\\,H(E\\mid x_t)\\;\\mp\\;H\\Bigl(\\sum_t p_x(t)\\,P(E\\mid x_t)\\Bigr)\\\\ p_x(t)&=\\frac{\\textcolor{acc}{\\Pr(t\\text{ not halted})}}{\\sum_{t'}\\Pr(t'\\text{ not halted})}\\end{aligned}"
+}

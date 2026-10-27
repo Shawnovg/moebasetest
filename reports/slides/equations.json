@@ -1,0 +1,12 @@
+{
+  "eq_task": "(A,B)\\;\\mapsto\\; y\\in\\{<,\\,>,\\,=,\\,\\wedge,\\,|,\\,\\#,\\,\\vee\\},\\qquad S_A=\\{w\\in\\{0,1\\}^6 : A(w)=1\\}",
+  "eq_regions": "y = g(r_1,r_2,r_3,r_4),\\quad r_1=[S_A\\cap S_B\\neq\\varnothing],\\; r_2=[S_A\\setminus S_B\\neq\\varnothing],\\; r_3=[S_B\\setminus S_A\\neq\\varnothing],\\; r_4=[\\overline{S_A\\cup S_B}\\neq\\varnothing]",
+  "eq_moe": "\\mathrm{MoE}(h)=\\sum_{e\\in\\mathrm{Top}k(G(h))}\\frac{G_e(h)}{\\sum_{e'\\in\\mathrm{Top}k}G_{e'}(h)}\\,E_e(h)",
+  "eq_halt": "p_t^{(l)}=\\alpha_t^{(l)}\\prod_{l'<l}\\bigl(1-\\alpha_t^{(l')}\\bigr),\\qquad \\tilde h_t=\\sum_{l} p_t^{(l)}\\,h_t^{(l)}",
+  "eq_mim": "\\mathcal L_{\\mathrm{MIM}}=H(E\\mid X)-H(E)\\quad\\text{(paper)}\\qquad \\textcolor{acc}{H(E\\mid X)+H(E)\\quad\\text{(released code)}}",
+  "eq_mom": "h\\leftarrow h+\\sum_{j\\in\\mathrm{Top}K(R^{\\mathrm{attn}}(h))}\\mathrm{Attn}_j(h),\\quad h\\leftarrow h+\\mathrm{FFN}_{R^{\\mathrm{ffn}}(h)}(h),\\quad R:\\ \\mathrm{GRU}\\to\\{1..N\\}\\cup\\{\\textsc{skip}\\}",
+  "eq_probe": "\\hat y=\\mathrm{softmax}\\bigl(W z^{(i)}+b\\bigr),\\qquad \\mathrm{BA}=\\frac{1}{|C|}\\sum_{c\\in C}\\Pr(\\hat y=c\\mid y=c)",
+  "eq_patch": "R(i,g)=\\frac{\\sum\\bigl[\\Delta(\\text{patched}_{i,g})-\\Delta(\\text{corrupt})\\bigr]}{\\sum\\bigl[\\Delta(\\text{clean})-\\Delta(\\text{corrupt})\\bigr]},\\qquad \\Delta=\\ell_{y}-\\ell_{y'}",
+  "eq_sae": "f=\\mathrm{ReLU}\\bigl(W_e(z-b_d)+b_e\\bigr),\\quad \\hat z=W_d f+b_d,\\quad \\mathcal L=\\lVert z-\\hat z\\rVert_2^2+\\lambda\\sum_j f_j\\lVert W_{d,:j}\\rVert_2",
+  "eq_mimgrad": "\\mathcal L_{\\mathrm{MIM}}\\propto\\sum_t p_x(t)\\,\\bigl[H(E\\mid x_t)\\bigr]-H\\Bigl(\\sum_t p_x(t)\\,P(E\\mid x_t)\\Bigr),\\qquad p_x(t)=\\frac{\\textcolor{acc}{\\Pr(\\text{token }t\\text{ not halted})}}{\\sum_{t'}\\Pr(t'\\text{ not halted})}"
+}

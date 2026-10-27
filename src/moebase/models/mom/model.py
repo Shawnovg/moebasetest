@@ -335,7 +335,7 @@ class MoTBlock(nn.Module):
         self.mot_attn = MoTAttention(config, chunk_idx)
         self.mot_ffn = MoTMLP(config, chunk_idx)
 
-    def forward(self, hidden_states, attention_mask=None, output_router_logits=False):
+    def forward(self, hidden_states, attention_mask=None, output_router_logits=False, step_hook=None, step_offset=0):
         block_router_logits = () if output_router_logits else None
         routes = []
         routing_states_attn = None  # reset at every block: GRU state lives inside one chunk
@@ -351,6 +351,8 @@ class MoTBlock(nn.Module):
             if output_router_logits:
                 block_router_logits += ((attn_routing_score, ffn_routing_score),)
             routes.append((r_a, r_f))
+            if step_hook is not None:
+                hidden_states = step_hook(step_offset + len(routes) - 1, hidden_states, (r_a, r_f))
         return hidden_states, block_router_logits, routes
 
 
@@ -361,13 +363,15 @@ class MoTLayer(nn.Module):
         self.mot_attn = MoTAttention(config, chunk_idx, is_anchor_layer=True)
         self.mot_ffn = MoTMLP(config, chunk_idx, is_anchor_layer=True)
 
-    def forward(self, hidden_states, attention_mask=None, output_router_logits=False):
+    def forward(self, hidden_states, attention_mask=None, output_router_logits=False, step_hook=None, step_offset=0):
         residual = hidden_states
         hidden_states, _, _, _, _ = self.mot_attn(hidden_states, attention_mask=attention_mask)
         hidden_states = residual + hidden_states
         residual = hidden_states
         hidden_states, _, _, _ = self.mot_ffn(hidden_states)
         hidden_states = residual + hidden_states
+        if step_hook is not None:
+            hidden_states = step_hook(step_offset, hidden_states, None)
         return hidden_states, None, []
 
 
@@ -416,6 +420,9 @@ class GPT2MoTModel(nn.Module):
         for i in range(config.num_top_layers):
             self.h.append(MoTLayer(config, i + config.num_bottom_layers + config.chunks))
         self.ln_f = nn.LayerNorm(self.embed_dim, eps=config.layer_norm_epsilon)
+        # analysis hook: step_hook(k, hidden, routes) -> hidden, k = -1 for embeddings, then one index per
+        # block application (MoTLayer = 1, MoTBlock = depth_per_chunk)
+        self.step_hook = None
 
     def forward(self, input_ids, attention_mask=None, output_router_logits=None):
         output_router_logits = self.config.output_router_logits if output_router_logits is None else output_router_logits
@@ -429,9 +436,14 @@ class GPT2MoTModel(nn.Module):
         hidden_states = self.drop(self.wte(input_ids) + self.wpe(position_ids))
         all_router_logits = () if output_router_logits else None
         all_routes = []
+        hook, k = self.step_hook, 0
+        if hook is not None:
+            hidden_states = hook(-1, hidden_states, None)
         for block in self.h:
             hidden_states, router_logits, routes = block(hidden_states, attention_mask=am,
-                                                         output_router_logits=output_router_logits)
+                                                         output_router_logits=output_router_logits,
+                                                         step_hook=hook, step_offset=k)
+            k += max(1, len(routes))
             if output_router_logits and router_logits is not None:
                 all_router_logits += router_logits
             all_routes.extend(routes)

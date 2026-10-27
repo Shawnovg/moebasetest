@@ -77,6 +77,7 @@ class GPT2Model(nn.Module):
         self.drop = nn.Dropout(config.embd_pdrop)
         self.h = nn.ModuleList([GPT2Block(config) for _ in range(config.n_layer)])
         self.ln_f = nn.LayerNorm(config.n_embd, eps=config.layer_norm_epsilon)
+        self.step_hook = None  # analysis hook: step_hook(k, hidden, None) -> hidden
 
     def forward(self, input_ids, attention_mask=None):
         b, t = input_ids.shape
@@ -86,8 +87,12 @@ class GPT2Model(nn.Module):
             am = attention_mask.view(b, -1)[:, None, None, :].to(self.wte.weight.dtype)
             am = (1.0 - am) * torch.finfo(self.wte.weight.dtype).min
         x = self.drop(self.wte(input_ids) + self.wpe(pos))
-        for blk in self.h:
+        if self.step_hook is not None:
+            x = self.step_hook(-1, x, None)
+        for k, blk in enumerate(self.h):
             x = blk(x, am)
+            if self.step_hook is not None:
+                x = self.step_hook(k, x, None)
         return self.ln_f(x)
 
 

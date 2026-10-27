@@ -1,0 +1,421 @@
+model,step,group,recovery,n_pairs
+dense6,-1,<cls>,0.0,321
+dense6,-1,edited token,1.0,321
+dense6,-1,rest of edited clause,0.0,321
+dense6,-1,#SEP#,0.0,321
+dense6,-1,other clause,0.0,321
+dense6,-1,all,1.0,321
+dense6,0,<cls>,0.03967755560524475,321
+dense6,0,edited token,0.9248363589596094,321
+dense6,0,rest of edited clause,0.01991272678829091,321
+dense6,0,#SEP#,0.0019671907069459013,321
+dense6,0,other clause,0.02917862191542502,321
+dense6,0,all,1.0,321
+dense6,1,<cls>,0.044855230508752765,321
+dense6,1,edited token,0.7739474533782982,321
+dense6,1,rest of edited clause,0.021778349141075678,321
+dense6,1,#SEP#,0.001889264204921657,321
+dense6,1,other clause,0.2380218794781801,321
+dense6,1,all,1.0,321
+dense6,2,<cls>,0.22793397649663058,321
+dense6,2,edited token,0.5294299884865149,321
+dense6,2,rest of edited clause,0.012172719533130056,321
+dense6,2,#SEP#,0.003723203256947212,321
+dense6,2,other clause,0.2716040648812371,321
+dense6,2,all,1.0,321
+dense6,3,<cls>,0.523254098294813,321
+dense6,3,edited token,0.24487607976324766,321
+dense6,3,rest of edited clause,0.10234854679281191,321
+dense6,3,#SEP#,0.0017432258612314502,321
+dense6,3,other clause,0.19226737890079862,321
+dense6,3,all,1.0,321
+dense6,4,<cls>,0.942716900209566,321
+dense6,4,edited token,0.028452405845702966,321
+dense6,4,rest of edited clause,0.013998389250834312,321
+dense6,4,#SEP#,0.00287026480232804,321
+dense6,4,other clause,0.013012447171521052,321
+dense6,4,all,1.0,321
+dense6,5,<cls>,1.0,321
+dense6,5,edited token,0.0,321
+dense6,5,rest of edited clause,0.0,321
+dense6,5,#SEP#,0.0,321
+dense6,5,other clause,0.0,321
+dense6,5,all,1.0,321
+ut_fixed6,-1,<cls>,0.0,33
+ut_fixed6,-1,edited token,1.0,33
+ut_fixed6,-1,rest of edited clause,0.0,33
+ut_fixed6,-1,#SEP#,0.0,33
+ut_fixed6,-1,other clause,0.0,33
+ut_fixed6,-1,all,1.0,33
+ut_fixed6,0,<cls>,0.025170307747621176,33
+ut_fixed6,0,edited token,0.8878211057993612,33
+ut_fixed6,0,rest of edited clause,0.09405416595860437,33
+ut_fixed6,0,#SEP#,-0.007450872686523757,33
+ut_fixed6,0,other clause,0.0272657976492514,33
+ut_fixed6,0,all,1.0,33
+ut_fixed6,1,<cls>,0.10410811700599759,33
+ut_fixed6,1,edited token,0.7029001349708043,33
+ut_fixed6,1,rest of edited clause,0.1148823323211102,33
+ut_fixed6,1,#SEP#,0.050808307771692145,33
+ut_fixed6,1,other clause,0.03937433189099212,33
+ut_fixed6,1,all,1.0,33
+ut_fixed6,2,<cls>,0.29180118037666014,33
+ut_fixed6,2,edited token,0.49505102440162385,33
+ut_fixed6,2,rest of edited clause,0.10348794006807945,33
+ut_fixed6,2,#SEP#,0.18557110026153917,33
+ut_fixed6,2,other clause,0.040065823136854334,33
+ut_fixed6,2,all,1.0,33
+ut_fixed6,3,<cls>,0.482530260578323,33
+ut_fixed6,3,edited token,0.2536794564228883,33
+ut_fixed6,3,rest of edited clause,0.0739356179830016,33
+ut_fixed6,3,#SEP#,0.21224554995899098,33
+ut_fixed6,3,other clause,0.03339097518504736,33
+ut_fixed6,3,all,1.0,33
+ut_fixed6,4,<cls>,0.732486008158546,33
+ut_fixed6,4,edited token,0.07325286032970355,33
+ut_fixed6,4,rest of edited clause,0.03756391760127106,33
+ut_fixed6,4,#SEP#,0.19549141182053772,33
+ut_fixed6,4,other clause,0.02274063834640061,33
+ut_fixed6,4,all,1.0,33
+ut_fixed6,5,<cls>,1.0,33
+ut_fixed6,5,edited token,0.0,33
+ut_fixed6,5,rest of edited clause,0.0,33
+ut_fixed6,5,#SEP#,0.0,33
+ut_fixed6,5,other clause,0.0,33
+ut_fixed6,5,all,1.0,33
+switch6,-1,<cls>,0.0,263
+switch6,-1,edited token,1.0,263
+switch6,-1,rest of edited clause,0.0,263
+switch6,-1,#SEP#,0.0,263
+switch6,-1,other clause,0.0,263
+switch6,-1,all,1.0,263
+switch6,0,<cls>,0.043524167898009405,263
+switch6,0,edited token,0.8223809916529917,263
+switch6,0,rest of edited clause,0.04300852972058572,263
+switch6,0,#SEP#,0.0019467181362467065,263
+switch6,0,other clause,0.08376381353948843,263
+switch6,0,all,1.0,263
+switch6,1,<cls>,0.2132374839950283,263
+switch6,1,edited token,0.31924558139996057,263
+switch6,1,rest of edited clause,0.17236027686025487,263
+switch6,1,#SEP#,0.009792085738749429,263
+switch6,1,other clause,0.2995597051120001,263
+switch6,1,all,1.0,263
+switch6,2,<cls>,0.3407238363155308,263
+switch6,2,edited token,0.1891438113816834,263
+switch6,2,rest of edited clause,0.15363546414975504,263
+switch6,2,#SEP#,0.03267520832763831,263
+switch6,2,other clause,0.2570908129953662,263
+switch6,2,all,1.0,263
+switch6,3,<cls>,0.6013679015908076,263
+switch6,3,edited token,0.09247275250096584,263
+switch6,3,rest of edited clause,0.10886536905128376,263
+switch6,3,#SEP#,0.049441984234238456,263
+switch6,3,other clause,0.1909914904920273,263
+switch6,3,all,1.0,263
+switch6,4,<cls>,0.7735724206629676,263
+switch6,4,edited token,0.04713999587975665,263
+switch6,4,rest of edited clause,0.0757811058423863,263
+switch6,4,#SEP#,0.01727329301824187,263
+switch6,4,other clause,0.12898978284020865,263
+switch6,4,all,1.0,263
+switch6,5,<cls>,1.0,263
+switch6,5,edited token,0.0,263
+switch6,5,rest of edited clause,0.0,263
+switch6,5,#SEP#,0.0,263
+switch6,5,other clause,0.0,263
+switch6,5,all,1.0,263
+moa6,-1,<cls>,0.0,184
+moa6,-1,edited token,1.0,184
+moa6,-1,rest of edited clause,0.0,184
+moa6,-1,#SEP#,0.0,184
+moa6,-1,other clause,0.0,184
+moa6,-1,all,1.0,184
+moa6,0,<cls>,0.10916060150244636,184
+moa6,0,edited token,0.5197051713237729,184
+moa6,0,rest of edited clause,0.15725383315458372,184
+moa6,0,#SEP#,0.020477233241547817,184
+moa6,0,other clause,0.21025867034326853,184
+moa6,0,all,1.0,184
+moa6,1,<cls>,0.4792256161124145,184
+moa6,1,edited token,0.23487263204286538,184
+moa6,1,rest of edited clause,0.15125260521613515,184
+moa6,1,#SEP#,0.020037637013758994,184
+moa6,1,other clause,0.16566353621884697,184
+moa6,1,all,1.0,184
+moa6,2,<cls>,0.47682030408810294,184
+moa6,2,edited token,0.23188581078717796,184
+moa6,2,rest of edited clause,0.1457073313901304,184
+moa6,2,#SEP#,0.0198362925307119,184
+moa6,2,other clause,0.16160833859143003,184
+moa6,2,all,1.0,184
+moa6,3,<cls>,0.5586887360377067,184
+moa6,3,edited token,0.017266377512619717,184
+moa6,3,rest of edited clause,0.18318982418212224,184
+moa6,3,#SEP#,0.03968933521371893,184
+moa6,3,other clause,0.238135076213169,184
+moa6,3,all,1.0,184
+moa6,4,<cls>,0.7484828677118965,184
+moa6,4,edited token,0.013557186794553156,184
+moa6,4,rest of edited clause,0.06471149919183344,184
+moa6,4,#SEP#,0.04002994423794513,184
+moa6,4,other clause,0.1063431084684476,184
+moa6,4,all,1.0,184
+moa6,5,<cls>,1.0,184
+moa6,5,edited token,0.0,184
+moa6,5,rest of edited clause,0.0,184
+moa6,5,#SEP#,0.0,184
+moa6,5,other clause,0.0,184
+moa6,5,all,1.0,184
+sut_fixed6,-1,<cls>,0.0,241
+sut_fixed6,-1,edited token,1.0,241
+sut_fixed6,-1,rest of edited clause,0.0,241
+sut_fixed6,-1,#SEP#,0.0,241
+sut_fixed6,-1,other clause,0.0,241
+sut_fixed6,-1,all,1.0,241
+sut_fixed6,0,<cls>,0.002116551476217047,241
+sut_fixed6,0,edited token,0.7333630535125509,241
+sut_fixed6,0,rest of edited clause,0.0834064371385561,241
+sut_fixed6,0,#SEP#,0.007376003681753676,241
+sut_fixed6,0,other clause,0.17823148629622107,241
+sut_fixed6,0,all,1.0,241
+sut_fixed6,1,<cls>,0.019520737246684936,241
+sut_fixed6,1,edited token,0.5032013212382982,241
+sut_fixed6,1,rest of edited clause,0.13046497404084148,241
+sut_fixed6,1,#SEP#,0.011474894130268873,241
+sut_fixed6,1,other clause,0.31728253601928397,241
+sut_fixed6,1,all,1.0,241
+sut_fixed6,2,<cls>,0.07283772924730555,241
+sut_fixed6,2,edited token,0.3217657128800853,241
+sut_fixed6,2,rest of edited clause,0.1602849713634185,241
+sut_fixed6,2,#SEP#,0.01947608707496097,241
+sut_fixed6,2,other clause,0.37090754506691903,241
+sut_fixed6,2,all,1.0,241
+sut_fixed6,3,<cls>,0.1906855385740303,241
+sut_fixed6,3,edited token,0.19044671295910376,241
+sut_fixed6,3,rest of edited clause,0.16584831519553148,241
+sut_fixed6,3,#SEP#,0.031924884669815204,241
+sut_fixed6,3,other clause,0.35020610194147517,241
+sut_fixed6,3,all,1.0,241
+sut_fixed6,4,<cls>,0.4978240062076899,241
+sut_fixed6,4,edited token,0.09259959684879727,241
+sut_fixed6,4,rest of edited clause,0.1274167402265002,241
+sut_fixed6,4,#SEP#,0.029465024853947346,241
+sut_fixed6,4,other clause,0.24221590231609008,241
+sut_fixed6,4,all,1.0,241
+sut_fixed6,5,<cls>,1.0,241
+sut_fixed6,5,edited token,0.0,241
+sut_fixed6,5,rest of edited clause,0.0,241
+sut_fixed6,5,#SEP#,0.0,241
+sut_fixed6,5,other clause,0.0,241
+sut_fixed6,5,all,1.0,241
+sut_common6,-1,<cls>,0.0,68
+sut_common6,-1,edited token,1.0,68
+sut_common6,-1,rest of edited clause,0.0,68
+sut_common6,-1,#SEP#,0.0,68
+sut_common6,-1,other clause,0.0,68
+sut_common6,-1,all,1.0,68
+sut_common6,0,<cls>,0.06364673686408927,68
+sut_common6,0,edited token,0.4695999394683454,68
+sut_common6,0,rest of edited clause,0.10535962411769574,68
+sut_common6,0,#SEP#,0.016269463172378908,68
+sut_common6,0,other clause,0.1968000568762452,68
+sut_common6,0,all,1.0,68
+sut_common6,1,<cls>,0.25067826039137736,68
+sut_common6,1,edited token,0.29300958512847347,68
+sut_common6,1,rest of edited clause,0.11147192470345206,68
+sut_common6,1,#SEP#,0.014899810129379703,68
+sut_common6,1,other clause,0.16314463380797287,68
+sut_common6,1,all,1.0,68
+sut_common6,2,<cls>,0.457880655494106,68
+sut_common6,2,edited token,0.168430534678994,68
+sut_common6,2,rest of edited clause,0.07594359053900741,68
+sut_common6,2,#SEP#,0.012696591938389446,68
+sut_common6,2,other clause,0.0998360799009352,68
+sut_common6,2,all,1.0,68
+sut_common6,3,<cls>,0.722878988794079,68
+sut_common6,3,edited token,0.0845705628677806,68
+sut_common6,3,rest of edited clause,0.04911711619946657,68
+sut_common6,3,#SEP#,0.009866434085418554,68
+sut_common6,3,other clause,0.05223839820693834,68
+sut_common6,3,all,1.0,68
+sut_common6,4,<cls>,0.8984720506344291,68
+sut_common6,4,edited token,0.03466508466685511,68
+sut_common6,4,rest of edited clause,0.024236977214402336,68
+sut_common6,4,#SEP#,0.004721592834772238,68
+sut_common6,4,other clause,0.025048494477285587,68
+sut_common6,4,all,1.0,68
+sut_common6,5,<cls>,1.0,68
+sut_common6,5,edited token,0.0,68
+sut_common6,5,rest of edited clause,0.0,68
+sut_common6,5,#SEP#,0.0,68
+sut_common6,5,other clause,0.0,68
+sut_common6,5,all,1.0,68
+sut_common6_mim_paper,-1,<cls>,0.0,174
+sut_common6_mim_paper,-1,edited token,1.0,174
+sut_common6_mim_paper,-1,rest of edited clause,0.0,174
+sut_common6_mim_paper,-1,#SEP#,0.0,174
+sut_common6_mim_paper,-1,other clause,0.0,174
+sut_common6_mim_paper,-1,all,1.0,174
+sut_common6_mim_paper,0,<cls>,0.012897165139427645,174
+sut_common6_mim_paper,0,edited token,0.3529442383546502,174
+sut_common6_mim_paper,0,rest of edited clause,0.26713953901508575,174
+sut_common6_mim_paper,0,#SEP#,0.0016816210206636924,174
+sut_common6_mim_paper,0,other clause,0.29409094201315344,174
+sut_common6_mim_paper,0,all,1.0,174
+sut_common6_mim_paper,1,<cls>,0.09599774697840023,174
+sut_common6_mim_paper,1,edited token,0.11217503588483563,174
+sut_common6_mim_paper,1,rest of edited clause,0.3318640023186487,174
+sut_common6_mim_paper,1,#SEP#,0.008224379654742412,174
+sut_common6_mim_paper,1,other clause,0.3840678328976948,174
+sut_common6_mim_paper,1,all,1.0,174
+sut_common6_mim_paper,2,<cls>,0.26973787386038983,174
+sut_common6_mim_paper,2,edited token,0.04872715079888566,174
+sut_common6_mim_paper,2,rest of edited clause,0.26867224792933003,174
+sut_common6_mim_paper,2,#SEP#,0.0076713379751573154,174
+sut_common6_mim_paper,2,other clause,0.31877846878726596,174
+sut_common6_mim_paper,2,all,1.0,174
+sut_common6_mim_paper,3,<cls>,0.5036200377877068,174
+sut_common6_mim_paper,3,edited token,0.02124511551806174,174
+sut_common6_mim_paper,3,rest of edited clause,0.17383042736168675,174
+sut_common6_mim_paper,3,#SEP#,0.006020788842103298,174
+sut_common6_mim_paper,3,other clause,0.21713602780963995,174
+sut_common6_mim_paper,3,all,1.0,174
+sut_common6_mim_paper,4,<cls>,0.7603547709350201,174
+sut_common6_mim_paper,4,edited token,0.008195636561422408,174
+sut_common6_mim_paper,4,rest of edited clause,0.08211055501278415,174
+sut_common6_mim_paper,4,#SEP#,0.003776473917649412,174
+sut_common6_mim_paper,4,other clause,0.10761905612017844,174
+sut_common6_mim_paper,4,all,1.0,174
+sut_common6_mim_paper,5,<cls>,1.0,174
+sut_common6_mim_paper,5,edited token,0.0,174
+sut_common6_mim_paper,5,rest of edited clause,0.0,174
+sut_common6_mim_paper,5,#SEP#,0.0,174
+sut_common6_mim_paper,5,other clause,0.0,174
+sut_common6_mim_paper,5,all,1.0,174
+sut_common6_long,-1,<cls>,0.0,263
+sut_common6_long,-1,edited token,1.0,263
+sut_common6_long,-1,rest of edited clause,0.0,263
+sut_common6_long,-1,#SEP#,0.0,263
+sut_common6_long,-1,other clause,0.0,263
+sut_common6_long,-1,all,1.0,263
+sut_common6_long,0,<cls>,0.12723569478263513,263
+sut_common6_long,0,edited token,0.5669355073352206,263
+sut_common6_long,0,rest of edited clause,0.10846926582380365,263
+sut_common6_long,0,#SEP#,0.016885003985807823,263
+sut_common6_long,0,other clause,0.1923043324757584,263
+sut_common6_long,0,all,1.0,263
+sut_common6_long,1,<cls>,0.2543625143113334,263
+sut_common6_long,1,edited token,0.2900502074409116,263
+sut_common6_long,1,rest of edited clause,0.17027412226278113,263
+sut_common6_long,1,#SEP#,0.021571421950173256,263
+sut_common6_long,1,other clause,0.2278735574467383,263
+sut_common6_long,1,all,1.0,263
+sut_common6_long,2,<cls>,0.49334449565395977,263
+sut_common6_long,2,edited token,0.12608003977947196,263
+sut_common6_long,2,rest of edited clause,0.1786264825556449,263
+sut_common6_long,2,#SEP#,0.02270756256251252,263
+sut_common6_long,2,other clause,0.18511093163631603,263
+sut_common6_long,2,all,1.0,263
+sut_common6_long,3,<cls>,0.6978356498193166,263
+sut_common6_long,3,edited token,0.06280065640162594,263
+sut_common6_long,3,rest of edited clause,0.11584177215535235,263
+sut_common6_long,3,#SEP#,0.01615683688184758,263
+sut_common6_long,3,other clause,0.10678542080672278,263
+sut_common6_long,3,all,1.0,263
+sut_common6_long,4,<cls>,0.8730619199457667,263
+sut_common6_long,4,edited token,0.0228369379517764,263
+sut_common6_long,4,rest of edited clause,0.05421965315819381,263
+sut_common6_long,4,#SEP#,0.007295107654514549,263
+sut_common6_long,4,other clause,0.043332507282351926,263
+sut_common6_long,4,all,1.0,263
+sut_common6_long,5,<cls>,1.0,263
+sut_common6_long,5,edited token,0.0,263
+sut_common6_long,5,rest of edited clause,0.0,263
+sut_common6_long,5,#SEP#,0.0,263
+sut_common6_long,5,other clause,0.0,263
+sut_common6_long,5,all,1.0,263
+mom_donor6_cls_full,-1,<cls>,0.0,18
+mom_donor6_cls_full,-1,edited token,1.0,18
+mom_donor6_cls_full,-1,rest of edited clause,0.0,18
+mom_donor6_cls_full,-1,#SEP#,0.0,18
+mom_donor6_cls_full,-1,other clause,0.0,18
+mom_donor6_cls_full,-1,all,1.0,18
+mom_donor6_cls_full,0,<cls>,0.6550793634471308,18
+mom_donor6_cls_full,0,edited token,0.016330333127177445,18
+mom_donor6_cls_full,0,rest of edited clause,0.3161676525945815,18
+mom_donor6_cls_full,0,#SEP#,0.005417042770467484,18
+mom_donor6_cls_full,0,other clause,0.07740989668780045,18
+mom_donor6_cls_full,0,all,1.0,18
+mom_donor6_cls_full,1,<cls>,0.9338526758202667,18
+mom_donor6_cls_full,1,edited token,0.008394813720891424,18
+mom_donor6_cls_full,1,rest of edited clause,0.08924733232883725,18
+mom_donor6_cls_full,1,#SEP#,0.015170173505256448,18
+mom_donor6_cls_full,1,other clause,0.05291353966341407,18
+mom_donor6_cls_full,1,all,1.0,18
+mom_donor6_cls_full,2,<cls>,0.9460435952864803,18
+mom_donor6_cls_full,2,edited token,0.005353407921588228,18
+mom_donor6_cls_full,2,rest of edited clause,0.03953385815191558,18
+mom_donor6_cls_full,2,#SEP#,0.009327268735968152,18
+mom_donor6_cls_full,2,other clause,0.034212378516873046,18
+mom_donor6_cls_full,2,all,1.0,18
+mom_donor6_cls_full,3,<cls>,0.9661904327864952,18
+mom_donor6_cls_full,3,edited token,0.00817456027937566,18
+mom_donor6_cls_full,3,rest of edited clause,0.0398533689005905,18
+mom_donor6_cls_full,3,#SEP#,-0.0071956318694379835,18
+mom_donor6_cls_full,3,other clause,0.025956236045447965,18
+mom_donor6_cls_full,3,all,1.0,18
+mom_donor6_cls_full,4,<cls>,0.9808512860676867,18
+mom_donor6_cls_full,4,edited token,0.003993972432220645,18
+mom_donor6_cls_full,4,rest of edited clause,0.02142084880945751,18
+mom_donor6_cls_full,4,#SEP#,-0.009926317053275761,18
+mom_donor6_cls_full,4,other clause,0.013702883968305244,18
+mom_donor6_cls_full,4,all,1.0,18
+mom_donor6_cls_full,5,<cls>,1.0,18
+mom_donor6_cls_full,5,edited token,0.0,18
+mom_donor6_cls_full,5,rest of edited clause,0.0,18
+mom_donor6_cls_full,5,#SEP#,0.0,18
+mom_donor6_cls_full,5,other clause,0.0,18
+mom_donor6_cls_full,5,all,1.0,18
+mom_ref6_cls_fromfull,-1,<cls>,0.0,17
+mom_ref6_cls_fromfull,-1,edited token,1.0,17
+mom_ref6_cls_fromfull,-1,rest of edited clause,0.0,17
+mom_ref6_cls_fromfull,-1,#SEP#,0.0,17
+mom_ref6_cls_fromfull,-1,other clause,0.0,17
+mom_ref6_cls_fromfull,-1,all,1.0,17
+mom_ref6_cls_fromfull,0,<cls>,0.6381364254587383,17
+mom_ref6_cls_fromfull,0,edited token,0.006291709387635584,17
+mom_ref6_cls_fromfull,0,rest of edited clause,0.1480321014155758,17
+mom_ref6_cls_fromfull,0,#SEP#,8.712035429375261e-05,17
+mom_ref6_cls_fromfull,0,other clause,0.04795941608162834,17
+mom_ref6_cls_fromfull,0,all,1.0,17
+mom_ref6_cls_fromfull,1,<cls>,0.7246303056185573,17
+mom_ref6_cls_fromfull,1,edited token,0.0027050332228245413,17
+mom_ref6_cls_fromfull,1,rest of edited clause,0.06539307715012933,17
+mom_ref6_cls_fromfull,1,#SEP#,-0.0002023525873252856,17
+mom_ref6_cls_fromfull,1,other clause,0.03218271018010047,17
+mom_ref6_cls_fromfull,1,all,0.9906184249212937,17
+mom_ref6_cls_fromfull,2,<cls>,0.782706800111475,17
+mom_ref6_cls_fromfull,2,edited token,0.0019705479592172586,17
+mom_ref6_cls_fromfull,2,rest of edited clause,0.04709451737997051,17
+mom_ref6_cls_fromfull,2,#SEP#,-0.00037636932073815125,17
+mom_ref6_cls_fromfull,2,other clause,0.021109038588838544,17
+mom_ref6_cls_fromfull,2,all,1.0007633217679102,17
+mom_ref6_cls_fromfull,3,<cls>,0.8176513565541532,17
+mom_ref6_cls_fromfull,3,edited token,0.0019257816697663074,17
+mom_ref6_cls_fromfull,3,rest of edited clause,0.0370462328836854,17
+mom_ref6_cls_fromfull,3,#SEP#,-0.0003881849094965426,17
+mom_ref6_cls_fromfull,3,other clause,0.016263043439829417,17
+mom_ref6_cls_fromfull,3,all,0.99798038590707,17
+mom_ref6_cls_fromfull,4,<cls>,0.838564103060392,17
+mom_ref6_cls_fromfull,4,edited token,0.0014295437101087638,17
+mom_ref6_cls_fromfull,4,rest of edited clause,0.026974560348709466,17
+mom_ref6_cls_fromfull,4,#SEP#,-0.0006012715370096339,17
+mom_ref6_cls_fromfull,4,other clause,0.013539184325053086,17
+mom_ref6_cls_fromfull,4,all,1.0,17
+mom_ref6_cls_fromfull,5,<cls>,1.0,17
+mom_ref6_cls_fromfull,5,edited token,0.0,17
+mom_ref6_cls_fromfull,5,rest of edited clause,0.0,17
+mom_ref6_cls_fromfull,5,#SEP#,0.0,17
+mom_ref6_cls_fromfull,5,other clause,0.0,17
+mom_ref6_cls_fromfull,5,all,1.0,17

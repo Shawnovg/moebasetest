@@ -1,0 +1,36 @@
+<section id="toolkit" data-transition="fade" style="background:#efebe3;color:#1d1d1b;font-family:'IBM Plex Sans', Arial, sans-serif;padding:88px 112px 120px;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:24px;font-weight:600;color:#c2410c;letter-spacing:2px;text-transform:uppercase">Analysis design · MoE_Analysis.ipynb</p>
+<h1 style="font-size:56px;font-weight:600;line-height:1.1">Four ways to look inside each step</h1>
+<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:28px;flex:1">
+<div style="background:#fbfaf6;border:1px solid #ddd8cc;border-radius:16px;padding:28px 32px;display:flex;flex-direction:column;gap:14px">
+<h3 style="font-size:32px;font-weight:600">1 · Linear probing</h3>
+<img src="/_blob/c1ee34d4ad5a0743baa9942934a29f62" alt="Linear probe softmax(W z + b) and balanced accuracy" style="width:622px;height:71px;object-fit:contain">
+<p style="font-size:24px;line-height:1.4;color:#4a4843">A linear read-out of the state after every step: label, region bits r₁..r₄, each clause’s 64-world truth table, top operator. Random-init model as control.</p>
+</div>
+<div style="background:#fbfaf6;border:1px solid #ddd8cc;border-radius:16px;padding:28px 32px;display:flex;flex-direction:column;gap:14px">
+<h3 style="font-size:32px;font-weight:600">2 · Activation patching</h3>
+<img src="/_blob/24d233e8c3f1fe63b76e96b83f2a8141" alt="Recovered fraction R of the logit difference after patching step i and position group g" style="width:620px;height:73px;object-fit:contain">
+<p style="font-size:24px;line-height:1.4;color:#4a4843">Clean and corrupt inputs differ in one token that flips the label. Copy clean states into the corrupt run at one step and one position group.</p>
+</div>
+<div style="background:#fbfaf6;border:1px solid #ddd8cc;border-radius:16px;padding:28px 32px;display:flex;flex-direction:column;gap:14px">
+<h3 style="font-size:32px;font-weight:600">3 · Sparse autoencoder</h3>
+<img src="/_blob/3d6c34367329eb5c62a9bf9e745d80ec" alt="ReLU sparse autoencoder encoder, decoder and L1 loss" style="width:492px;height:104px;object-fit:contain">
+<p style="font-size:24px;line-height:1.4;color:#4a4843">512 features on the final &lt;cls&gt; state, about 15 active per input. Does any single feature track a logic concept?</p>
+</div>
+<div style="background:#fbfaf6;border:1px solid #ddd8cc;border-radius:16px;padding:28px 32px;display:flex;flex-direction:column;gap:14px">
+<h3 style="font-size:32px;font-weight:600">4 · Ablations, as the authors ran them</h3>
+<img src="/_blob/ee7326473977ae0a1a4f6fe381d5de0c" alt="Depth truncation accuracy, expert knockout and random routing" style="width:711px;height:77px;object-fit:contain">
+<p style="font-size:24px;line-height:1.4;color:#4a4843">Also: halting-threshold sweep τ, MoM forced SKIP and module knockout, and retrained variants (MIM sign, load balancing, no halting, E = 1).</p>
+</div>
+</div>
+<p style="position:absolute;left:112px;bottom:48px;width:1696px;font-size:24px;color:#6b6862">Probes: 8,000 training states, 3,000 test, 2,000 long-formula states per model · patching: up to 500 minimal pairs · ablations: 2,000 test examples.</p>
+<aside>All analyses use step hooks added to the models: they are called on the embeddings and after every block application, and are off during training. For halting SUT models the state recorded at step i is the soft-halted state, the one the classifier would read if computation stopped there.
+
+Probing: linear probes trained on states from training examples, evaluated on held-out test examples and on longer formulas. Balanced accuracy removes the class imbalance, so chance is 1/7 for the label and 0.5 per bit. The control is the same architecture with random weights (with SUT's tiny expert initialisation rescaled so the control actually computes random features).
+
+Patching: single-token edits, a variable swap or and/or swap, that change the gold label. We copy the clean run's states into the corrupt run at one step for one group of positions: <cls>, the edited token, the rest of the edited clause, the separator, the other clause. For halting models the whole ACT state is patched too. Patching all positions gives exactly 1, which validates the code.
+
+SAE: a ReLU sparse autoencoder with 512 features on the final <cls> state, L1 chosen so about 15 features fire per input.
+
+Ablations: run only the first k steps, sweep the halting threshold after training as in the SUT paper, knock out single experts, replace the router output by noise, and for MoM force SKIP or knock out modules. The retraining ablations come from the pilot runs.</aside>
+</section>
