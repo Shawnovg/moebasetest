@@ -1,0 +1,16 @@
+<section id="pilot" data-transition="fade" style="background:#efebe3;color:#1d1d1b;font-family:'IBM Plex Sans', Arial, sans-serif;padding:88px 112px 120px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:24px;font-weight:600;color:#c2410c;letter-spacing:2px;text-transform:uppercase">4 · The pilot result</p>
+<h1 style="font-size:52px;font-weight:600;line-height:1.1">Dense wins; SUT and MoM barely beat the majority class</h1>
+<img src="/_blob/3b3e8df10177e19d6b8f0965a319cf85" alt="Test accuracy per model on lengths 0 to 6 and 7 to 12: Dense 0.736 and 0.571, Switch 0.682, MoA 0.621, UT 0.602, SUT fixed-depth 0.594, SUT paper MIM 0.574, SUT released 0.551, SUT 3x budget 0.691, MoM donor 0.542, MoM 0.540, majority class 0.54" style="width:1696px;height:572px;object-fit:contain">
+<div style="display:flex;gap:24px;align-items:center;background:#1d1d1b;border-radius:14px;padding:20px 28px">
+<p style="font-size:28px;font-weight:600;color:#f08a5d">Next:</p>
+<p style="font-size:28px;color:#f7f5f0">what is different inside these models? We probe, patch and ablate every step.</p>
+</div>
+<aside>Test accuracy, mean over seeds. Solid bars: held-out pairs of the training lengths. Light bars: longer formulas, 7 to 12 operators, never seen in training. The dotted line is the majority class.
+
+Dense is best at 0.736. Experts in a dense model (Switch, MoA) cost a little. Sharing one block (UT) costs more. SUT with the released code reaches only 0.551, and fixing the MIM sign helps a little (0.574). Training SUT three times longer brings it to 0.691, still below Dense at one third of its budget. Both MoM and its dense donor stay at the majority class.
+
+On longer formulas everything is close to chance; only Dense keeps a clear margin (0.571).
+
+These results raise the question for the rest of the talk: what do SUT and MoM compute differently, layer by layer, and which of their components are responsible?</aside>
+</section>

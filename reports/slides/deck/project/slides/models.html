@@ -1,0 +1,45 @@
+<section id="models" data-transition="fade" style="background:#f7f5f0;color:#1d1d1b;font-family:'IBM Plex Sans', Arial, sans-serif;padding:88px 112px 120px;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:24px;font-weight:600;color:#c2410c;letter-spacing:2px;text-transform:uppercase">1 · The models</p>
+<h1 style="font-size:56px;font-weight:600;line-height:1.1">Six model families on one common backbone</h1>
+<div style="display:flex;gap:48px;flex:1">
+<div style="width:740px;display:flex;flex-direction:column;gap:16px">
+<table style="font-size:24px;color:#1d1d1b;font-family:'IBM Plex Sans', Arial, sans-serif">
+<tr><th style="width:24%;text-align:left">Model</th><th style="width:48%;text-align:left">What changes</th><th style="width:28%;text-align:left">Aux. loss</th></tr>
+<tr><td>Dense</td><td>6 separate blocks</td><td>none</td></tr>
+<tr><td>UT</td><td>1 shared block, applied 6×</td><td>none</td></tr>
+<tr><td>Switch</td><td>FFN: 4 experts, top-1</td><td>load balance</td></tr>
+<tr><td>MoA</td><td>attention: 8 experts, top-4</td><td>MIM</td></tr>
+<tr style="background:#f6e4da"><td>SUT</td><td>shared block, attention and FFN experts (4, top-2), per-token halting</td><td>MIM</td></tr>
+<tr style="background:#e9e6f3"><td>MoM</td><td>dense donor → 4-step routed block</td><td>load balance</td></tr>
+</table>
+<p style="font-size:24px;line-height:1.4;color:#4a4843">SUT and MoM follow the authors’ released code (10 parity tests match their outputs and gradients); the others are built from the same audited units.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<img src="/_blob/8e141d62d40dcc9f45ca54dc2c7ed265" alt="Schematic of SUT (one shared block of attention and FFN experts with per-token halting) and MoM (bottom layer, a 4-step routed assembly block, anchor layer)" style="width:904px;height:294px;object-fit:contain;border-radius:12px">
+<div style="display:flex;gap:24px;align-items:center">
+<p style="width:190px;font-size:24px;font-weight:600;color:#c2410c">SUT experts</p>
+<img src="/_blob/b97d4cfda2ea03780e548b7128232dd1" alt="Top-k mixture of experts with renormalised gates" style="width:509px;height:84px;object-fit:contain">
+</div>
+<div style="display:flex;gap:24px;align-items:center">
+<p style="width:190px;font-size:24px;font-weight:600;color:#c2410c">SUT halting</p>
+<img src="/_blob/dd69d1f5ab4c8e50d5d3e7706db7b514" alt="Stick-breaking halting probabilities and the soft-halted state" style="width:504px;height:72px;object-fit:contain">
+</div>
+<div style="display:flex;gap:24px;align-items:center">
+<p style="width:190px;font-size:24px;font-weight:600;color:#c2410c">SUT MIM loss</p>
+<img src="/_blob/c44d9797432068eb1e43a7877c301778" alt="MIM loss: paper H(E|X) minus H(E); released code H(E|X) plus H(E)" style="width:471px;height:77px;object-fit:contain">
+</div>
+<div style="display:flex;gap:24px;align-items:center">
+<p style="width:190px;font-size:24px;font-weight:600;color:#c2410c">MoM assembly</p>
+<img src="/_blob/d0a15dd796cd6db483c4b75c82a8e34d" alt="MoM assembly step: one attention and one FFN module chosen per token by a GRU router, or SKIP" style="width:601px;height:85px;object-fit:contain">
+</div>
+</div>
+</div>
+<p style="position:absolute;left:112px;bottom:48px;width:1696px;font-size:24px;color:#6b6862">Schematic redrawn after Shen et al. 2023 (SUT, Fig. 1, 3) and Gong et al. 2024 (MoM, Fig. 1).</p>
+<aside>All models share width 128, six block applications and the same input format, so differences come from the structure.
+
+Dense: six separate post-LN blocks. UT: one dense block applied six times. Switch: experts in the FFN of each layer, top-1, Switch load-balancing loss. MoA: attention heads as experts, 4 of 8 per token, with SUT's MIM loss.
+
+SUT (Shen et al. 2023): one shared block whose attention query and output projections and FFN are mixtures of experts (4 experts, top-2), plus stick-breaking halting: each token stops once its probability of not having halted falls below 1 − 0.999, and the output is the halting-weighted mix of the step outputs. The MIM auxiliary loss is meant to make expert use balanced overall but confident per token; the released code adds the marginal entropy instead of subtracting it.
+
+MoM (Gong et al. 2024): converted from a trained dense donor. A bottom layer and an anchor layer stay dense; the middle four layers become pools of 4 attention and 4 FFN modules, and a GRU router assembles one attention and one FFN module per token at each of 4 steps, or skips.</aside>
+</section>

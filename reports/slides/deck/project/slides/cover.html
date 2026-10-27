@@ -1,0 +1,25 @@
+<section id="cover" data-transition="fade" style="background:#1d1d1b;color:#f7f5f0;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:40px">
+<div style="display:flex;flex-direction:column;gap:32px">
+<p style="font-size:24px;font-weight:600;color:#f08a5d;letter-spacing:2px;text-transform:uppercase">MoE_Base_Test · CPU pilot and mechanistic analysis</p>
+<h1 style="font-size:80px;font-weight:600;line-height:1.1;color:#f7f5f0">Do routed and recurrent Transformers reason better about logic?</h1>
+<p style="font-size:32px;line-height:1.4;color:#c9c5bb">A controlled pilot of SUT and Mixture-of-Modules against dense baselines, then a look inside the trained models to explain the gap.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="border-top:4px solid #5b9be6;padding-top:20px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:72px;font-weight:600;color:#f7f5f0;line-height:1.1">0.736</p>
+<p style="font-size:24px;color:#c9c5bb">Dense Transformer, test accuracy</p>
+</div>
+<div style="border-top:4px solid #e57ab8;padding-top:20px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:72px;font-weight:600;color:#f7f5f0;line-height:1.1">0.551</p>
+<p style="font-size:24px;color:#c9c5bb">Sparse Universal Transformer (released settings)</p>
+</div>
+<div style="border-top:4px solid #a8a49a;padding-top:20px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:72px;font-weight:600;color:#f7f5f0;line-height:1.1">0.540</p>
+<p style="font-size:24px;color:#c9c5bb">Mixture-of-Modules, equal to always guessing “#”</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#a8a49a">github.com/Shawnovg/moebasetest · notebooks MoE_Experiment.ipynb and MoE_Analysis.ipynb</p>
+<aside>The project asks whether Transformers that route tokens to experts (SUT, Mixture-of-Modules) or reuse one block recurrently (Universal Transformer, SUT) handle compositional logical inference better than a plain dense Transformer of the same width and depth.
+
+The pilot gave a clear but unexpected answer at this budget: the dense model is best, SUT with the released code is barely above the majority class, and MoM sits exactly at the majority class. The first half of the talk introduces the pilot; the second half opens up the trained models to explain why.</aside>
+</section>

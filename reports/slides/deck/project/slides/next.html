@@ -1,0 +1,29 @@
+<section id="next" data-transition="fade" style="background:#1d1d1b;color:#f7f5f0;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;font-weight:600;color:#f08a5d;letter-spacing:2px;text-transform:uppercase">8 · What it means for the next run</p>
+<h1 style="font-size:56px;font-weight:600;line-height:1.1;color:#f7f5f0">The gap comes from training choices, not from routing itself</h1>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:56px">
+<div style="display:flex;flex-direction:column;gap:20px">
+<h3 style="font-size:32px;font-weight:600;color:#f08a5d">What we learned</h3>
+<ul style="font-size:26px;line-height:1.45;color:#dcd8ce">
+<li>Dense spreads the computation over all 6 layers.</li>
+<li>SUT halts after about 1.5 steps, so it never uses its depth.</li>
+<li>The released MIM sign collapses routing and also pushes on halting.</li>
+<li>With depth available, SUT relies on its experts.</li>
+<li>MoM’s donor never learned, so there was nothing to assemble.</li>
+</ul>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<h3 style="font-size:32px;font-weight:600;color:#f08a5d">Next experiments (GPU)</h3>
+<ul style="font-size:26px;line-height:1.45;color:#dcd8ce">
+<li>SUT with the paper MIM sign and a stop-gradient on its halting weights.</li>
+<li>A halting cost or minimum depth, so tokens use more than 2 steps.</li>
+<li>A MoM donor that learns the task first (positions as in Dense).</li>
+<li>Train to convergence, 3–5 seeds; repeat probing and patching.</li>
+</ul>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#a8a49a">Caveat: CPU pilot, 3,000 steps (MoM 10,000), one seed per model in the analysis.</p>
+<aside>Summary: at this budget the dense model wins because it actually uses its depth. SUT's learned halting stops computation after about one and a half steps, and the released MIM sign both collapses expert use and, through its halting-weighted average, pushes the halting gate. When SUT is forced to use its depth or trained longer, it does use its experts heavily, so routing is not the problem in itself. MoM inherited nothing from its donor.
+
+For the GPU run: use the paper MIM sign with a detach on the not-halted weights, add a halting cost or minimum depth, make sure the MoM donor learns the task before conversion, train to convergence with several seeds, and re-run this analysis notebook on the new checkpoints.</aside>
+</section>

@@ -1653,6 +1653,70 @@ def slide_fig_schematics(fname="s_schematics.png"):
 slide_fig_schematics()
 """)
 
+md("### Unit 15d: Slide figure: the pilot result that motivates the analysis")
+code(r"""
+PILOT_ORDER = [("dense6", "Dense"), ("switch6", "Switch"), ("moa6", "MoA"), ("ut_fixed6", "UT (fixed depth)"),
+               ("sut_fixed6", "SUT fixed-depth"), ("sut_common6_mim_paper", "SUT, MIM paper sign"),
+               ("sut_common6", "SUT (released)"), ("sut_common6_long", "SUT, 3x budget"),
+               ("mom_donor6_cls_full", "MoM donor (dense)"), ("mom_ref6_cls_fromfull", "MoM")]
+
+def slide_fig_pilot(fname="s_pilot_results.png"):
+    slide_style()
+    df = pd.read_csv(ROOT / "runs" / "pilot" / "results_long.csv")
+    df = df[df.regime == "length"]
+    fig, ax = plt.subplots(figsize=(16.6, 5.6))
+    y = np.arange(len(PILOT_ORDER))
+    for j, (part, lab, alpha) in enumerate([("test_iid", "test, lengths 0–6", 1.0), ("test_len", "test, lengths 7–12", 0.45)]):
+        vals, sds = [], []
+        for cfg, _ in PILOT_ORDER:
+            v = df[(df.config == cfg) & (df.part == part)].acc
+            vals.append(v.mean()); sds.append(v.std() if len(v) > 1 else 0)
+        cols = [style(c)[0] for c, _ in PILOT_ORDER]
+        ax.barh(y + (j - 0.5) * 0.4, vals, height=0.38, color=cols, alpha=alpha, label=lab)
+        for i, v in enumerate(vals):
+            ax.text(v + 0.004, y[i] + (j - 0.5) * 0.4, f"{v:.3f}", va="center", fontsize=11.5, color=SLIDE["ink"] if j == 0 else SLIDE["mute"])
+    maj = 0.541
+    ax.axvline(maj, color=SLIDE["ink"], ls=":", lw=1.4)
+    ax.text(maj + 0.003, len(PILOT_ORDER) - 0.35, "majority class 0.54", fontsize=12, color=SLIDE["ink"])
+    ax.set_yticks(y, [l for _, l in PILOT_ORDER]); ax.invert_yaxis(); ax.set_xlim(0.45, 0.80)
+    ax.set_xlabel("accuracy (mean over seeds)")
+    ax.legend([plt.Rectangle((0, 0), 1, 1, color=SLIDE["mute"]), plt.Rectangle((0, 0), 1, 1, color=SLIDE["mute"], alpha=0.45)],
+              ["held-out test, lengths 0–6", "longer formulas, lengths 7–12"], loc="lower right", fontsize=12.5)
+    fig.tight_layout(); fig.savefig(SLIDE_DIR / fname); plt.show()
+
+slide_fig_pilot()
+""")
+
+md("### Unit 15e: Slide figure: the dataset (labels and formula lengths per split)")
+code(r"""
+def slide_fig_data(fname="s_dataset.png"):
+    slide_style()
+    parts = [("train", "train"), ("valid", "valid"), ("test_iid", "test 0–6"), ("test_len", "test 7–12")]
+    exs = {p: logic.read_jsonl(DATA / f"{p}.jsonl") for p, _ in parts}
+    fig, axes = plt.subplots(1, 2, figsize=(16.6, 4.6), gridspec_kw=dict(width_ratios=[1, 1.25]))
+    ax = axes[0]
+    tr = exs["train"]; counts = np.array([sum(e.label == l for e in tr) for l in logic.LABELS]) / len(tr)
+    names = ["<  entails", ">  entailed by", "=  equivalent", "^  negation", "|  alternation", "#  independent", "v  cover"]
+    order = np.argsort(-counts)
+    ax.barh(range(7), counts[order], color=[SLIDE["accent"] if logic.LABELS[i] == "#" else "#8c8a83" for i in order])
+    for k, i in enumerate(order):
+        ax.text(counts[i] + 0.005, k, f"{counts[i] * 100:.1f}%", va="center", fontsize=12)
+    ax.set_yticks(range(7), [names[i] for i in order]); ax.invert_yaxis(); ax.set_xlim(0, 0.62)
+    ax.set_title("label distribution (train)", loc="left", color=SLIDE["ink"]); ax.set_xlabel("share of pairs")
+    ax = axes[1]
+    bins = np.arange(13)
+    for (p, lab), col in zip(parts, ["#2a78d6", "#8fb8e8", "#c2410c", "#e8a07a"]):
+        c = np.bincount([e.length_bin for e in exs[p]], minlength=13)
+        ax.plot(bins, c, marker="o", ms=5, color=col, label=f"{lab} ({len(exs[p]):,})")
+    ax.axvspan(6.5, 12.5, color=SLIDE["grid"], alpha=0.6, lw=0)
+    ax.text(9.5, ax.get_ylim()[1] * 0.92, "never seen in training", ha="center", fontsize=12.5, color=SLIDE["mute"])
+    ax.set_xticks(bins); ax.set_xlabel("length bin = max operators in a clause")
+    ax.set_title("pairs per length bin", loc="left", color=SLIDE["ink"]); ax.legend(fontsize=12, loc="upper left")
+    fig.tight_layout(); fig.savefig(SLIDE_DIR / fname); plt.show()
+
+slide_fig_data()
+""")
+
 
 def build(path):
     nb = {"cells": [], "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},

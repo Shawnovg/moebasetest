@@ -1,0 +1,23 @@
+<section id="data" data-transition="fade" style="background:#efebe3;color:#1d1d1b;font-family:'IBM Plex Sans', Arial, sans-serif;padding:88px 112px 120px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:24px;font-weight:600;color:#c2410c;letter-spacing:2px;text-transform:uppercase">2 · The data</p>
+<h1 style="font-size:56px;font-weight:600;line-height:1.1">The task: the relation between two clauses</h1>
+<div style="display:flex;gap:40px;align-items:center">
+<div style="width:640px;display:flex;flex-direction:column;gap:14px">
+<div style="background:#fbfaf6;border:1px solid #ddd8cc;border-radius:12px;padding:18px 24px;display:flex;flex-direction:column;gap:6px">
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:26px;color:#1d1d1b">&lt;cls&gt; ( a ( and b ) ) #SEP# a</p>
+<p style="font-size:24px;color:#4a4843">label <b>&lt;</b> : every world where A holds, B holds</p>
+</div>
+<img src="/_blob/ef8a2e051a898d93b0da42571fbffafd" alt="Truth set of clause A over the 64 worlds and the seven relation labels" style="width:640px;height:35px;object-fit:contain">
+</div>
+<img src="/_blob/6abdb9da7db0cf6b4f57c14ba2b311aa" alt="The label is a function of four region bits r1 to r4" style="width:469px;height:118px;object-fit:contain">
+<p style="flex:1;font-size:24px;line-height:1.4;color:#4a4843">Bowman et al. (2015) generator, Ordered Memory release: 249,069 pairs over 6 variables. Train on ≤ 6 operators; test on held-out ≤ 6 and on unseen 7–12.</p>
+</div>
+<img src="/_blob/c29b4408d4e17fc467293d4bd5080218" alt="Label distribution of the training set, with independence at 54.3 percent, and the number of pairs per length bin for train, valid, test 0 to 6 and test 7 to 12" style="width:1696px;height:440px;object-fit:contain">
+<aside>Each example is two clauses built from the six variables a to f with and, or and not. A clause's truth set is the set of the 64 possible worlds in which it is true. The label is the set relation between the two truth sets: forward or reverse entailment, equivalence, negation (complement), alternation (disjoint, not covering), cover (overlapping and covering) or independence.
+
+Because the generator rejects tautologies and contradictions, the label is a fixed function of four region bits: do A and B overlap, does A have worlds outside B, B outside A, and is there a world where neither holds. That is the structure the probes later look for.
+
+The input format is the same for every model: a CLS token, clause A, a separator, clause B, with the classifier reading the CLS state.
+
+Splits (length regime): train 121,977 and valid 13,552 pairs with at most 6 operators per clause; test 23,922 held-out pairs of the same lengths and 13,445 pairs with 7 to 12 operators, never seen in training. Independence is 54% of the data, so always guessing it gives 0.54. Equivalence and negation are rare (about 2% each).</aside>
+</section>

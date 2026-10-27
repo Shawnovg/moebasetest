@@ -1,5 +1,5 @@
-<section id="inside" data-transition="fade" style="background:#f7f5f0;color:#1d1d1b;font-family:'IBM Plex Sans', Arial, sans-serif;padding:88px 112px 120px;display:flex;flex-direction:column;gap:24px">
-<p style="font-size:24px;font-weight:600;color:#c2410c;letter-spacing:2px;text-transform:uppercase">Results · probing and patching</p>
+<section id="inside" data-transition="fade" style="background:#efebe3;color:#1d1d1b;font-family:'IBM Plex Sans', Arial, sans-serif;padding:88px 112px 120px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:24px;font-weight:600;color:#c2410c;letter-spacing:2px;text-transform:uppercase">6 · What the hidden states contain</p>
 <h1 style="font-size:52px;font-weight:600;line-height:1.1">Dense builds the relation layer by layer; SUT stops after one step</h1>
 <img src="/_blob/9008877f143ca38b8b7008b3128065a1" alt="Probe balanced accuracy for the label and the region bits at every step, and the patching recovery at the cls token, for Dense, Switch, SUT fixed-depth, SUT, SUT 3x budget, MoM and a random-init control" style="width:1696px;height:500px;object-fit:contain">
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px">
@@ -16,15 +16,15 @@
 <p style="font-size:24px;line-height:1.35;color:#4a4843">Label 0.16 and region 0.50 at every step, the same as a random-weight model.</p>
 </div>
 </div>
-<aside>Left and middle panels: balanced accuracy of linear probes on the <cls> state after each step, for the 7-way label and the four region bits. Chance is 1/7 and 0.5. Right panel: activation patching, the fraction of the clean–corrupt logit difference recovered by patching only the <cls> state at that step.
+<aside>Left and middle panels: balanced accuracy of linear probes on the CLS state after each step, for the 7-way label and the four region bits. Chance is 1/7 and 0.5. Right panel: activation patching, the fraction of the clean-to-corrupt logit difference recovered by patching only the CLS state at that step.
 
-Dense: the region bits become linearly readable only from layer 2 on and keep improving to layer 6 (0.75). Patching shows the edited token's information stays at its own position through layer 2 and moves into <cls> at layers 3 and 4. So the dense model computes the relation over its whole depth.
+Dense: the region bits become linearly readable from layer 2 on and keep improving to layer 6 (0.75). Patching shows the edited token's information stays at its own position through layer 2 and moves into the CLS token at layers 3 and 4. So the dense model computes the relation over its whole depth.
 
-SUT with the released settings: the probes jump a little at step 1 and then stay flat (region 0.53, label 0.22). Patching shows information does reach <cls> early, but the states no longer change in a useful way. The 3x-budget SUT gets further (0.69 by step 3) and then also plateaus. SUT fixed-depth (no halting) keeps improving to step 6 but at a lower level than Dense.
+SUT with the released settings: the probes jump a little at step 1 and then stay flat (region 0.53, label 0.22). Patching shows information does reach the CLS token early, but the states no longer change in a useful way. The 3x-budget SUT gets further (0.69 by step 3) and then also plateaus. SUT fixed-depth (no halting) keeps improving to step 6 but at a lower level than Dense.
 
-MoM and its dense donor: probes stay at chance at every step, indistinguishable from the random-init control. Their clause-token states even carry less truth-table information than the raw embeddings.
+MoM and its dense donor: probes stay at chance at every step, indistinguishable from the random-init control.
 
 Truth-table probes (not shown): clause meanings are about as decodable from random features (0.66) as from any trained model (0.66 to 0.71), so no model computes explicit truth tables.
 
-SAE: the best single SAE feature correlates with the region bits at |r| = 0.52 on average in Dense, 0.23 in SUT, 0.32 in SUT 3x, 0.16 in MoM.</aside>
+SAE: the best single SAE feature correlates with the region bits at r = 0.52 on average in Dense, 0.23 in SUT, 0.32 in SUT 3x, 0.16 in MoM.</aside>
 </section>
