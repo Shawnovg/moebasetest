@@ -1,0 +1,7 @@
+# SUT MoMHA: 4 experts x 2 heads x 32, top-2, shared K/V heads, MLP gate, renormalised gates.
+structure_params:
+  num_experts: 4
+  heads_per_expert: 2
+  k: 2
+  gate_norm: renorm
+  switchloss: 0.01

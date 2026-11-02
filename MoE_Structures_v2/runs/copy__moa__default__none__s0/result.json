@@ -1,0 +1,77 @@
+{
+ "run": "copy__moa__default__none__s0",
+ "dataset": "copy",
+ "structure": "moa",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 414208,
+ "params_total": 587683,
+ "valid_acc": 1.0,
+ "valid_loss": 2.277200084812289e-06,
+ "test_acc": 1.0,
+ "test_loss": 2.278807837332286e-06,
+ "test_seq_acc": 1.0,
+ "test_per_task": {
+  "copy": 1.0
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.11572,
+    0.02748,
+    0.13265,
+    0.23538,
+    0.10843,
+    0.02187,
+    0.20229,
+    0.15616
+   ],
+   "entropy": 0.91108,
+   "max_load": 0.23538,
+   "dead": 0,
+   "per_task": {
+    "copy": [
+     63340,
+     15043,
+     72605,
+     128836,
+     59351,
+     11971,
+     110724,
+     85474
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.02253,
+    0.20665,
+    0.03951,
+    0.13743,
+    0.02858,
+    0.13713,
+    0.21161,
+    0.21655
+   ],
+   "entropy": 0.8876,
+   "max_load": 0.21655,
+   "dead": 0,
+   "per_task": {
+    "copy": [
+     12333,
+     113110,
+     21627,
+     75220,
+     15643,
+     75060,
+     115825,
+     118526
+    ]
+   }
+  }
+ },
+ "train_time_s": 671.1582090854645,
+ "device": "cpu"
+}

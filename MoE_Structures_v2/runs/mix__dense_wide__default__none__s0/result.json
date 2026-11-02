@@ -1,0 +1,27 @@
+{
+ "run": "mix__dense_wide__default__none__s0",
+ "dataset": "mix",
+ "structure": "dense_wide",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 1185280,
+ "params_total": 1358755,
+ "valid_acc": 0.254627539503386,
+ "valid_loss": 2.5015232887009735,
+ "test_acc": 0.2561648463010922,
+ "test_loss": 2.4996142503901413,
+ "test_seq_acc": 0.09059059059059059,
+ "test_per_task": {
+  "mqar": 0.13156906906906907,
+  "fact": 0.010885885885885885,
+  "mod": 0.008258258258258258,
+  "copy": 0.4332176137401791,
+  "rev": 0.3035309667673716,
+  "logic": 0.5435435435435435
+ },
+ "routing": {},
+ "train_time_s": 1287.879702091217,
+ "device": "cpu"
+}

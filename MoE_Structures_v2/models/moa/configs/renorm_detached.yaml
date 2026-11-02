@@ -1,0 +1,4 @@
+# The paper's text: gates renormalised over the top-k with the denominator detached.
+base: default.yaml
+structure_params:
+  gate_norm: renorm_detached

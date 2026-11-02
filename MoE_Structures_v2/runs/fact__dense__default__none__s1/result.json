@@ -1,0 +1,22 @@
+{
+ "run": "fact__dense__default__none__s1",
+ "dataset": "fact",
+ "structure": "dense",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 395776,
+ "params_total": 569251,
+ "valid_acc": 0.5804375,
+ "valid_loss": 1.7272854766845702,
+ "test_acc": 0.5761875,
+ "test_loss": 1.7452783584594727,
+ "test_seq_acc": 0.01175,
+ "test_per_task": {
+  "fact": 0.5761875
+ },
+ "routing": {},
+ "train_time_s": 393.47287678718567,
+ "device": "cpu"
+}

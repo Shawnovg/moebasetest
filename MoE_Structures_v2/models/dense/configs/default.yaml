@@ -1,0 +1,2 @@
+# Dense baseline: 4 heads x 32, FFN 512 (the shared backbone unchanged).
+structure_params: {}

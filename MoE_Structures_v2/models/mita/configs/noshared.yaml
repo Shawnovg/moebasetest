@@ -1,0 +1,3 @@
+# Routed experts only, no compressed shared expert.
+base: default.yaml
+structure_params: {shared: false}

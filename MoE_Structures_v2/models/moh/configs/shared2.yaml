@@ -1,0 +1,5 @@
+# The paper's main form: 2 always-on shared heads + 2-of-6 routed heads, two-stage (shared/routed) weights.
+base: default.yaml
+structure_params:
+  shared_head: 2
+  routed_head: 2

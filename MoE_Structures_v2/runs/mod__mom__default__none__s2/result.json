@@ -1,0 +1,107 @@
+{
+ "run": "mod__mom__default__none__s2",
+ "dataset": "mod",
+ "structure": "mom",
+ "variant": "default",
+ "balance": "none",
+ "seed": 2,
+ "steps": 3000,
+ "params": 861962,
+ "params_total": 1035437,
+ "valid_acc": 0.012125,
+ "valid_loss": 4.5736988830566405,
+ "test_acc": 0.00925,
+ "test_loss": 4.578354553222656,
+ "test_seq_acc": 0.0,
+ "test_per_task": {
+  "mod": 0.00925
+ },
+ "routing": {
+  "body.step0.attn": {
+   "load": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "entropy": -0.0,
+   "max_load": 1.0,
+   "dead": 4,
+   "per_task": {
+    "mod": [
+     0,
+     0,
+     0,
+     0,
+     96000
+    ]
+   }
+  },
+  "body.step0.ffn": {
+   "load": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "entropy": -0.0,
+   "max_load": 1.0,
+   "dead": 4,
+   "per_task": {
+    "mod": [
+     0,
+     0,
+     0,
+     0,
+     96000
+    ]
+   }
+  },
+  "body.step1.attn": {
+   "load": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "entropy": -0.0,
+   "max_load": 1.0,
+   "dead": 4,
+   "per_task": {
+    "mod": [
+     0,
+     0,
+     0,
+     0,
+     96000
+    ]
+   }
+  },
+  "body.step1.ffn": {
+   "load": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "entropy": -0.0,
+   "max_load": 1.0,
+   "dead": 4,
+   "per_task": {
+    "mod": [
+     0,
+     0,
+     0,
+     0,
+     96000
+    ]
+   }
+  }
+ },
+ "train_time_s": 157.43979358673096,
+ "device": "cpu"
+}

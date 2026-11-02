@@ -1,0 +1,4 @@
+# Hash routing (Roller et al. 2021): fixed token-id -> experts table, gate 1/k, no learned router.
+base: default.yaml
+structure_params:
+  routing: hash

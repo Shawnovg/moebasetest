@@ -1,0 +1,11 @@
+# MoM (mom/model.py MoTBlock): pool of 4 attention + 4 FFN modules, 2 assembly steps, top-1, SKIP class,
+# 'naive' MLP router, raw-score weighting of outputs.
+structure_params:
+  num_attn: 4
+  num_ffn: 4
+  depth: 2
+  k: 1
+  enable_pause: true
+  router_type: naive
+  router_dim: 256
+  aux_coef: 0.01

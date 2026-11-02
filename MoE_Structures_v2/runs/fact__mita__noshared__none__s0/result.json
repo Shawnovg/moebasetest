@@ -1,0 +1,77 @@
+{
+ "run": "fact__mita__noshared__none__s0",
+ "dataset": "fact",
+ "structure": "mita",
+ "variant": "noshared",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 396032,
+ "params_total": 569507,
+ "valid_acc": 0.045375,
+ "valid_loss": 4.596988616943359,
+ "test_acc": 0.0469375,
+ "test_loss": 4.589410873413086,
+ "test_seq_acc": 0.0,
+ "test_per_task": {
+  "fact": 0.0469375
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.15796,
+    0.11351,
+    0.12002,
+    0.118,
+    0.11824,
+    0.12358,
+    0.11773,
+    0.13096
+   ],
+   "entropy": 0.9974,
+   "max_load": 0.15796,
+   "dead": 0,
+   "per_task": {
+    "fact": [
+     83402,
+     59931,
+     63372,
+     62304,
+     62432,
+     65250,
+     62163,
+     69146
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.14306,
+    0.11859,
+    0.12049,
+    0.12138,
+    0.12093,
+    0.12089,
+    0.12043,
+    0.13423
+   ],
+   "entropy": 0.99899,
+   "max_load": 0.14306,
+   "dead": 0,
+   "per_task": {
+    "fact": [
+     75536,
+     62616,
+     63617,
+     64088,
+     63853,
+     63829,
+     63587,
+     70874
+    ]
+   }
+  }
+ },
+ "train_time_s": 761.2601521015167,
+ "device": "cpu"
+}

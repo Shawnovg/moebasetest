@@ -1,0 +1,77 @@
+{
+ "run": "logic__moa__default__none__s0",
+ "dataset": "logic",
+ "structure": "moa",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 414208,
+ "params_total": 587683,
+ "valid_acc": 0.529,
+ "valid_loss": 1.1438278884887696,
+ "test_acc": 0.5485,
+ "test_loss": 1.1178018417358397,
+ "test_seq_acc": 0.5485,
+ "test_per_task": {
+  "logic": 0.5485
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.0338,
+    0.23179,
+    0.12145,
+    0.25,
+    0.04389,
+    0.2162,
+    0.01509,
+    0.08778
+   ],
+   "entropy": 0.86617,
+   "max_load": 0.25,
+   "dead": 0,
+   "per_task": {
+    "logic": [
+     16372,
+     112264,
+     58823,
+     121082,
+     21256,
+     104710,
+     7309,
+     42512
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.00112,
+    0.00112,
+    0.00112,
+    0.00112,
+    0.24888,
+    0.24888,
+    0.24888,
+    0.24888
+   ],
+   "entropy": 0.68045,
+   "max_load": 0.24888,
+   "dead": 4,
+   "per_task": {
+    "logic": [
+     542,
+     541,
+     542,
+     542,
+     120540,
+     120540,
+     120540,
+     120541
+    ]
+   }
+  }
+ },
+ "train_time_s": 634.6544597148895,
+ "device": "cpu"
+}

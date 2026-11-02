@@ -1,0 +1,4 @@
+# The paper's default GRU router, whose state follows each token across the assembly steps.
+base: default.yaml
+structure_params:
+  router_type: gru

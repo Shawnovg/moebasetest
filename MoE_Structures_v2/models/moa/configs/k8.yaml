@@ -1,0 +1,4 @@
+# All 8 experts active (gate-weighted dense multi-query attention): isolates the effect of selection.
+base: default.yaml
+structure_params:
+  k: 8

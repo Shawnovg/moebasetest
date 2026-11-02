@@ -1,0 +1,7 @@
+# MoH (MoH-DiT MoHAttention): 8 heads x 32, each token activates 4 routed heads, no shared heads.
+structure_params:
+  num_heads: 8
+  shared_head: 0
+  routed_head: 4
+  qkv_bias: false
+  lb_coef: 0.01           # averaged over layers as in MoH train.py

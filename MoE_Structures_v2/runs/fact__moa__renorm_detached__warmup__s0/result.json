@@ -1,0 +1,77 @@
+{
+ "run": "fact__moa__renorm_detached__warmup__s0",
+ "dataset": "fact",
+ "structure": "moa",
+ "variant": "renorm_detached",
+ "balance": "warmup",
+ "seed": 0,
+ "steps": 3000,
+ "params": 414208,
+ "params_total": 587683,
+ "valid_acc": 0.2131875,
+ "valid_loss": 3.486985626220703,
+ "test_acc": 0.2104375,
+ "test_loss": 3.482368667602539,
+ "test_seq_acc": 0.0,
+ "test_per_task": {
+  "fact": 0.2104375
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.08262,
+    0.18198,
+    0.03536,
+    0.01095,
+    0.14856,
+    0.22617,
+    0.14003,
+    0.17432
+   ],
+   "entropy": 0.90552,
+   "max_load": 0.22617,
+   "dead": 0,
+   "per_task": {
+    "fact": [
+     43621,
+     96085,
+     18671,
+     5783,
+     78441,
+     119420,
+     73936,
+     92043
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.16341,
+    0.22756,
+    0.07795,
+    0.15791,
+    0.0322,
+    0.03242,
+    0.145,
+    0.16355
+   ],
+   "entropy": 0.92389,
+   "max_load": 0.22756,
+   "dead": 0,
+   "per_task": {
+    "fact": [
+     86278,
+     120154,
+     41157,
+     83376,
+     17000,
+     17120,
+     76561,
+     86354
+    ]
+   }
+  }
+ },
+ "train_time_s": 478.72004795074463,
+ "device": "cpu"
+}

@@ -1,0 +1,61 @@
+{
+ "run": "fact__mita__m4k4__lb__s0",
+ "dataset": "fact",
+ "structure": "mita",
+ "variant": "m4k4",
+ "balance": "lb",
+ "seed": 0,
+ "steps": 3000,
+ "params": 396032,
+ "params_total": 569507,
+ "valid_acc": 0.053375,
+ "valid_loss": 4.487567993164062,
+ "test_acc": 0.05653125,
+ "test_loss": 4.480238250732421,
+ "test_seq_acc": 0.0,
+ "test_per_task": {
+  "fact": 0.05653125
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.2463,
+    0.25232,
+    0.23993,
+    0.26145
+   ],
+   "entropy": 0.99964,
+   "max_load": 0.26145,
+   "dead": 0,
+   "per_task": {
+    "fact": [
+     130046,
+     133225,
+     126681,
+     138048
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.26054,
+    0.24301,
+    0.24253,
+    0.25393
+   ],
+   "entropy": 0.99967,
+   "max_load": 0.26054,
+   "dead": 0,
+   "per_task": {
+    "fact": [
+     137566,
+     128307,
+     128054,
+     134073
+    ]
+   }
+  }
+ },
+ "train_time_s": 749.2117042541504,
+ "device": "cpu"
+}

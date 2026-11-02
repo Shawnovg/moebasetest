@@ -1,0 +1,22 @@
+{
+ "run": "rev__dense__default__none__s0",
+ "dataset": "rev",
+ "structure": "dense",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 395776,
+ "params_total": 569251,
+ "valid_acc": 1.0,
+ "valid_loss": 9.629307949407045e-06,
+ "test_acc": 1.0,
+ "test_loss": 9.414793573944147e-06,
+ "test_seq_acc": 1.0,
+ "test_per_task": {
+  "rev": 1.0
+ },
+ "routing": {},
+ "train_time_s": 646.6880278587341,
+ "device": "cpu"
+}

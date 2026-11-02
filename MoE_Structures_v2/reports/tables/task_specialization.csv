@@ -1,0 +1,15 @@
+dataset,structure,variant,balance,seed,module,task_mi
+mix,mita,default,none,0,blocks.0.attn,0.020320624013817505
+mix,mita,default,none,0,blocks.1.attn,0.008553853292688911
+mix,moa,default,none,0,blocks.0.attn,0.04091437468634269
+mix,moa,default,none,0,blocks.1.attn,0.06941237147795673
+mix,moe,default,none,0,blocks.0.ffn,0.21874007251017422
+mix,moe,default,none,0,blocks.1.ffn,0.27948356661644586
+mix,moh,default,none,0,blocks.0.attn,0.027519291818719458
+mix,moh,default,none,0,blocks.1.attn,0.07553397157213201
+mix,mom,default,none,0,body.step0.attn,0.045961137340375935
+mix,mom,default,none,0,body.step0.ffn,0.101276327569046
+mix,mom,default,none,0,body.step1.attn,0.022756837508655543
+mix,mom,default,none,0,body.step1.ffn,0.021369667100344294
+mix,momha,default,none,0,blocks.0.attn,0.05004959195662843
+mix,momha,default,none,0,blocks.1.attn,0.0616573585884618

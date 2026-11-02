@@ -1,0 +1,6 @@
+{"step": 500, "train_loss": 5.053534184455872, "train_aux": 0.0, "grad_norm": 0.675715982913971, "valid_loss": 4.816375457763672, "valid_acc": 0.0165625, "valid_per_task": {"fact": 0.0165625}, "time": 91.6159598827362}
+{"step": 1000, "train_loss": 4.667250834465027, "train_aux": 0.0, "grad_norm": 1.198215365409851, "valid_loss": 4.480314636230469, "valid_acc": 0.0575625, "valid_per_task": {"fact": 0.0575625}, "time": 186.48438835144043}
+{"step": 1500, "train_loss": 4.101305781364441, "train_aux": 0.0, "grad_norm": 2.5315937995910645, "valid_loss": 3.7142470703125, "valid_acc": 0.159875, "valid_per_task": {"fact": 0.159875}, "time": 276.25648951530457}
+{"step": 2000, "train_loss": 3.2059782052040102, "train_aux": 0.0, "grad_norm": 4.063283443450928, "valid_loss": 2.8424954833984377, "valid_acc": 0.30425, "valid_per_task": {"fact": 0.30425}, "time": 369.0443649291992}
+{"step": 2500, "train_loss": 2.4563543391227722, "train_aux": 0.0, "grad_norm": 4.780532360076904, "valid_loss": 2.2921460571289063, "valid_acc": 0.426875, "valid_per_task": {"fact": 0.426875}, "time": 461.33083057403564}
+{"step": 3000, "train_loss": 2.135412130355835, "train_aux": 0.0, "grad_norm": 4.717979431152344, "valid_loss": 2.175102828979492, "valid_acc": 0.4565, "valid_per_task": {"fact": 0.4565}, "time": 553.4821262359619}

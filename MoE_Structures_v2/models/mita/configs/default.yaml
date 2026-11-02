@@ -1,0 +1,8 @@
+# MiTA (mita/mita_attention.py): 4 heads x 32, m = 8 landmarks, each expert = its landmark's top-8 keys,
+# each query routed to 1 expert (argmax), plus the compressed shared expert.
+structure_params:
+  num_landmarks: 8
+  kv_topk: 8
+  router_topk: 1
+  shared: true
+  lb_coef: 0.01           # adaptation (MiTA has no balancing loss)

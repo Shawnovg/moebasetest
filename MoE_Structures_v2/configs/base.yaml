@@ -1,0 +1,30 @@
+# Shared settings for every run. Structure configs (models/<s>/configs/*.yaml) add `structure_params`
+# and may override anything here; sweeps override dataset / routing.balance / train.seed / train.steps.
+dataset: mqar
+backbone:
+  d_model: 128
+  n_layers: 2
+  n_heads: 4
+  head_dim: 32
+  d_ff: 512
+  activation: gelu
+  ln_eps: 1.0e-5
+  rope_base: 10000.0
+  max_len: 512
+routing:
+  balance: none          # none | lb | warmup
+  warmup_frac: 0.1       # 'warmup': fraction of training steps with random routing
+train:
+  steps: 3000
+  batch_size: 64
+  lr: 1.0e-3
+  betas: [0.9, 0.98]
+  weight_decay: 0.01
+  warmup_steps: 300       # learning-rate warm-up (unrelated to routing warm-up)
+  schedule: cosine
+  grad_clip: 1.0
+  seed: 0
+  eval_every: 500
+  eval_batches: 8
+  threads: 1
+structure_params: {}

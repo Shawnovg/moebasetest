@@ -1,0 +1,11 @@
+# SUT MoE FFN: 8 experts x 256 hidden, top-2, MLP gate, renormalised gates (sut_layer/.../moe.py).
+structure_params:
+  num_experts: 8
+  expert_hidden: 256
+  k: 2
+  gate: mlp
+  gate_norm: renorm
+  bias: true
+  routing: learned
+  switchloss: 0.01        # used only when routing.balance = lb
+  zloss: 0.0

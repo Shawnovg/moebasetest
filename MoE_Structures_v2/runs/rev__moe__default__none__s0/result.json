@@ -1,0 +1,77 @@
+{
+ "run": "rev__moe__default__none__s0",
+ "dataset": "rev",
+ "structure": "moe",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 1222144,
+ "params_total": 1395619,
+ "valid_acc": 1.0,
+ "valid_loss": 3.863712830662188e-07,
+ "test_acc": 1.0,
+ "test_loss": 4.1208078904976326e-07,
+ "test_seq_acc": 1.0,
+ "test_per_task": {
+  "rev": 1.0
+ },
+ "routing": {
+  "blocks.0.ffn": {
+   "load": [
+    0.4116,
+    0.3003,
+    0.00031,
+    0.2284,
+    0.0,
+    2e-05,
+    0.05902,
+    0.00035
+   ],
+   "entropy": 0.5946,
+   "max_load": 0.4116,
+   "dead": 4,
+   "per_task": {
+    "rev": [
+     111441,
+     81307,
+     83,
+     61839,
+     1,
+     5,
+     15981,
+     95
+    ]
+   }
+  },
+  "blocks.1.ffn": {
+   "load": [
+    0.01379,
+    0.06996,
+    0.3789,
+    0.00721,
+    0.03052,
+    0.00322,
+    0.04567,
+    0.45073
+   ],
+   "entropy": 0.61243,
+   "max_load": 0.45073,
+   "dead": 0,
+   "per_task": {
+    "rev": [
+     3734,
+     18942,
+     102589,
+     1952,
+     8263,
+     871,
+     12364,
+     122037
+    ]
+   }
+  }
+ },
+ "train_time_s": 709.4348587989807,
+ "device": "cpu"
+}

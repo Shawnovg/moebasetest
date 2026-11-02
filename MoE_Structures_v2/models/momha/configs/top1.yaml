@@ -1,0 +1,7 @@
+# Top-1 expert of 4 heads each (same active heads); raw probability gate so the router gets gradient.
+base: default.yaml
+structure_params:
+  num_experts: 4
+  heads_per_expert: 4
+  k: 1
+  gate_norm: raw

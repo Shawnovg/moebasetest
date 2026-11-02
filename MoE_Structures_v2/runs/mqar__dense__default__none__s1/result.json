@@ -1,0 +1,22 @@
+{
+ "run": "mqar__dense__default__none__s1",
+ "dataset": "mqar",
+ "structure": "dense",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 395776,
+ "params_total": 569251,
+ "valid_acc": 0.1235,
+ "valid_loss": 2.6730142517089845,
+ "test_acc": 0.1240625,
+ "test_loss": 2.672826446533203,
+ "test_seq_acc": 0.0,
+ "test_per_task": {
+  "mqar": 0.1240625
+ },
+ "routing": {},
+ "train_time_s": 602.1206746101379,
+ "device": "cpu"
+}

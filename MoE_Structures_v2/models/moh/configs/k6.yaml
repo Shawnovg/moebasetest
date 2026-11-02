@@ -1,0 +1,4 @@
+# Denser routing: 6 of 8 heads per token.
+base: default.yaml
+structure_params:
+  routed_head: 6

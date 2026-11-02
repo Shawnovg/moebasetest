@@ -1,0 +1,22 @@
+{
+ "run": "mod__dense_wide__default__none__s2",
+ "dataset": "mod",
+ "structure": "dense_wide",
+ "variant": "default",
+ "balance": "none",
+ "seed": 2,
+ "steps": 3000,
+ "params": 1185280,
+ "params_total": 1358755,
+ "valid_acc": 0.980625,
+ "valid_loss": 0.05650451755523682,
+ "test_acc": 0.31225,
+ "test_loss": 5.262642211914063,
+ "test_seq_acc": 0.0075,
+ "test_per_task": {
+  "mod": 0.31225
+ },
+ "routing": {},
+ "train_time_s": 665.5510747432709,
+ "device": "cpu"
+}

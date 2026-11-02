@@ -1,0 +1,22 @@
+{
+ "run": "logic__dense__default__none__s0",
+ "dataset": "logic",
+ "structure": "dense",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 395776,
+ "params_total": 569251,
+ "valid_acc": 0.534,
+ "valid_loss": 1.2015331268310547,
+ "test_acc": 0.5475,
+ "test_loss": 1.188590274810791,
+ "test_seq_acc": 0.5475,
+ "test_per_task": {
+  "logic": 0.5475
+ },
+ "routing": {},
+ "train_time_s": 672.5877079963684,
+ "device": "cpu"
+}

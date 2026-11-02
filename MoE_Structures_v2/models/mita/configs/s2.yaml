@@ -1,0 +1,3 @@
+# Each query uses its 2 best experts (reference _mita_attention.py).
+base: default.yaml
+structure_params: {router_topk: 2}

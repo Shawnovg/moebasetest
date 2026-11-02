@@ -1,0 +1,61 @@
+{
+ "run": "mod__momha__default__warmup__s0",
+ "dataset": "mod",
+ "structure": "momha",
+ "variant": "default",
+ "balance": "warmup",
+ "seed": 0,
+ "steps": 3000,
+ "params": 462592,
+ "params_total": 636067,
+ "valid_acc": 0.534125,
+ "valid_loss": 2.1165765838623045,
+ "test_acc": 0.1518125,
+ "test_loss": 4.927331619262695,
+ "test_seq_acc": 0.00025,
+ "test_per_task": {
+  "mod": 0.1518125
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.43295,
+    0.0587,
+    0.45854,
+    0.04981
+   ],
+   "entropy": 0.74717,
+   "max_load": 0.45854,
+   "dead": 0,
+   "per_task": {
+    "mod": [
+     83127,
+     11270,
+     88040,
+     9563
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.04957,
+    0.39263,
+    0.43376,
+    0.12404
+   ],
+   "entropy": 0.8203,
+   "max_load": 0.43376,
+   "dead": 0,
+   "per_task": {
+    "mod": [
+     9517,
+     75385,
+     83282,
+     23816
+    ]
+   }
+  }
+ },
+ "train_time_s": 351.7986054420471,
+ "device": "cpu"
+}

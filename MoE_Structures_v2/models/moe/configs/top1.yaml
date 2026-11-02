@@ -1,0 +1,6 @@
+# Switch-Transformer style: top-1, linear gate, raw probability as the gate (renorm with k=1 would give gate 1).
+base: default.yaml
+structure_params:
+  k: 1
+  gate: linear
+  gate_norm: raw

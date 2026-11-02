@@ -1,0 +1,2 @@
+base: default.yaml
+structure_params: {num_landmarks: 16, kv_topk: 16}

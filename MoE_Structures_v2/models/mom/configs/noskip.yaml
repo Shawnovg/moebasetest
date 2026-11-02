@@ -1,0 +1,4 @@
+# No SKIP class: every token must run one attention and one FFN module per step.
+base: default.yaml
+structure_params:
+  enable_pause: false

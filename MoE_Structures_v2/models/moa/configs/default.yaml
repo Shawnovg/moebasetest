@@ -1,0 +1,7 @@
+# MoA (moa_layer/moa_attention.py): 8 single-head experts x 32, top-4, shared K/V head, raw top-k gates (code).
+structure_params:
+  num_experts: 8
+  k: 4
+  gate_norm: raw
+  switchloss: 0.01
+  zloss: 0.001

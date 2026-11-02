@@ -1,0 +1,61 @@
+{
+ "run": "mqar__momha__default__none__s0",
+ "dataset": "mqar",
+ "structure": "momha",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 462592,
+ "params_total": 636067,
+ "valid_acc": 0.1204375,
+ "valid_loss": 2.6695183715820314,
+ "test_acc": 0.125,
+ "test_loss": 2.668215065002441,
+ "test_seq_acc": 0.0,
+ "test_per_task": {
+  "mqar": 0.125
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.10305,
+    0.35792,
+    0.39208,
+    0.14695
+   ],
+   "entropy": 0.90228,
+   "max_load": 0.39208,
+   "dead": 0,
+   "per_task": {
+    "mqar": [
+     41219,
+     143166,
+     156834,
+     58781
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.48605,
+    0.36586,
+    0.08937,
+    0.05872
+   ],
+   "entropy": 0.79408,
+   "max_load": 0.48605,
+   "dead": 0,
+   "per_task": {
+    "mqar": [
+     194422,
+     146342,
+     35750,
+     23486
+    ]
+   }
+  }
+ },
+ "train_time_s": 776.848970413208,
+ "device": "cpu"
+}

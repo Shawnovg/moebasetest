@@ -1,0 +1,3 @@
+base: default.yaml
+structure_params:
+  k: 2
