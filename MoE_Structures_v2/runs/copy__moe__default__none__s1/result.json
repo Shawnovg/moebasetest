@@ -1,0 +1,77 @@
+{
+ "run": "copy__moe__default__none__s1",
+ "dataset": "copy",
+ "structure": "moe",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 1222144,
+ "params_total": 1395619,
+ "valid_acc": 1.0,
+ "valid_loss": 1.834817267341358e-06,
+ "test_acc": 1.0,
+ "test_loss": 1.7976387887045784e-06,
+ "test_seq_acc": 1.0,
+ "test_per_task": {
+  "copy": 1.0
+ },
+ "routing": {
+  "blocks.0.ffn": {
+   "load": [
+    0.05554,
+    0.0,
+    0.28201,
+    0.04926,
+    0.0,
+    0.36269,
+    0.0,
+    0.2505
+   ],
+   "entropy": 0.66385,
+   "max_load": 0.36269,
+   "dead": 3,
+   "per_task": {
+    "copy": [
+     15201,
+     0,
+     77178,
+     13480,
+     0,
+     99259,
+     0,
+     68554
+    ]
+   }
+  },
+  "blocks.1.ffn": {
+   "load": [
+    0.28941,
+    0.00011,
+    0.02975,
+    0.5,
+    0.17953,
+    0.00117,
+    1e-05,
+    2e-05
+   ],
+   "entropy": 0.54225,
+   "max_load": 0.5,
+   "dead": 4,
+   "per_task": {
+    "copy": [
+     79204,
+     29,
+     8143,
+     136835,
+     49131,
+     321,
+     3,
+     6
+    ]
+   }
+  }
+ },
+ "train_time_s": 790.3808164596558,
+ "device": "cpu"
+}

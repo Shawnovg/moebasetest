@@ -1,0 +1,77 @@
+{
+ "run": "copy__moh__default__none__s1",
+ "dataset": "copy",
+ "structure": "moh",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 529152,
+ "params_total": 702627,
+ "valid_acc": 1.0,
+ "valid_loss": 2.1702507858860446e-06,
+ "test_acc": 1.0,
+ "test_loss": 2.165029330315632e-06,
+ "test_seq_acc": 1.0,
+ "test_per_task": {
+  "copy": 1.0
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.10277,
+    0.04922,
+    0.0277,
+    0.14147,
+    0.14726,
+    0.23921,
+    0.1159,
+    0.17647
+   ],
+   "entropy": 0.93207,
+   "max_load": 0.23921,
+   "dead": 0,
+   "per_task": {
+    "copy": [
+     56249,
+     26941,
+     15159,
+     77432,
+     80604,
+     130931,
+     63437,
+     96591
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.25,
+    0.25,
+    0.07609,
+    0.11653,
+    0.08132,
+    3e-05,
+    0.05767,
+    0.16837
+   ],
+   "entropy": 0.86969,
+   "max_load": 0.25,
+   "dead": 1,
+   "per_task": {
+    "copy": [
+     136836,
+     136836,
+     41649,
+     63781,
+     44508,
+     15,
+     31563,
+     92156
+    ]
+   }
+  }
+ },
+ "train_time_s": 1005.8161129951477,
+ "device": "cpu"
+}

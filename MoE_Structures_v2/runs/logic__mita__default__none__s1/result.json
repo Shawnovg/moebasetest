@@ -1,0 +1,77 @@
+{
+ "run": "logic__mita__default__none__s1",
+ "dataset": "logic",
+ "structure": "mita",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 396032,
+ "params_total": 569507,
+ "valid_acc": 0.5575,
+ "valid_loss": 1.1595224914550781,
+ "test_acc": 0.56325,
+ "test_loss": 1.1604453659057616,
+ "test_seq_acc": 0.56325,
+ "test_per_task": {
+  "logic": 0.56325
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.124,
+    0.11766,
+    0.11577,
+    0.12225,
+    0.12019,
+    0.1177,
+    0.12185,
+    0.16057
+   ],
+   "entropy": 0.99731,
+   "max_load": 0.16057,
+   "dead": 0,
+   "per_task": {
+    "logic": [
+     60058,
+     56988,
+     56072,
+     59209,
+     58212,
+     57006,
+     59013,
+     77770
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.12549,
+    0.11715,
+    0.11565,
+    0.12608,
+    0.12206,
+    0.11643,
+    0.13982,
+    0.13731
+   ],
+   "entropy": 0.99885,
+   "max_load": 0.13982,
+   "dead": 0,
+   "per_task": {
+    "logic": [
+     60779,
+     56738,
+     56012,
+     61066,
+     59119,
+     56388,
+     67721,
+     66505
+    ]
+   }
+  }
+ },
+ "train_time_s": 1242.578096151352,
+ "device": "cpu"
+}

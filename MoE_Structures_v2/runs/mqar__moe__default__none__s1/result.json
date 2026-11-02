@@ -1,0 +1,77 @@
+{
+ "run": "mqar__moe__default__none__s1",
+ "dataset": "mqar",
+ "structure": "moe",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 1222144,
+ "params_total": 1395619,
+ "valid_acc": 0.1219375,
+ "valid_loss": 2.719508026123047,
+ "test_acc": 0.12346875,
+ "test_loss": 2.718906295776367,
+ "test_seq_acc": 0.0,
+ "test_per_task": {
+  "mqar": 0.12346875
+ },
+ "routing": {
+  "blocks.0.ffn": {
+   "load": [
+    0.0,
+    0.33623,
+    0.02156,
+    0.0,
+    0.0,
+    0.14222,
+    0.49999,
+    0.0
+   ],
+   "entropy": 0.51609,
+   "max_load": 0.49999,
+   "dead": 4,
+   "per_task": {
+    "mqar": [
+     0,
+     134490,
+     8625,
+     0,
+     0,
+     56890,
+     199995,
+     0
+    ]
+   }
+  },
+  "blocks.1.ffn": {
+   "load": [
+    0.49957,
+    0.00477,
+    0.0013,
+    0.05027,
+    0.43297,
+    0.00179,
+    0.00371,
+    0.00561
+   ],
+   "entropy": 0.45915,
+   "max_load": 0.49957,
+   "dead": 0,
+   "per_task": {
+    "mqar": [
+     199830,
+     1907,
+     521,
+     20108,
+     173189,
+     715,
+     1485,
+     2245
+    ]
+   }
+  }
+ },
+ "train_time_s": 864.1623060703278,
+ "device": "cpu"
+}

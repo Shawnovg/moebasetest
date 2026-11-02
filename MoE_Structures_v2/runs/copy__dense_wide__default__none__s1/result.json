@@ -1,0 +1,22 @@
+{
+ "run": "copy__dense_wide__default__none__s1",
+ "dataset": "copy",
+ "structure": "dense_wide",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 1185280,
+ "params_total": 1358755,
+ "valid_acc": 1.0,
+ "valid_loss": 8.702979442559765e-07,
+ "test_acc": 1.0,
+ "test_loss": 8.706765315529002e-07,
+ "test_seq_acc": 1.0,
+ "test_per_task": {
+  "copy": 1.0
+ },
+ "routing": {},
+ "train_time_s": 1387.255829334259,
+ "device": "cpu"
+}

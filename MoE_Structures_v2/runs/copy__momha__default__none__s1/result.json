@@ -1,0 +1,61 @@
+{
+ "run": "copy__momha__default__none__s1",
+ "dataset": "copy",
+ "structure": "momha",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 462592,
+ "params_total": 636067,
+ "valid_acc": 1.0,
+ "valid_loss": 7.763993601385183e-07,
+ "test_acc": 1.0,
+ "test_loss": 7.714977940556803e-07,
+ "test_seq_acc": 1.0,
+ "test_per_task": {
+  "copy": 1.0
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.23538,
+    0.26462,
+    0.23538,
+    0.26462
+   ],
+   "entropy": 0.99877,
+   "max_load": 0.26462,
+   "dead": 0,
+   "per_task": {
+    "copy": [
+     64418,
+     72418,
+     64418,
+     72418
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.26499,
+    0.14935,
+    0.45886,
+    0.1268
+   ],
+   "entropy": 0.90546,
+   "max_load": 0.45886,
+   "dead": 0,
+   "per_task": {
+    "copy": [
+     72521,
+     40873,
+     125576,
+     34702
+    ]
+   }
+  }
+ },
+ "train_time_s": 694.4498903751373,
+ "device": "cpu"
+}

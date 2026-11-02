@@ -1,0 +1,77 @@
+{
+ "run": "logic__moe__default__none__s1",
+ "dataset": "logic",
+ "structure": "moe",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 1222144,
+ "params_total": 1395619,
+ "valid_acc": 0.573,
+ "valid_loss": 1.0864037551879884,
+ "test_acc": 0.57375,
+ "test_loss": 1.093560043334961,
+ "test_seq_acc": 0.57375,
+ "test_per_task": {
+  "logic": 0.57375
+ },
+ "routing": {
+  "blocks.0.ffn": {
+   "load": [
+    0.04333,
+    0.08728,
+    0.45083,
+    5e-05,
+    0.00051,
+    0.0,
+    0.12542,
+    0.29259
+   ],
+   "entropy": 0.64072,
+   "max_load": 0.45083,
+   "dead": 3,
+   "per_task": {
+    "logic": [
+     10493,
+     21135,
+     109174,
+     11,
+     123,
+     1,
+     30372,
+     70855
+    ]
+   }
+  },
+  "blocks.1.ffn": {
+   "load": [
+    0.46587,
+    0.04053,
+    1e-05,
+    0.01948,
+    0.0001,
+    0.01449,
+    0.45949,
+    2e-05
+   ],
+   "entropy": 0.47246,
+   "max_load": 0.46587,
+   "dead": 3,
+   "per_task": {
+    "logic": [
+     112817,
+     9815,
+     2,
+     4717,
+     24,
+     3510,
+     111273,
+     6
+    ]
+   }
+  }
+ },
+ "train_time_s": 728.723886013031,
+ "device": "cpu"
+}

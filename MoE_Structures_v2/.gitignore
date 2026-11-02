@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+_data/
+_to_delete/
+runs/**/model.pt
+runs/**/.lock
+runs_calib*/**/model.pt

@@ -1,0 +1,107 @@
+{
+ "run": "mqar__mom__default__none__s1",
+ "dataset": "mqar",
+ "structure": "mom",
+ "variant": "default",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 861962,
+ "params_total": 1035437,
+ "valid_acc": 0.0143125,
+ "valid_loss": 4.159144622802734,
+ "test_acc": 0.01640625,
+ "test_loss": 4.159084579467773,
+ "test_seq_acc": 0.0,
+ "test_per_task": {
+  "mqar": 0.01640625
+ },
+ "routing": {
+  "body.step0.attn": {
+   "load": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "entropy": -0.0,
+   "max_load": 1.0,
+   "dead": 4,
+   "per_task": {
+    "mqar": [
+     0,
+     0,
+     0,
+     0,
+     200000
+    ]
+   }
+  },
+  "body.step0.ffn": {
+   "load": [
+    0.00526,
+    0.0,
+    0.0,
+    0.0,
+    0.99475
+   ],
+   "entropy": 0.02039,
+   "max_load": 0.99475,
+   "dead": 3,
+   "per_task": {
+    "mqar": [
+     1051,
+     0,
+     0,
+     0,
+     198949
+    ]
+   }
+  },
+  "body.step1.attn": {
+   "load": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "entropy": -0.0,
+   "max_load": 1.0,
+   "dead": 4,
+   "per_task": {
+    "mqar": [
+     0,
+     0,
+     0,
+     0,
+     200000
+    ]
+   }
+  },
+  "body.step1.ffn": {
+   "load": [
+    0.00526,
+    0.0,
+    0.0,
+    0.0,
+    0.99475
+   ],
+   "entropy": 0.02039,
+   "max_load": 0.99475,
+   "dead": 3,
+   "per_task": {
+    "mqar": [
+     1051,
+     0,
+     0,
+     0,
+     198949
+    ]
+   }
+  }
+ },
+ "train_time_s": 377.0851957798004,
+ "device": "cpu"
+}
