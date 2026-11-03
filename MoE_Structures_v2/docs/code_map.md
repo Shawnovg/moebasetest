@@ -11,18 +11,21 @@ MoE_Structures_v2/
 │   ├── experts.py       SUT ParallelExperts + compute_gating (used by MoE, MoMHA, MoA)
 │   ├── routing.py       RoutingState (balance mode, warm-up flag) + every paper's balancing loss
 │   ├── model.py         EncoderModel: embedding -> 2 pre-LN blocks (or MoM body) -> head
-│   ├── data.py          Dataset: .npz splits -> padded batches
+│   ├── data.py          Dataset: .npz splits -> padded batches; DynamicsDataset: state sequences
 │   ├── metrics.py       evaluate(): accuracy, per-task accuracy, routing usage
-│   └── train.py         train_run(): the training loop, writes runs/<name>/
+│   ├── metrics_dyn.py   evaluate_dynamics(): MSE, error by regime age, rollout, routing per regime
+│   └── train.py         train_run() / train_dynamics_run(): the training loops, write runs/<name>/
 ├── models/<structure>/  one directory per structure
 │   ├── __init__.py      build_sublayers(...) (or build_body for MoM): what the backbone calls
 │   ├── <module>.py      the routed module ported from the reference code
 │   ├── configs/*.yaml   default.yaml + one YAML per variant
 │   └── <s>_analysis.ipynb   per-structure notebook (configs, schematic, results, routing)
-├── data_gen/            vocab.py, tasks.py (generators), build_all.py (writes the datasets)
+├── data_gen/            vocab.py, tasks.py (generators), build_all.py (writes the token datasets),
+│                        dynamics.py (switching-dynamics generator, writes dyn / dyn_fast)
 ├── experiments/         run.py (ENTRY: one trial), plan.py (phases), sweep.py (parallel runner)
-├── analysis/            collect.py, routing.py, figures.py, schematics.py, report_tables.py
-├── notebooks/           00-06 notebooks + _build_notebooks.py (generates all notebooks)
+├── analysis/            collect.py, routing.py, figures.py, schematics.py, report_tables.py,
+│                        dyn_reference.py (no-learning reference predictors), dynamics.py (dyn tables/figures)
+├── notebooks/           00-07 notebooks (07 = dynamics study) + _build_notebooks.py (generates all notebooks)
 ├── tests/               test_parity.py (vs reference code), test_mita.py, ref_loader.py
 ├── tools/run_notebook.py   execute a notebook without Jupyter
 ├── configs/base.yaml    shared backbone + training settings
@@ -74,3 +77,25 @@ python -m analysis.report_tables
     analysis/figures.py  every result figure;  analysis/schematics.py  the structure diagrams
     -> reports/tables/*.csv, reports/figures/*.png
 ```
+
+## The dynamics study (datasets dyn / dyn_fast)
+
+```
+python -m data_gen.dynamics                      -> DATA_ROOT/dyn, DATA_ROOT/dyn_fast (states + hidden regimes)
+python -m experiments.run --structure moh --dataset dyn --seed 0
+    backbone/config.py  load_run_config(...) -> apply_task(): dataset dyn* => cfg["task"] = "dynamics", state_dim 4
+    backbone/train.py   train_run(cfg) -> train_dynamics_run(cfg)
+        backbone/data.py      DynamicsDataset (normalised with the training mean/std from manifest.json)
+        backbone/model.py     EncoderModel: embed = Linear(4 -> 128), head = Linear(128 -> 4),
+                              RoutingState(causal=True) -> every attention module masks future keys
+                              (layers.masked_softmax_attention / MoA / MoMHA: layers.causal_mask)
+        loss = MSE(predicted next state, true next state) at every position
+        backbone/metrics_dyn.py  evaluate_dynamics(): MSE (original units), by regime age, 16-step rollout,
+                                 unit picks per hidden regime -> result.json
+python -m experiments.sweep --phase dyn_main | dyn_variants      (experiments/plan.py)
+python -m analysis.dyn_reference    reference predictors (Bayes floor, oracles, persistence)
+python -m analysis.dynamics         reports/tables/dyn_*.csv, reports/figures/dyn_*.png
+notebooks/07_dynamics.ipynb         the same, step by step
+```
+MoM and MiTA are not wired for the dynamics task (EncoderModel raises an error): they are excluded from
+this study and their modules have no causal mask.

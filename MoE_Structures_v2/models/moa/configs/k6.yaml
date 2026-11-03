@@ -1,0 +1,4 @@
+# Denser routing: 6 of 8 query experts per token. Matches MoH k6.
+base: default.yaml
+structure_params:
+  k: 6

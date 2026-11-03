@@ -23,6 +23,8 @@ def load_results(runs_root) -> pd.DataFrame:
     rows = []
     for p in sorted(Path(runs_root).glob("*/result.json")):
         r = json.loads(p.read_text())
+        if r.get("task") == "dynamics":          # analysis/dynamics.py collects these
+            continue
         row = {k: r[k] for k in ID_COLS + ["test_acc", "valid_acc", "test_seq_acc", "test_loss", "params",
                                            "params_total", "train_time_s", "steps"]}
         row["run"] = r["run"]
@@ -43,6 +45,8 @@ def load_routing(runs_root) -> pd.DataFrame:
     rows = []
     for p in sorted(Path(runs_root).glob("*/result.json")):
         r = json.loads(p.read_text())
+        if r.get("task") == "dynamics":
+            continue
         cfg = json.loads((p.parent / "config.json").read_text())
         # MoH shared heads run for every token and are never routed; the usage vector still lists them (always 0).
         # Drop them so entropy / dead count describe the routed heads only.
@@ -72,6 +76,8 @@ def load_history(runs_root) -> pd.DataFrame:
     rows = []
     for p in sorted(Path(runs_root).glob("*/history.jsonl")):
         cfg = json.loads((p.parent / "config.json").read_text())
+        if cfg.get("task") == "dynamics":
+            continue
         ids = {"dataset": cfg["dataset"], "structure": cfg["structure"], "variant": cfg["variant"],
                "balance": cfg["routing"]["balance"], "seed": cfg["train"]["seed"]}
         for line in p.read_text().splitlines():

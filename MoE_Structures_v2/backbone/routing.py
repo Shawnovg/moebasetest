@@ -9,6 +9,7 @@ Every routed module owns a pointer to the model's ``RoutingState`` and asks it t
                           values from the router's probabilities at those random units, so the router
                           keeps receiving gradient from the task loss.
 * ``state.token_ids``     B x T token ids (hash-routing variants) and ``state.valid`` B x T bool.
+* ``state.causal``        True for the dynamics task: every attention module masks future keys.
 
 Balancing objectives (each an exact port of the released code it names):
 
@@ -35,6 +36,7 @@ class RoutingState:
     token_ids: Optional[torch.Tensor] = None
     valid: Optional[torch.Tensor] = None
     record: bool = False           # store per-token routing decisions for analysis
+    causal: bool = False           # causal attention (next-state prediction task 'dyn'); False = bidirectional
     generator: Optional[torch.Generator] = field(default=None, repr=False)
 
     @property

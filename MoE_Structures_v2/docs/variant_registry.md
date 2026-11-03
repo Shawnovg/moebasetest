@@ -15,8 +15,10 @@ this study (ours).
 | MoH | default | 8 heads x 32, router keeps 4 heads, renormalised x4 | 4 / 8 | code (MoH, routed only) |
 | MoH | shared2 | 2 always-on heads + 2 of 6 routed, two-stage weights | 2+2 / 8 | code + paper (main form) |
 | MoH | k6 | router keeps 6 of 8 heads | 6 / 8 | ours |
+| MoH | k8 | all 8 heads (gate-weighted): no selection; matches MoA k8 | 8 / 8 | ours (dyn study) |
 | MoA | default | 8 single-head query experts, shared K/V head, raw top-4 gates, zero-init gate | 4 / 8 | code (MoA) |
 | MoA | renorm_detached | gates renormalised over top-4 (denominator detached) | 4 / 8 | paper |
+| MoA | k6 | 6 of 8 query experts; matches MoH k6 | 6 / 8 | ours (dyn study) |
 | MoA | k8 | all 8 experts active (gate-weighted) | 8 / 8 | ours (no selection) |
 | MoMHA | default | 4 experts x 2 heads, shared K/V heads, MLP router, renormalised top-2 | 2 / 4 | code (SUT) |
 | MoMHA | top1 | 4 experts x 4 heads, raw gate, top-1 | 1 / 4 | ours (raw gate: F1) |
@@ -37,3 +39,12 @@ this study (ours).
 | none | task loss only | all |
 | lb | + the reference's own balancing loss | MoE / MoMHA: Switch 0.01; MoA: Switch 0.01 + z 0.001; MoH: MoH loss 0.01 averaged over layers; MoM: `load_balancing_loss_func` 0.01; MiTA: Switch-form 0.01 (ours, no reference loss) |
 | warmup | first 10 % of steps route uniformly at random (gates still from the router) | all routed |
+
+## Dynamics study (datasets dyn, dyn_fast)
+
+Balancing mode `none` only (no balancing loss, no random warm-up), seeds 0-2.
+* `dyn_main`: Dense, Dense-wide, MoE, MoH, MoA, MoMHA default configs on dyn and dyn_fast.
+* `dyn_variants` (dyn): MoE top1; MoH k6, k8; MoA k6, k8, renorm_detached; MoMHA top1.
+  Not run: MoE hash (routes by token id; the dynamics input has no tokens), MoH shared2 (shared heads, excluded
+  by design), all MoM and MiTA configs. MoH k8 and MoA k6 were added so MoH and MoA are compared at the
+  same k (4, 6, 8); they were not run on the token tasks.

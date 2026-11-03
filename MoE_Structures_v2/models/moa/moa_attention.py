@@ -28,6 +28,7 @@ import torch
 import torch.nn as nn
 
 from backbone.experts import ParallelExperts, compute_gating
+from backbone.layers import causal_mask
 from backbone.routing import random_topk, switch_loss, z_loss
 
 
@@ -109,6 +110,8 @@ class MoAAttention(nn.Module):
         w = torch.einsum("bkie,bje->bkij", q, k)
         if key_pad is not None:
             w = w.masked_fill(key_pad[:, None, None, :], float("-inf"))
+        if state.causal:
+            w = w.masked_fill(causal_mask(T, T, x.device), float("-inf"))
         p = torch.softmax(w.float(), dim=-1).type_as(w)
         attn = torch.einsum("bkij,bje->bike", p, v)                  # B, T, k, hd
         out = self.q_proj.reduce(attn)

@@ -69,3 +69,40 @@ positions switched off, each module computes the same output as the reference.
 | E8 | **Single-expert top-1 variants behave differently by module type.** MoE top1 with a raw gate (Switch form) beats the default k=2 without balancing (0.58 vs 0.44), while MoMHA top1 (one 4-head expert) drops to 0.05-0.14. | variants_fact_moe.png, variants_fact_momha.png |
 | E9 | **Dataset calibration.** copy / rev are at ceiling, mqar at floor (~0.12 for all, 2 layers cannot do multi-query recall in 3000 steps), logic at the majority class (0.55-0.58), and the 6-task mix only learns copy and rev (each task gets 1/6 of the data). Only fact and mod separate the structures; they were used for the main and variant sweeps. Confirmed with a second screening seed (seeds 0-1 on all 7 datasets); the only seed disagreement is MoM on rev (1.00 on seed 0, 0.02 on seed 1: the loss never leaves chance, ln 64 = 4.16), which shows MoM's collapse is decided early and depends on the seed. Dense-wide on mix is also unstable (0.26 / 0.12, slow to learn copy and rev with 1/6 of the data). | screening_heatmap.png, screening_separation.png |
 | E10 | MoH `shared2` with the paper's two-stage weights is worse than routed-only (0.30-0.37 vs 0.43-0.52). The usage vector lists the 2 shared heads as never-routed units; the analysis excludes them (`analysis/collect.py`). | variants_fact_moh.png |
+
+## The switching-dynamics study (datasets `dyn`, `dyn_fast`)
+
+Design choices that differ from the token tasks, or from the original Twilight dynamics code
+(`Twilight_MoE_Dynamics/src/twilight_moe/dynamics.py`):
+
+* **Generator unchanged** (`data_gen/dynamics.py` is a port of Twilight's `generate_sequences`): 3 regimes,
+  x[t+1] = 0.94 · blockdiag(Rot(a), Rot(b)) x[t] + N(0, 0.08²), hidden Markov regime. Only the dataset sizes
+  differ: 50 000 training sequences of 64 steps (Twilight used 256 sequences and a context of 8).
+* **Causal attention.** The token tasks use bidirectional attention; next-state prediction would be trivial
+  with it, so every attention module (dense, MoH, MoA, MoMHA) applies a causal mask when the task is
+  dynamics (`RoutingState.causal`). Verified: changing future inputs leaves past outputs unchanged.
+* **Continuous input / output.** Linear 4→128 embedding and 128→4 head instead of token embedding and
+  vocabulary head; loss is MSE on normalised states at every position.
+* **No balancing at all** (`balance none`): no load-balance loss, no random warm-up. MoH runs without its
+  shared heads (default config has none). MoE `hash` (needs token ids), `shared2`, MoM and MiTA are not run.
+* **New variants** so that MoH and MoA can be compared at the same number of active heads: MoH `k8`
+  (`routed_head: 8`) and MoA `k6` (`k: 6`), next to the existing MoH `k6` and MoA `k8`.
+* **Metric.** One-step MSE in original units on positions t ≥ 8; reported as excess over the Bayes floor
+  (the Markov-mixture predictor that knows the regime of the last observed transition,
+  `analysis/dyn_reference.py`). Almost all of that floor's error comes from the step at which the regime
+  switches (age 0), which no causal model can predict.
+
+### Findings and abnormalities (dynamics, 3 seeds; full numbers in the technical report)
+
+* All structures end within ~2% of the Bayes floor (dyn: floor 0.00989, Dense 0.01008, MoH 0.01005). The
+  structure gaps are 0.1–0.3% of the total error: consistent across seeds and both switch rates, but small.
+* Ranking by excess over the floor: MoH < MoMHA < Dense-wide ≈ MoE ≈ MoA < Dense on both datasets.
+  MoH's lead is the same with 4, 6 or 8 active heads and comes mostly from steady state (8+ steps into a regime).
+* MoH k8 and MoA k8 activate all 8 heads; the router then only sets per-head weights (entropy 1, regime MI 0).
+* Layer-0 attention routers carry zero regime information (they see only x[t]). MoE FFN layer 1 is the most
+  regime-specific router (normalised MI 0.55) yet gains least.
+* Without balancing, MoE top1 collapses in layer 0 (entropy 0.10, 5.3/8 experts dead) and is the worst
+  configuration (0/3 wins vs Dense); MoMHA top1 layer 0 also collapses (entropy 0.25).
+* The models are slightly below the Bayes floor at age 0 and above it at age 1 (they hedge more at a switch);
+  the floor is a bound on the average, not per age bin.
+* The 16-step rollout does not separate the structures (noise compounds identically).

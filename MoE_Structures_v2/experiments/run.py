@@ -53,7 +53,9 @@ def main(argv=None):
     over = {"dataset": a.dataset, "routing.balance": a.balance, "train.seed": a.seed, **parse_sets(a.set)}
     cfg = load_run_config(a.structure, a.variant, over)
     res = train_run(cfg, runs_root=Path(a.runs), data_root=Path(a.data), verbose=not a.quiet)
-    print(json.dumps({k: res[k] for k in ("run", "test_acc", "valid_acc", "params", "train_time_s")}))
+    keys = ("run", "test_mse", "test_mse_ctx8", "params", "train_time_s") if cfg.get("task") == "dynamics" \
+        else ("run", "test_acc", "valid_acc", "params", "train_time_s")
+    print(json.dumps({k: res[k] for k in keys}))
 
 
 if __name__ == "__main__":

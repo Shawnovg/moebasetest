@@ -66,6 +66,19 @@ def load_run_config(structure: str, variant: str = "default", overrides: Optiona
             deep_update(cfg[k], v)
         else:
             cfg[k] = v
+    return apply_task(cfg)
+
+
+DYNAMICS_DATASETS = ("dyn", "dyn_fast")
+
+
+def apply_task(cfg: Dict[str, Any]) -> Dict[str, Any]:
+    """Token tasks vs the continuous next-state task (datasets dyn / dyn_fast, 4-D states)."""
+    if cfg.get("dataset") in DYNAMICS_DATASETS:
+        cfg["task"] = "dynamics"
+        cfg["state_dim"] = 4
+    else:
+        cfg["task"] = "tokens"
     return cfg
 
 

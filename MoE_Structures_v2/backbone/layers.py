@@ -2,7 +2,8 @@
 
 Every attention variant (dense, MoH, MoA, MoMHA, MiTA, MoM modules) applies the same rotary
 position embedding to its queries and keys, so position handling is identical across structures.
-Attention is bidirectional over the prompt; padded keys are masked.
+Attention is bidirectional over the prompt (token tasks) or causal (dynamics task, ``state.causal``);
+padded keys are masked.
 """
 from __future__ import annotations
 
@@ -43,13 +44,20 @@ class Rotary(nn.Module):
         return x * cos + self._rotate_half(x) * sin
 
 
+def causal_mask(T: int, S: int, device) -> torch.Tensor:
+    """T x S bool, True where key s lies in the future of query t (s > t): masked out."""
+    return torch.ones(T, S, dtype=torch.bool, device=device).triu(1)
+
+
 def masked_softmax_attention(q: torch.Tensor, k: torch.Tensor, v: torch.Tensor,
                              key_pad: Optional[torch.Tensor], scale: float,
-                             return_probs: bool = False):
+                             return_probs: bool = False, causal: bool = False):
     """q: [B,H,T,D], k/v: [B,H,S,D], key_pad: [B,S] True = pad. Returns [B,H,T,D] (+ probs)."""
     logits = torch.einsum("bhtd,bhsd->bhts", q, k) * scale
     if key_pad is not None:
         logits = logits.masked_fill(key_pad[:, None, None, :], float("-inf"))
+    if causal:
+        logits = logits.masked_fill(causal_mask(q.shape[-2], k.shape[-2], q.device), float("-inf"))
     probs = torch.softmax(logits.float(), dim=-1).type_as(q)
     out = torch.einsum("bhts,bhsd->bhtd", probs, v)
     return (out, probs) if return_probs else out
@@ -74,7 +82,8 @@ class DenseAttention(nn.Module):
         k = self.k_proj(x).view(B, T, self.n_heads, self.head_dim).transpose(1, 2)
         v = self.v_proj(x).view(B, T, self.n_heads, self.head_dim).transpose(1, 2)
         q, k = self.rope(q), self.rope(k)
-        out = masked_softmax_attention(q, k, v, key_pad, self.head_dim ** -0.5)
+        out = masked_softmax_attention(q, k, v, key_pad, self.head_dim ** -0.5,
+                                       causal=bool(getattr(state, "causal", False)))
         out = out.transpose(1, 2).reshape(B, T, self.n_heads * self.head_dim)
         return self.o_proj(out), x.new_zeros(())
 

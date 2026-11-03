@@ -2,6 +2,11 @@
 
     tokens -> embedding -> [pre-LN block] x n_layers -> final LayerNorm -> output head (vocab)
 
+Dynamics task (``cfg["task"] == "dynamics"``, datasets dyn / dyn_fast): the input is a sequence of 4-D
+states instead of token ids, so the embedding is a linear map R^4 -> R^d, the head maps back to R^4
+(the predicted next state), and every attention module is causal (``state.causal``). The blocks and
+all routed sub-modules are exactly the same modules as for the token tasks.
+
 A structure package (``models/<name>/__init__.py``) provides ONE of:
 
 * ``build_sublayers(cfg, rope, state, layer_idx) -> (attention_module, ffn_module)``
@@ -50,10 +55,17 @@ class EncoderModel(nn.Module):
         bb = cfg["backbone"]
         self.cfg = cfg
         d = bb["d_model"]
-        self.embed = nn.Embedding(vocab_size, d)
-        nn.init.normal_(self.embed.weight, std=0.02)
+        self.continuous = cfg.get("task") == "dynamics"
+        if self.continuous:
+            if cfg["structure"] in ("mom", "mita"):
+                raise ValueError("the dynamics task is wired for dense / moe / moh / moa / momha only "
+                                 "(MoM and MiTA are excluded from this study and have no causal mask)")
+            self.embed = nn.Linear(cfg["state_dim"], d)
+        else:
+            self.embed = nn.Embedding(vocab_size, d)
+            nn.init.normal_(self.embed.weight, std=0.02)
         self.rope = Rotary(bb["head_dim"], base=bb.get("rope_base", 10000.0), max_len=bb.get("max_len", 512))
-        self.state = RoutingState(balance=cfg["routing"]["balance"])
+        self.state = RoutingState(balance=cfg["routing"]["balance"], causal=self.continuous)
         pkg = structure_package(cfg["structure"])
         if hasattr(pkg, "build_body"):
             self.body = pkg.build_body(cfg, self.rope, self.state)
@@ -65,14 +77,15 @@ class EncoderModel(nn.Module):
                 attn, ffn = pkg.build_sublayers(cfg, self.rope, self.state, i)
                 self.blocks.append(Block(d, attn, ffn, eps=bb.get("ln_eps", 1e-5)))
         self.final_ln = nn.LayerNorm(d, eps=bb.get("ln_eps", 1e-5))
-        self.head = nn.Linear(d, vocab_size)
+        self.head = nn.Linear(d, cfg["state_dim"] if self.continuous else vocab_size)
         self.step_hook = None
 
     def forward(self, tokens: torch.Tensor, pad_mask: Optional[torch.Tensor] = None,
                 select: Optional[torch.Tensor] = None):
         """tokens, pad_mask: B x T (pad_mask True = padding). Returns logits B x T x V, aux loss.
-        With ``select`` (B x T bool, the answer slots) only those positions are decoded: logits N_sel x V."""
-        self.state.token_ids = tokens
+        With ``select`` (B x T bool, the answer slots) only those positions are decoded: logits N_sel x V.
+        Dynamics task: ``tokens`` is B x T x 4 (normalised states); returns the predicted next states B x T x 4."""
+        self.state.token_ids = None if self.continuous else tokens
         self.state.valid = None if pad_mask is None else ~pad_mask
         x = self.embed(tokens)
         if self.step_hook is not None:

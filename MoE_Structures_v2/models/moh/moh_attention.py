@@ -85,7 +85,7 @@ class MoHAttention(nn.Module):
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, self.head_dim).permute(2, 0, 3, 1, 4)
         q, k, v = qkv.unbind(0)
         q, k = self.rope(q), self.rope(k)
-        out = masked_softmax_attention(q, k, v, key_pad, self.scale)   # B, H, N, hd
+        out = masked_softmax_attention(q, k, v, key_pad, self.scale, causal=state.causal)   # B, H, N, hd
 
         out = out.transpose(1, 2)  # B, N, H, hd
         if self.routed_head > 0:

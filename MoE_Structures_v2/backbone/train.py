@@ -12,6 +12,11 @@ Steps:
 5. at the end: validation and test accuracy, per-task accuracy and routing usage on the test set,
    parameter counts, wall time -> result.json; final weights -> model.pt; config -> config.json.
 A run whose result.json exists is skipped (resumable sweeps).
+
+Dynamics task (dataset dyn / dyn_fast): ``train_dynamics_run`` is the same loop with the loss replaced by
+the MSE of the predicted next state (normalised units, every position), validation MSE in history.jsonl,
+and backbone/metrics_dyn.py for the final evaluation (MSE in original units, error by regime age,
+16-step rollout, routing split by hidden regime).
 """
 from __future__ import annotations
 
@@ -26,8 +31,9 @@ import torch
 import torch.nn.functional as F
 
 from .config import dumps, run_name
-from .data import Dataset, load_vocab
+from .data import Dataset, DynamicsDataset, load_vocab
 from .metrics import IGN, evaluate
+from .metrics_dyn import evaluate_dynamics
 from .model import EncoderModel, count_parameters
 from .paths import DATA_ROOT, RUNS_ROOT
 
@@ -53,6 +59,8 @@ def build_optimizer(model, cfg):
 
 
 def train_run(cfg, runs_root: Path = RUNS_ROOT, data_root: Path = DATA_ROOT, verbose=True, save_model=True):
+    if cfg.get("task") == "dynamics":
+        return train_dynamics_run(cfg, runs_root, data_root, verbose, save_model)
     name = run_name(cfg)
     out = Path(runs_root) / name
     if (out / "result.json").exists():
@@ -113,6 +121,71 @@ def train_run(cfg, runs_root: Path = RUNS_ROOT, data_root: Path = DATA_ROOT, ver
               "valid_acc": ev_valid["acc"], "valid_loss": ev_valid["loss"],
               "test_acc": ev_test["acc"], "test_loss": ev_test["loss"], "test_seq_acc": ev_test["seq_acc"],
               "test_per_task": ev_test["per_task"], "routing": ev_test.get("routing", {}),
+              "train_time_s": train_time, "device": str(device)}
+    if save_model:
+        torch.save({k: v.half() if v.is_floating_point() else v for k, v in model.state_dict().items()},
+                   out / "model.pt")
+    (out / "result.json").write_text(json.dumps(result, indent=1))
+    return result
+
+
+def train_dynamics_run(cfg, runs_root: Path = RUNS_ROOT, data_root: Path = DATA_ROOT, verbose=True, save_model=True):
+    name = run_name(cfg)
+    out = Path(runs_root) / name
+    if (out / "result.json").exists():
+        return json.loads((out / "result.json").read_text())
+    out.mkdir(parents=True, exist_ok=True)
+    t = cfg["train"]
+    torch.set_num_threads(t.get("threads", 1))
+    set_seed(t["seed"])
+    train = DynamicsDataset(cfg["dataset"], "train", data_root)
+    valid = DynamicsDataset(cfg["dataset"], "valid", data_root)
+    test = DynamicsDataset(cfg["dataset"], "test", data_root)
+    device = torch.device("cpu")
+    model = EncoderModel(cfg, 0).to(device)
+    model.state.generator = torch.Generator(device=device).manual_seed(t["seed"] + 7)
+    opt = build_optimizer(model, cfg)
+    (out / "config.json").write_text(dumps(cfg))
+
+    balance = cfg["routing"]["balance"]
+    warm_steps = int(cfg["routing"].get("warmup_frac", 0.1) * t["steps"]) if balance == "warmup" else 0
+    batches = train.train_batches(t["batch_size"], seed=t["seed"] + 1)
+    hist = open(out / "history.jsonl", "w")
+    t0 = time.time()
+    run_loss = run_aux = 0.0
+    for step in range(t["steps"]):
+        model.state.random_active = step < warm_steps
+        for g in opt.param_groups:
+            g["lr"] = lr_at(step, cfg)
+        inp, tgt, _ = next(batches)
+        pred, aux = model(inp)
+        loss = F.mse_loss(pred, tgt)
+        opt.zero_grad(set_to_none=True)
+        (loss + aux).backward()
+        gn = torch.nn.utils.clip_grad_norm_(model.parameters(), t["grad_clip"])
+        opt.step()
+        run_loss += loss.item(); run_aux += float(aux)
+        if (step + 1) % t["eval_every"] == 0 or step + 1 == t["steps"]:
+            ev = evaluate_dynamics(model, valid, max_batches=t.get("eval_batches"), routing=False)
+            n = t["eval_every"] if (step + 1) % t["eval_every"] == 0 else (step + 1) % t["eval_every"]
+            rec = {"step": step + 1, "train_loss": run_loss / n, "train_aux": run_aux / n, "grad_norm": float(gn),
+                   "valid_mse": ev["mse"], "valid_mse_ctx8": ev["mse_ctx8"], "time": time.time() - t0}
+            hist.write(json.dumps(rec) + "\n"); hist.flush()
+            if verbose:
+                print(f"[{name}] step {step + 1} loss {rec['train_loss']:.4f} valid mse {ev['mse']:.5f} "
+                      f"({rec['time']:.0f}s)", flush=True)
+            run_loss = run_aux = 0.0
+    hist.close()
+    train_time = time.time() - t0
+    ev_valid = evaluate_dynamics(model, valid, routing=False)
+    ev_test = evaluate_dynamics(model, test, routing=True, do_rollout=True)
+    result = {"run": name, "dataset": cfg["dataset"], "structure": cfg["structure"], "variant": cfg["variant"],
+              "balance": balance, "seed": t["seed"], "steps": t["steps"], "task": "dynamics",
+              "params": count_parameters(model), "params_total": count_parameters(model, False),
+              "valid_mse": ev_valid["mse"], "valid_mse_ctx8": ev_valid["mse_ctx8"],
+              "test_mse": ev_test["mse"], "test_mse_ctx8": ev_test["mse_ctx8"],
+              "test_mse_age": ev_test["mse_age"], "test_age_counts": ev_test["age_counts"],
+              "test_rollout": ev_test["rollout"], "routing": ev_test.get("routing", {}),
               "train_time_s": train_time, "device": str(device)}
     if save_model:
         torch.save({k: v.half() if v.is_floating_point() else v for k, v in model.state_dict().items()},

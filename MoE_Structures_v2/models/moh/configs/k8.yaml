@@ -1,0 +1,4 @@
+# All 8 heads per token (gate-weighted, renormalised x8): no selection. Matches MoA k8.
+base: default.yaml
+structure_params:
+  routed_head: 8

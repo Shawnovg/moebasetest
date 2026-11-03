@@ -19,6 +19,18 @@ python -m pytest tests                                               # parity te
 Paths: `backbone/paths.py` (data root defaults to `E:\data\MoE_Structures_v2` on Windows; override with the
 environment variable `MOEV2_DATA`, runs with `MOEV2_RUNS`).
 
+## Switching-dynamics study (dyn, dyn_fast)
+
+```bash
+python -m data_gen.dynamics                                   # E:\data\MoE_Structures_v2\dyn, dyn_fast
+python -m experiments.run --structure moh --dataset dyn --seed 0
+python -m experiments.sweep --phase dyn_main --workers 2      # then --phase dyn_variants
+python -m analysis.dynamics                                   # reports/tables/dyn_*.csv, figures/dyn_*.png
+```
+Next-state prediction of a 4-D state rotated by one of three hidden matrices (generator from
+Twilight_MoE_Dynamics). Causal attention; MoE, MoH, MoA, MoMHA vs Dense / Dense-wide; no balancing.
+See `notebooks/07_dynamics.ipynb` and the "Dynamics study" section of `docs/code_map.md`.
+
 ## Where things are
 
 * `configs/base.yaml` — backbone and training settings shared by every structure.

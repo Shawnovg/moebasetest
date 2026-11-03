@@ -56,6 +56,7 @@ random warm-up) and with per-structure variants.
 | 04_main_sweep | structures x balancing modes x 3 seeds |
 | 05_variants | per-structure variants x balancing modes |
 | 06_analysis | all result tables and figures for the report |
+| 07_dynamics | switching-dynamics study: data, references, results, routing vs regime |
 | models/<s>/<s>_analysis | everything about one structure |
 
 One trial from the command line: `python -m experiments.run --structure moe --dataset mqar --balance lb --seed 0`
@@ -231,13 +232,66 @@ if len(rdf) and "{s}" in set(rdf.structure):
     ]
 
 
+
+NOTEBOOKS["notebooks/07_dynamics.ipynb"] = [
+    md("""# 07 — Switching-dynamics study (datasets dyn, dyn_fast)
+
+The state-transition task from the first project design (generator ported unchanged from
+`D:\\HarunoKen\\Twilight_MoE_Dynamics`): a 4-D state is rotated by one of three hidden matrices,
+the matrix switches as a Markov chain, and the model predicts the next state from the states so far.
+
+* structures: Dense, Dense-wide, **MoE, MoH, MoA, MoMHA** (MoM and MiTA excluded); no balancing
+* attention is **causal** here (`state.causal`), input/output are linear maps R^4 <-> R^128
+* data: `data_gen/dynamics.py` -> `E:\\data\\MoE_Structures_v2\\dyn`, `dyn_fast`
+* loop: `backbone/train.py train_dynamics_run`; metrics: `backbone/metrics_dyn.py`;
+  references: `analysis/dyn_reference.py`; tables/figures: `analysis/dynamics.py`
+* run the sweeps:  `python -m experiments.sweep --phase dyn_main`  and  `--phase dyn_variants`"""),
+    code(SETUP),
+    md("## 1. What the data looks like"),
+    code(r"""import numpy as np, matplotlib.pyplot as plt, matplotlib.image as mpimg
+from analysis import dynamics as D
+def show(p, size=(11, 5.5)):
+    if p: plt.figure(figsize=size); plt.imshow(mpimg.imread(p)); plt.axis("off"); plt.show()
+print(json.dumps({k: v for k, v in json.loads((DATA_ROOT / "dyn" / "manifest.json").read_text()).items()
+                  if k not in ("matrices", "splits")}, indent=1))
+show(D.fig_example("dyn")); show(D.fig_example("dyn_fast")); show(D.fig_phase("dyn"), (11, 4))"""),
+    md("""## 2. Reference predictors (no learning)
+`bayes_lastobs` is the floor: the best prediction once the past regime is known. Its remaining error is
+almost all at age 0 (the step where the regime switches, which nobody can foresee)."""),
+    code(r"""from analysis.dyn_reference import references
+ref = pd.concat([references(d) for d in D.DYN_DS]); display(ref.round(5))"""),
+    md("## 3. Main comparison (default configs, 3 seeds)"),
+    code(r"""ref = D.references(); df, rt, hist = D.load()
+df, main, age, roll, rtab = D.tables(df, rt, ref)
+display(main[main.variant == "default"][["dataset", "structure", "mse", "mse_sd", "excess", "excess_sd",
+        "excess_pct_of_floor", "minus_dense", "wins_vs_dense", "params", "n_x"]].round(6))
+show(D.fig_main(main, ref), (12, 4.5))"""),
+    md("## 4. Error around regime switches, rollout, learning curves"),
+    code(r"""for ds in D.DYN_DS:
+    show(D.fig_age(age, ref, ds), (13, 4.6)); show(D.fig_rollout(roll, ref, ds), (7.5, 4.5)); show(D.fig_curves(hist, ds), (7.5, 4.2))"""),
+    md("## 5. Variants (dyn)"),
+    code(r"""display(main[(main.dataset == "dyn")][["structure", "variant", "excess", "excess_sd", "minus_dense", "wins_vs_dense", "n_x"]].round(6))
+show(D.fig_variants(main, "dyn"), (9, 5))"""),
+    md("""## 6. Does routing follow the hidden regime?
+`regime_mi_obs` = mutual information between the unit a token is routed to and the regime of the last
+observed transition, divided by log 3 (0 = routing ignores the regime, 1 = the unit identifies it)."""),
+    code(r"""display(rtab.round(3))
+for ds in D.DYN_DS:
+    show(D.fig_regime_routing(rt, ds), (9, 12))"""),
+]
+
+
 LABELS = {"dense": "Dense", "dense_wide": "Dense-wide", "moe": "MoE", "moh": "MoH", "moa": "MoA", "momha": "MoMHA",
           "mom": "MoM", "mita": "MiTA"}
 for s, lab in LABELS.items():
     NOTEBOOKS[f"models/{s}/{s}_analysis.ipynb"] = structure_notebook(s, lab)
 
 if __name__ == "__main__":
+    import sys
+    only = sys.argv[1:]                       # optional: build only these notebook paths
     for path, cells in NOTEBOOKS.items():
+        if only and path not in only:
+            continue
         p = ROOT / path
         p.write_text(json.dumps(nb(cells), indent=1), encoding="utf-8")
         print(p)

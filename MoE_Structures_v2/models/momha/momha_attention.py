@@ -28,6 +28,7 @@ import torch
 import torch.nn as nn
 
 from backbone.experts import ParallelExperts, compute_gating
+from backbone.layers import causal_mask
 from backbone.routing import random_topk, switch_loss
 
 
@@ -111,6 +112,8 @@ class MoMHAAttention(nn.Module):
         w = torch.einsum("bkhie,bhje->bkhij", q, k)
         if key_pad is not None:
             w = w.masked_fill(key_pad[:, None, None, None, :], float("-inf"))
+        if state.causal:
+            w = w.masked_fill(causal_mask(T, T, x.device), float("-inf"))
         p = torch.softmax(w.float(), dim=-1).type_as(w)
         attn = torch.einsum("bkhij,bhje->bkhie", p, v)                   # B,k,H,T,hd
         attn = attn.permute(0, 3, 1, 2, 4).reshape(B, T, self.top_k, self.expert_dim)
