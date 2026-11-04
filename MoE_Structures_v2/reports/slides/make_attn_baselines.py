@@ -19,7 +19,7 @@ from analysis import figures as F  # noqa: E402
 
 OUT = ROOT / "reports" / "slides" / "figures"
 TAB = ROOT / "reports" / "tables"
-PAIRS = [("moh", "mha8"), ("moa", "mqa8"), ("momha", "gqa8")]
+PAIRS = [("moh", "dense", "mha8"), ("moa", "mqa4", "mqa8"), ("momha", "gqa4", "gqa8")]
 C, L = F.STRUCT_COLOR, F.STRUCT_LABEL
 plt.rcParams.update({"figure.facecolor": "white", "axes.facecolor": "white", "savefig.facecolor": "white",
                      "savefig.dpi": 200, "font.size": 11})
@@ -54,23 +54,25 @@ def main():
               ("dyn_fast", "dyn_fast: MSE $-$ Bayes floor ($\\times10^{-3}$, lower is better)"),
               ("fact", "fact: test accuracy (higher is better)"),
               ("mod", "mod: test accuracy (higher is better)")]
-    fig, axes = plt.subplots(2, 2, figsize=(15, 8.6))
+    fig, axes = plt.subplots(2, 2, figsize=(17, 9))
     for ax, (ds, title) in zip(axes.flat, panels):
         vals = []
-        for i, (rs, fs) in enumerate(PAIRS):
-            bars = [(get(ds, rs, "none"), C[rs], 0.45, f"{L[rs]}\nno bal."),
-                    (get(ds, rs, "lb"), C[rs], 1.0, f"{L[rs]}\nLB loss"),
-                    (get(ds, fs, "none"), C[fs], 1.0, L[fs])]
+        for i, (rs, f4, f8) in enumerate(PAIRS):
+            bars = [(get(ds, rs, "none"), C[rs], 0.45, ""),
+                    (get(ds, rs, "lb"), C[rs], 1.0, ""),
+                    (get(ds, f4, "none"), C[f4], 1.0, ""),
+                    (get(ds, f8, "none"), C[f8], 1.0, "")]
             for j, (r, col, a, _) in enumerate(bars):
-                x = i * 3.6 + j
+                x = i * 4.7 + j
                 ax.bar(x, r["mean"], width=0.85, color=col, alpha=a, yerr=r["std"], capsize=3,
                        error_kw={"lw": 1, "ecolor": F.INK2})
                 ax.text(x, r["mean"] + (r["std"] if r["std"] == r["std"] else 0), f"{r['mean']:.3f}" if ds.startswith("dyn") else f"{r['mean']:.2f}",
-                        ha="center", va="bottom", fontsize=9.5)
+                        ha="center", va="bottom", fontsize=9)
                 vals.append(r["mean"] + (r["std"] if r["std"] == r["std"] else 0))
-        ticks = [i * 3.6 + j for i in range(3) for j in range(3)]
-        labs = [b for rs, fs in PAIRS for b in (f"{L[rs]}\nno bal.", f"{L[rs]}\nLB loss", L[fs])]
-        ax.set_xticks(ticks, labs, fontsize=10)
+        ticks = [i * 4.7 + j for i in range(3) for j in range(4)]
+        lab4 = lambda s: "MHA-4\n(Dense)" if s == "dense" else L[s]
+        labs = [b for rs, f4, f8 in PAIRS for b in (f"{L[rs]}\nno bal.", f"{L[rs]}\nLB loss", lab4(f4), L[f8])]
+        ax.set_xticks(ticks, labs, fontsize=9.5)
         dense = get(ds, "dense", "none")["mean"]
         ax.axhline(dense, color=C["dense"], ls="--", lw=1.6)
         dtxt = f"{dense:.3f}" if ds.startswith("dyn") else f"{dense:.2f}"

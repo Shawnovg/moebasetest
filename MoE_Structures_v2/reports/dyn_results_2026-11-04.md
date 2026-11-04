@@ -87,3 +87,17 @@ MHA-8 (8 own K/V) ↔ MoH, MQA-8 (1 shared K/V) ↔ MoA, GQA-8 (2 shared K/V) �
 - mod: no structure beats Dense (0.30); routing is neutral to harmful.
 
 Table: reports/tables/attn_baselines.csv. Figure: reports/slides/figures/attn_baselines.png (script reports/slides/make_attn_baselines.py).
+
+### Active-width controls: MQA-4 and GQA-4 (4 query heads, no router; MHA-4 = Dense)
+
+Without the router, MoH / MoA / MoMHA activate exactly the attention weights of MHA-4 / MQA-4 / GQA-4 (65.5k / 41.0k / 49.2k per layer).
+
+| | dyn | dyn_fast | fact acc | mod acc |
+|---|---|---|---|---|
+| MHA-4 (= Dense) | 0.192 | 0.205 | 0.54 | 0.30 |
+| MQA-4 | 0.188 | 0.206 | 0.51 | 0.21 |
+| GQA-4 | 0.193 | 0.198 | 0.59 | 0.24 |
+
+- Dynamics: every 4-head control sits at Dense level; every routed model beats both its 4-head and 8-head control. Routing, not width, gives the gain.
+- fact: at matched active width routing is no better (MoH 0.52 vs 0.54) or worse (MoA 0.35–0.46 vs 0.51; MoMHA 0.34–0.45 vs 0.59); the 8-head controls are best.
+- mod: routed ≈ their 4-head controls; nothing beats Dense.

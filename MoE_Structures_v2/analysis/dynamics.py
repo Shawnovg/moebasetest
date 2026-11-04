@@ -40,7 +40,7 @@ def load(runs_root=RUNS_ROOT, balance="none"):
         r = json.loads(p.read_text())
         if r.get("task") != "dynamics":
             continue
-        want = "none" if r["structure"] in ("dense", "dense_wide", "mha8", "mqa8", "gqa8") else balance
+        want = "none" if r["structure"] in ("dense", "dense_wide", "mha8", "mqa8", "gqa8", "mqa4", "gqa4") else balance
         if r.get("balance", "none") != want:
             continue
         row = {k: r[k] for k in ID + ["params", "params_total", "train_time_s", "test_mse", "test_mse_ctx8",

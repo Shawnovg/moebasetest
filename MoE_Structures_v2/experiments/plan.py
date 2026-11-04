@@ -15,6 +15,7 @@ Switching-dynamics study (datasets dyn / dyn_fast; MoE, MoH, MoA, MoMHA only; no
 * dyn_variants  on dyn: MoE top1; MoH k6, k8; MoA k6, k8, renorm_detached; MoMHA top1 x seeds 0-2.
                 (MoE hash needs token ids and MoH shared2 uses shared heads: not run on dyn.)
 * attn_baselines  MHA-8 / MQA-8 / GQA-8 (router-free attention controls) x {dyn, dyn_fast, fact, mod} x seeds 0-2.
+* attn_baselines4 MQA-4 / GQA-4 (4 query heads = the routed models' active width) x same datasets/seeds.
 * dyn_main_lb, dyn_variants_lb  the same routed runs with the load-balance loss (balance 'lb').
 """
 from __future__ import annotations
@@ -28,7 +29,8 @@ BALANCES = ["none", "lb", "warmup"]
 
 
 DYN_DATASETS = ["dyn", "dyn_fast"]
-ATTN_BASELINES = ["mha8", "mqa8", "gqa8"]   # dense counterparts of MoH / MoA / MoMHA
+ATTN_BASELINES = ["mha8", "mqa8", "gqa8"]   # dense counterparts of MoH / MoA / MoMHA (all 8 heads on)
+ATTN_BASELINES4 = ["mqa4", "gqa4"]          # active-width controls (4 heads; MHA-4 is Dense itself)
 DYN_STRUCTURES = ["dense", "dense_wide", "moe", "moh", "moa", "momha"]
 DYN_VARIANTS = [("moe", "top1"), ("moh", "k6"), ("moh", "k8"), ("moa", "k6"), ("moa", "k8"),
                 ("moa", "renorm_detached"), ("momha", "top1")]
@@ -78,6 +80,9 @@ def phase(name, datasets=None, seeds=None):
     if name == "attn_baselines":     # router-free attention controls (no balancing needed)
         return [trial(s, d, "none", sd) for sd in (seeds or [0, 1, 2])
                 for d in (datasets or ["dyn", "dyn_fast", "fact", "mod"]) for s in ATTN_BASELINES]
+    if name == "attn_baselines4":    # 4-head controls matched to the routed models' active width
+        return [trial(s, d, "none", sd) for sd in (seeds or [0, 1, 2])
+                for d in (datasets or ["dyn", "dyn_fast", "fact", "mod"]) for s in ATTN_BASELINES4]
     if name == "dyn_main_lb":        # routed structures only: Dense / Dense-wide have no router (reuse the 'none' runs)
         return [trial(s, d, "lb", sd) for sd in (seeds or [0, 1, 2]) for d in (datasets or DYN_DATASETS)
                 for s in DYN_STRUCTURES if s not in ("dense", "dense_wide")]

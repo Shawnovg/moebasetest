@@ -1,0 +1,4 @@
+# GQA-4: 4 query heads x 32, 2 shared key/value head(s), no router (active-width control for MoMHA)
+structure_params:
+  n_heads: 4
+  n_kv_heads: 2
