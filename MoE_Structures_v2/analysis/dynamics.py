@@ -33,11 +33,15 @@ ID = ["dataset", "structure", "variant", "seed"]
 
 
 # ---------------------------------------------------------------- collection
-def load(runs_root=RUNS_ROOT):
+def load(runs_root=RUNS_ROOT, balance="none"):
+    """Runs of one balancing mode; Dense / Dense-wide (no router) always come from the 'none' runs."""
     rows, routes, hist = [], [], []
     for p in sorted(Path(runs_root).glob("dyn*/result.json")):
         r = json.loads(p.read_text())
         if r.get("task") != "dynamics":
+            continue
+        want = "none" if r["structure"] in ("dense", "dense_wide", "mha8", "mqa8", "gqa8") else balance
+        if r.get("balance", "none") != want:
             continue
         row = {k: r[k] for k in ID + ["params", "params_total", "train_time_s", "test_mse", "test_mse_ctx8",
                                       "valid_mse"]}
@@ -298,32 +302,37 @@ def fig_curves(hist, ds, out=FIG_ROOT):
     return _save(fig, f"dyn_curves_{ds}", out)
 
 
-def main():
+def main(balance="none"):
+    """balance 'none' -> reports/tables/dyn_*.csv and reports/figures/dyn_*.png;
+    'lb' -> dyn_*_lb.csv and reports/figures/dyn_lb/."""
     TABLES.mkdir(parents=True, exist_ok=True)
     ref = references()
-    df, rt, hist = load()
-    for ds in DYN_DS:
-        fig_example(ds)
-    fig_phase("dyn")
+    df, rt, hist = load(balance=balance)
+    sfx = "" if balance == "none" else f"_{balance}"
+    out = FIG_ROOT if balance == "none" else Path(FIG_ROOT) / f"dyn_{balance}"
+    if balance == "none":
+        for ds in DYN_DS:
+            fig_example(ds)
+        fig_phase("dyn")
     if not len(df):
         print("no dynamics runs yet")
         return
     df, main_t, age, roll, rtab = tables(df, rt, ref)
-    df.to_csv(TABLES / "dyn_runs.csv", index=False)
-    main_t.to_csv(TABLES / "dyn_main.csv", index=False)
-    age.to_csv(TABLES / "dyn_age.csv", index=False)
-    roll.to_csv(TABLES / "dyn_rollout.csv", index=False)
+    df.to_csv(TABLES / f"dyn_runs{sfx}.csv", index=False)
+    main_t.to_csv(TABLES / f"dyn_main{sfx}.csv", index=False)
+    age.to_csv(TABLES / f"dyn_age{sfx}.csv", index=False)
+    roll.to_csv(TABLES / f"dyn_rollout{sfx}.csv", index=False)
     if len(rtab):
-        rtab.to_csv(TABLES / "dyn_routing.csv", index=False)
-    fig_main(main_t, ref)
+        rtab.to_csv(TABLES / f"dyn_routing{sfx}.csv", index=False)
+    fig_main(main_t, ref, out=out)
     for ds in sorted(set(df.dataset)):
-        fig_age(age, ref, ds)
-        fig_rollout(roll, ref, ds)
-        fig_curves(hist, ds)
+        fig_age(age, ref, ds, out=out)
+        fig_rollout(roll, ref, ds, out=out)
+        fig_curves(hist, ds, out=out)
         if len(rt):
-            fig_regime_routing(rt, ds)
+            fig_regime_routing(rt, ds, out=out)
     if (main_t.variant != "default").any():
-        fig_variants(main_t, "dyn")
+        fig_variants(main_t, "dyn", out=out)
     with pd.option_context("display.width", 220, "display.max_columns", 30):
         print(main_t.round(6).to_string(index=False))
         if len(rtab):
@@ -331,4 +340,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1] if len(sys.argv) > 1 else "none")

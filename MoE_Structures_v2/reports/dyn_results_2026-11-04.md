@@ -56,3 +56,34 @@ The task is next-state prediction on a 4-D rotating-coordinates time series. Thr
 - **The task is near-saturated for this backbone.** A harder variant would be needed to separate the structures more clearly, for example more regimes, more noise, higher dimension or a smaller model.
 
 Technical report section: "Switching-dynamics study" in the MoE_Structures_v2 technical report. Git commit: 288237b on `structures-v2`.
+
+## Update (4 Nov evening): load-balance loss and router-free attention controls
+
+### Routed models retrained with the load-balance loss (excess ×1e-3, 3 seeds)
+
+| | dyn none | dyn LB | dyn_fast none | dyn_fast LB |
+|---|---|---|---|---|
+| MoH | 0.162 | **0.157** | 0.175 | **0.168** |
+| MoMHA | 0.169 | 0.167 | 0.177 | 0.184 |
+| MoA | 0.183 | 0.176 | 0.183 | 0.179 |
+| MoE | 0.180 | 0.181 | 0.188 | 0.193 |
+
+MoH stays best. MoE top-1 is now worse than top-2 (0.229 vs 0.181), consistent with the earlier top-1 advantage being a router-collapse artefact. Layer-2 regime MI (dyn): MoE 0.69, MoH 0.27, MoMHA 0.24, MoA 0.09; attention layer 1 still 0.
+
+### Router-free attention controls (all 8 query heads on every token, no router)
+
+MHA-8 (8 own K/V) ↔ MoH, MQA-8 (1 shared K/V) ↔ MoA, GQA-8 (2 shared K/V) ↔ MoMHA. 3 seeds each.
+
+| | dyn | dyn_fast | fact acc | mod acc |
+|---|---|---|---|---|
+| Dense | 0.192 | 0.205 | 0.54 | 0.30 |
+| MHA-8 | 0.193 | 0.205 | **0.80** | 0.30 |
+| MQA-8 | 0.194 | 0.215 | 0.66 | 0.28 |
+| GQA-8 | 0.194 | 0.216 | 0.69 | 0.28 |
+| MoH (none / LB) | 0.162 / 0.157 | 0.175 / 0.168 | 0.52 / 0.46 | 0.28 / 0.28 |
+
+- Dynamics: all three controls are no better than Dense; every routed variant beats its control. The gain comes from per-token head selection, not from having 8 heads.
+- fact: the controls are far better than the routed models (MHA-8 0.80 vs MoH 0.52; Dense-wide 0.98). Sparse routing in attention hurts memorisation; extra always-on attention parameters help.
+- mod: no structure beats Dense (0.30); routing is neutral to harmful.
+
+Table: reports/tables/attn_baselines.csv. Figure: reports/slides/figures/attn_baselines.png (script reports/slides/make_attn_baselines.py).

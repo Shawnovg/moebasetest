@@ -14,11 +14,14 @@ import pandas as pd  # noqa: E402
 
 from backbone.paths import FIG_ROOT  # noqa: E402
 
-STRUCT_ORDER = ["dense", "dense_wide", "moe", "moh", "moa", "momha", "mom", "mita"]
+STRUCT_ORDER = ["dense", "dense_wide", "moe", "mha8", "moh", "mqa8", "moa", "gqa8", "momha", "mom", "mita"]
 STRUCT_LABEL = {"dense": "Dense", "dense_wide": "Dense-wide", "moe": "MoE", "moh": "MoH", "moa": "MoA",
-                "momha": "MoMHA", "mom": "MoM", "mita": "MiTA"}
-STRUCT_COLOR = dict(zip(STRUCT_ORDER, ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300",
-                                       "#6250d6", "#e34948"]))
+                "momha": "MoMHA", "mom": "MoM", "mita": "MiTA",
+                "mha8": "MHA-8", "mqa8": "MQA-8", "gqa8": "GQA-8"}
+STRUCT_COLOR = {"dense": "#2a78d6", "dense_wide": "#eb6834", "moe": "#1baf7a", "moh": "#eda100", "moa": "#e87ba4",
+                "momha": "#008300", "mom": "#6250d6", "mita": "#e34948",
+                # router-free attention controls: a darker shade of their routed counterpart's colour
+                "mha8": "#9a6800", "mqa8": "#b0466f", "gqa8": "#004f00"}
 BAL_ORDER = ["none", "lb", "warmup"]
 BAL_LABEL = {"none": "no balancing", "lb": "load-balance loss", "warmup": "random warm-up"}
 BAL_COLOR = {"none": "#8a8984", "lb": "#184f95", "warmup": "#86b6ef"}

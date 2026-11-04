@@ -1,0 +1,4 @@
+# GQA-8: 8 query heads x 32 sharing TWO key/value heads (MoMHA's attention with all 4 blocks and no router)
+structure_params:
+  n_heads: 8
+  n_kv_heads: 2
