@@ -1,0 +1,22 @@
+{
+ "run": "fact__mha8__default__none__s0",
+ "dataset": "fact",
+ "structure": "mha8",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 526848,
+ "params_total": 700323,
+ "valid_acc": 0.795125,
+ "valid_loss": 1.0260451736450196,
+ "test_acc": 0.7943125,
+ "test_loss": 1.0232748908996583,
+ "test_seq_acc": 0.1585,
+ "test_per_task": {
+  "fact": 0.7943125
+ },
+ "routing": {},
+ "train_time_s": 417.3311867713928,
+ "device": "cpu"
+}

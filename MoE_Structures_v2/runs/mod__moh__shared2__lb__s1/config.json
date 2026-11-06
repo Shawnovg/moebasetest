@@ -1,0 +1,46 @@
+{
+ "backbone": {
+  "activation": "gelu",
+  "d_ff": 512,
+  "d_model": 128,
+  "head_dim": 32,
+  "ln_eps": 1e-05,
+  "max_len": 512,
+  "n_heads": 4,
+  "n_layers": 2,
+  "rope_base": 10000.0
+ },
+ "dataset": "mod",
+ "routing": {
+  "balance": "lb",
+  "warmup_frac": 0.1
+ },
+ "structure": "moh",
+ "structure_params": {
+  "lb_coef": 0.01,
+  "num_heads": 8,
+  "qkv_bias": false,
+  "routed_head": 2,
+  "shared_head": 2
+ },
+ "task": "tokens",
+ "train": {
+  "batch_size": 64,
+  "betas": [
+   0.9,
+   0.98
+  ],
+  "eval_batches": 8,
+  "eval_every": 500,
+  "grad_clip": 1.0,
+  "lr": 0.001,
+  "schedule": "cosine",
+  "seed": 1,
+  "steps": 3000,
+  "threads": 1,
+  "warmup_steps": 300,
+  "weight_decay": 0.01
+ },
+ "variant": "shared2",
+ "vocab_size": 675
+}

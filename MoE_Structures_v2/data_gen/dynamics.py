@@ -12,6 +12,7 @@ the state by 0.94 (stable under any switching). The model only sees the states, 
 Datasets (all: 4-D states, noise 0.08, burn-in 128, sequences of 64 transitions):
 * ``dyn``       p_stay 0.95 (one switch every ~20 steps, the Twilight default)
 * ``dyn_fast``  p_stay 0.80 (one switch every ~5 steps: the regime must be re-inferred often)
+* ``dyn_p50``   p_stay 0.50 (one switch every ~2 steps; added after the 5 Nov supervisor meeting)
 
 Files: DATA_ROOT/<name>/{train,valid,test}.npz with ``states`` (N x 65 x 4, float32) and ``regimes``
 (N x 64, int64; regimes[:, t] is the regime that maps states[:, t] -> states[:, t+1]) and manifest.json
@@ -38,6 +39,7 @@ CONTRACTION = 0.94
 DYN_DATASETS = {
     "dyn": {"stay_probability": 0.95},
     "dyn_fast": {"stay_probability": 0.80},
+    "dyn_p50": {"stay_probability": 0.50},
 }
 COMMON = {"length": 64, "burn_in": 128, "noise_std": 0.08,
           "n": {"train": 50_000, "valid": 1_000, "test": 2_000}}

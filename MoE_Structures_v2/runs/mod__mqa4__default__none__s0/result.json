@@ -1,0 +1,22 @@
+{
+ "run": "mod__mqa4__default__none__s0",
+ "dataset": "mod",
+ "structure": "mqa4",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 346624,
+ "params_total": 520099,
+ "valid_acc": 0.90475,
+ "valid_loss": 0.4866089515686035,
+ "test_acc": 0.261625,
+ "test_loss": 4.849336975097656,
+ "test_seq_acc": 0.00175,
+ "test_per_task": {
+  "mod": 0.261625
+ },
+ "routing": {},
+ "train_time_s": 191.3383228778839,
+ "device": "cpu"
+}

@@ -77,7 +77,7 @@ def references(name, root=DATA_ROOT, windows=(1, 2, 4, 8)):
 
 def main():
     TABLES.mkdir(parents=True, exist_ok=True)
-    df = pd.concat([references(n) for n in ("dyn", "dyn_fast")], ignore_index=True)
+    df = pd.concat([references(n) for n in ("dyn", "dyn_fast", "dyn_p50")], ignore_index=True)
     df.to_csv(TABLES / "dyn_reference.csv", index=False)
     with pd.option_context("display.width", 200):
         print(df.round(5).to_string(index=False))

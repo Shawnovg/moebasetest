@@ -1,0 +1,22 @@
+{
+ "run": "mod__gqa8__default__none__s0",
+ "dataset": "mod",
+ "structure": "gqa8",
+ "variant": "default",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 428544,
+ "params_total": 602019,
+ "valid_acc": 0.988875,
+ "valid_loss": 0.09337280082702637,
+ "test_acc": 0.3241875,
+ "test_loss": 5.01441796875,
+ "test_seq_acc": 0.0075,
+ "test_per_task": {
+  "mod": 0.3241875
+ },
+ "routing": {},
+ "train_time_s": 255.04277563095093,
+ "device": "cpu"
+}

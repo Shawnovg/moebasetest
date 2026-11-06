@@ -1,0 +1,22 @@
+{
+ "run": "mod__mqa8__default__none__s2",
+ "dataset": "mod",
+ "structure": "mqa8",
+ "variant": "default",
+ "balance": "none",
+ "seed": 2,
+ "steps": 3000,
+ "params": 412160,
+ "params_total": 585635,
+ "valid_acc": 0.960375,
+ "valid_loss": 0.22446279907226563,
+ "test_acc": 0.2596875,
+ "test_loss": 4.864185684204101,
+ "test_seq_acc": 0.0025,
+ "test_per_task": {
+  "mod": 0.2596875
+ },
+ "routing": {},
+ "train_time_s": 255.5277304649353,
+ "device": "cpu"
+}

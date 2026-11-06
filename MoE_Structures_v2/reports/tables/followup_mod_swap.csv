@@ -1,0 +1,25 @@
+setting,run,op,swap,acc
+"3,000 steps, weight decay 0.01 (main setting)",mod__dense__default__none__s0,+,swap in train,0.883
+"3,000 steps, weight decay 0.01 (main setting)",mod__dense__default__none__s0,+,swap not in train,0.01
+"3,000 steps, weight decay 0.01 (main setting)",mod__dense__default__none__s0,*,swap in train,0.925
+"3,000 steps, weight decay 0.01 (main setting)",mod__dense__default__none__s0,*,swap not in train,0.027
+"3,000 steps, weight decay 0.01 (main setting)",mod__dense__default__none__s0,-,swap in train,0.002
+"3,000 steps, weight decay 0.01 (main setting)",mod__dense__default__none__s0,-,swap not in train,0.013
+"3,000 steps, weight decay 0.01 (main setting)",mod__moh__default__lb__s0,+,swap in train,0.909
+"3,000 steps, weight decay 0.01 (main setting)",mod__moh__default__lb__s0,+,swap not in train,0.011
+"3,000 steps, weight decay 0.01 (main setting)",mod__moh__default__lb__s0,*,swap in train,0.926
+"3,000 steps, weight decay 0.01 (main setting)",mod__moh__default__lb__s0,*,swap not in train,0.027
+"3,000 steps, weight decay 0.01 (main setting)",mod__moh__default__lb__s0,-,swap in train,0.011
+"3,000 steps, weight decay 0.01 (main setting)",mod__moh__default__lb__s0,-,swap not in train,0.032
+"30,000 steps, weight decay 1.0",mod__dense__long__none__s0,+,swap in train,1.0
+"30,000 steps, weight decay 1.0",mod__dense__long__none__s0,+,swap not in train,1.0
+"30,000 steps, weight decay 1.0",mod__dense__long__none__s0,*,swap in train,1.0
+"30,000 steps, weight decay 1.0",mod__dense__long__none__s0,*,swap not in train,1.0
+"30,000 steps, weight decay 1.0",mod__dense__long__none__s0,-,swap in train,1.0
+"30,000 steps, weight decay 1.0",mod__dense__long__none__s0,-,swap not in train,1.0
+"30,000 steps, weight decay 1.0",mod__moh__long__lb__s0,+,swap in train,1.0
+"30,000 steps, weight decay 1.0",mod__moh__long__lb__s0,+,swap not in train,1.0
+"30,000 steps, weight decay 1.0",mod__moh__long__lb__s0,*,swap in train,1.0
+"30,000 steps, weight decay 1.0",mod__moh__long__lb__s0,*,swap not in train,0.999
+"30,000 steps, weight decay 1.0",mod__moh__long__lb__s0,-,swap in train,1.0
+"30,000 steps, weight decay 1.0",mod__moh__long__lb__s0,-,swap not in train,1.0

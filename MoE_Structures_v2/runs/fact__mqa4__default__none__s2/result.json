@@ -1,0 +1,22 @@
+{
+ "run": "fact__mqa4__default__none__s2",
+ "dataset": "fact",
+ "structure": "mqa4",
+ "variant": "default",
+ "balance": "none",
+ "seed": 2,
+ "steps": 3000,
+ "params": 346624,
+ "params_total": 520099,
+ "valid_acc": 0.5669375,
+ "valid_loss": 1.9257454376220704,
+ "test_acc": 0.5718125,
+ "test_loss": 1.902081199645996,
+ "test_seq_acc": 0.01,
+ "test_per_task": {
+  "fact": 0.5718125
+ },
+ "routing": {},
+ "train_time_s": 266.43494486808777,
+ "device": "cpu"
+}

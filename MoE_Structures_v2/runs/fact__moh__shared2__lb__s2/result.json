@@ -1,0 +1,77 @@
+{
+ "run": "fact__moh__shared2__lb__s2",
+ "dataset": "fact",
+ "structure": "moh",
+ "variant": "shared2",
+ "balance": "lb",
+ "seed": 2,
+ "steps": 3000,
+ "params": 529664,
+ "params_total": 703139,
+ "valid_acc": 0.354875,
+ "valid_loss": 2.7170533142089845,
+ "test_acc": 0.36340625,
+ "test_loss": 2.697095504760742,
+ "test_seq_acc": 0.00075,
+ "test_per_task": {
+  "fact": 0.36340625
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.0,
+    0.0,
+    0.17075,
+    0.14679,
+    0.21297,
+    0.13789,
+    0.1353,
+    0.19631
+   ],
+   "entropy": 0.85421,
+   "max_load": 0.21297,
+   "dead": 2,
+   "per_task": {
+    "fact": [
+     0,
+     0,
+     45077,
+     38752,
+     56223,
+     36403,
+     35719,
+     51826
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.0,
+    0.0,
+    0.16153,
+    0.1574,
+    0.1766,
+    0.17044,
+    0.17677,
+    0.15725
+   ],
+   "entropy": 0.86105,
+   "max_load": 0.17677,
+   "dead": 2,
+   "per_task": {
+    "fact": [
+     0,
+     0,
+     42645,
+     41554,
+     46622,
+     44997,
+     46668,
+     41514
+    ]
+   }
+  }
+ },
+ "train_time_s": 422.5728769302368,
+ "device": "cpu"
+}

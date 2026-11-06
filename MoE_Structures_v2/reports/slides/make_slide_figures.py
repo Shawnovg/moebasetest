@@ -30,6 +30,7 @@ plt.rcParams.update({"figure.facecolor": WHITE, "axes.facecolor": WHITE, "savefi
 C, L = F.STRUCT_COLOR, F.STRUCT_LABEL
 SIX = ["dense", "dense_wide", "moe", "moh", "moa", "momha"]
 ROUTED = ["moe", "moh", "moa", "momha"]
+ATT = False   # True: attention structures only (no MoE / Dense-wide), after the 5 Nov supervisor meeting
 INK, INK2, GRID = F.INK, F.INK2, F.GRID
 ACC = "#2a78d6"
 
@@ -58,7 +59,7 @@ EQS = {
     "eq_moa": r"$\mathrm{MoA}(x)=\sum_{i\in\mathrm{Top}_4(g)} g_i(x)\,\mathrm{Attn}\!\left(xW_Q^{i},\,XW_K,\,XW_V\right)W_O^{i},\qquad W_K,W_V\ \mathrm{shared}$",
     "eq_momha": r"$\mathrm{MoMHA}(x)=\sum_{j\in\mathrm{Top}_2(g)} g_j(x)\,\mathrm{MHA}_j(x),\qquad 4\ \mathrm{blocks}\times 2\ \mathrm{heads}$",
     "eq_dyn": r"$x_{t+1}=\rho\,A_{r_t}\,x_t+\varepsilon_t,\quad A_r=\begin{pmatrix}R(a_r)&0\\0&R(b_r)\end{pmatrix},\quad \rho=0.94,\quad \varepsilon_t\sim\mathcal{N}(0,\,0.08^2 I_4)$",
-    "eq_markov": r"$P(r_{t+1}=r_t)=p_{\mathrm{stay}},\qquad p_{\mathrm{stay}}=0.95\ (\texttt{dyn}),\ \ 0.80\ (\texttt{dyn\_fast})$",
+    "eq_markov": r"$P(r_{t+1}=r_t)=p_{\mathrm{stay}},\qquad p_{\mathrm{stay}}=0.95\ (\texttt{dyn}),\ \ 0.80\ (\texttt{dyn\_fast}),\ \ 0.50\ (\texttt{dyn\_p50})$",
     "eq_loss": r"$\hat x_{t+1}=f_\theta(x_0,\dots,x_t),\qquad \mathcal{L}=\frac{1}{T}\sum_{t=0}^{T-1}\left\lVert \hat x_{t+1}-x_{t+1}\right\rVert_2^2$",
     "eq_excess": r"$\mathrm{excess}=\mathrm{MSE}_{\mathrm{model}}-\mathrm{MSE}_{\mathrm{Bayes}},\qquad \hat x^{\mathrm{Bayes}}_{t+1}=\sum_{k} P(r_t=k\mid r_{t-1})\,\rho A_k x_t$",
     "eq_mi_full": r"$\displaystyle I(U;R)=\sum_{u,r} p(u,r)\,\log\frac{p(u,r)}{p(u)\,p(r)}=H(R)-H(R\mid U),\qquad \mathrm{MI}_{\mathrm{norm}}=\frac{I(U;R)}{\log 3}\in[0,1]$",
@@ -185,7 +186,7 @@ def fig_fact_ablation(balance="none"):
     d0 = _acc()
     d0 = d0[d0.dataset == "fact"]
     d = d0[d0.balance == balance]
-    rows = [("moe", "default", "top-2 of 8 (default)"), ("moe", "top1", "top-1"), ("moe", "hash", "hash routing"),
+    rows = ([] if ATT else [("moe", "default", "top-2 of 8 (default)"), ("moe", "top1", "top-1"), ("moe", "hash", "hash routing")]) + [
             ("moh", "default", "4 of 8 heads (default)"), ("moh", "k6", "6 of 8 heads"), ("moh", "shared2", "2 shared + 2 of 6"),
             ("moa", "default", "4 of 8 heads (default)"), ("moa", "k8", "8 of 8 heads"), ("moa", "renorm_detached", "detached renorm"),
             ("momha", "default", "top-2 of 4 blocks (default)"), ("momha", "top1", "top-1")]
@@ -204,8 +205,12 @@ def fig_fact_ablation(balance="none"):
         ax.text(r["mean"] + r["std"] + 0.012, y, f"{r['mean']:.2f}", va="center", fontsize=11.5, color=INK)
         ticks.append(y); labs.append(f"{L[s]}  ·  {lab}")
         y += 1; prev = s
-    for s, ls in (("dense", "--"), ("dense_wide", ":")):
-        v = d0[(d0.structure == s) & (d0.variant == "default") & (d0.balance == "none")]["mean"].iloc[0]
+    for s, ls in ((("dense", "--"), ("mha8", ":")) if ATT else (("dense", "--"), ("dense_wide", ":"))):
+        if s == "mha8":
+            ab = pd.read_csv(TAB / "attn_baselines.csv")
+            v = ab[(ab.dataset == "fact") & (ab.structure == "mha8")]["mean"].iloc[0]
+        else:
+            v = d0[(d0.structure == s) & (d0.variant == "default") & (d0.balance == "none")]["mean"].iloc[0]
         ax.axvline(v, color=C[s], ls=ls, lw=1.8, label=f"{L[s]} {v:.2f}")
     ax.set_yticks(ticks, labs, fontsize=12)
     ax.invert_yaxis()
@@ -293,7 +298,7 @@ def fig_matched_k(main):
         e = np.array([get(s, v).excess for v in vs]) * 1e3
         sd = np.array([get(s, v).excess_sd for v in vs]) * 1e3
         ax.errorbar([4, 6, 8], e, yerr=sd, fmt="o-", color=C[s], lw=2.2, ms=8, capsize=4, label=L[s])
-    for s, ls in (("dense", "--"), ("dense_wide", ":")):
+    for s, ls in ((("dense", "--"), ("mha8", ":")) if ATT else (("dense", "--"), ("dense_wide", ":"))):
         ax.axhline(get(s, "default").excess * 1e3, color=C[s], ls=ls, lw=1.8, label=L[s])
     ax.set_xticks([4, 6, 8], ["4 of 8\n(default)", "6 of 8", "8 of 8\n(all heads)"], fontsize=12)
     ax.set_ylabel(r"MSE $-$ Bayes floor  ($\times 10^{-3}$)", fontsize=12)
@@ -305,7 +310,7 @@ def fig_matched_k(main):
 
 def fig_dyn_variants_other(main):
     d = main[main.dataset == "dyn"]
-    rows = [("moe", "default", "top-2 (default)"), ("moe", "top1", "top-1"),
+    rows = ([] if ATT else [("moe", "default", "top-2 (default)"), ("moe", "top1", "top-1")]) + [
             ("moa", "default", "default"), ("moa", "renorm_detached", "detached renorm"),
             ("momha", "default", "top-2 (default)"), ("momha", "top1", "top-1")]
     fig, ax = plt.subplots(figsize=(9, 4.4))
@@ -376,6 +381,19 @@ def dynamics_lb():
 if __name__ == "__main__":
     if sys.argv[1:] == ["lb"]:
         dynamics_lb(); sys.exit()
+    if sys.argv[1:] == ["att"]:          # attention-only versions (lb for routed models) -> figures/att/
+        ATT = True
+        SIX = ["dense", "mha8", "moh", "moa", "momha"]; ROUTED = ["moh", "moa", "momha"]
+        OUT = OUT / "att"; OUT.mkdir(exist_ok=True)
+        SIX = ["dense", "moh", "moa", "momha"]; fig_memory_heatmap(); fig_fact_mod_balance()
+        SIX = ["dense", "mha8", "moh", "moa", "momha"]; fig_fact_ablation("lb")
+        ref = D.references()
+        df, rt, hist = D.load(balance="lb")
+        df = df[df.structure.isin(SIX)]; rt = rt[rt.structure.isin(SIX)]
+        df, main, age, roll, rtab = D.tables(df, rt, ref)
+        D.fig_age(age, ref, "dyn", out=OUT)
+        fig_matched_k(main); fig_dyn_variants_other(main); fig_regime_mi(rtab)
+        sys.exit()
     if sys.argv[1:] == ["eq"]:
         equations(); sys.exit()
     for s in ["dense", "moe", "moh", "moa", "momha"]:

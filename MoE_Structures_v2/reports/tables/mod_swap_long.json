@@ -1,0 +1,54 @@
+{
+ "mod__dense__long__none__s0": {
+  "* | swap in train": [
+   1.0,
+   1332
+  ],
+  "* | swap not in train": [
+   1.0,
+   1354
+  ],
+  "+ | swap in train": [
+   1.0,
+   1337
+  ],
+  "+ | swap not in train": [
+   1.0,
+   1305
+  ],
+  "- | swap in train": [
+   1.0,
+   1317
+  ],
+  "- | swap not in train": [
+   1.0,
+   1355
+  ]
+ },
+ "mod__moh__long__lb__s0": {
+  "* | swap in train": [
+   1.0,
+   1332
+  ],
+  "* | swap not in train": [
+   0.999,
+   1354
+  ],
+  "+ | swap in train": [
+   1.0,
+   1337
+  ],
+  "+ | swap not in train": [
+   1.0,
+   1305
+  ],
+  "- | swap in train": [
+   1.0,
+   1317
+  ],
+  "- | swap not in train": [
+   1.0,
+   1355
+  ]
+ }
+}

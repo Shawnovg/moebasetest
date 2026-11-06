@@ -83,6 +83,17 @@ def phase(name, datasets=None, seeds=None):
     if name == "attn_baselines4":    # 4-head controls matched to the routed models' active width
         return [trial(s, d, "none", sd) for sd in (seeds or [0, 1, 2])
                 for d in (datasets or ["dyn", "dyn_fast", "fact", "mod"]) for s in ATTN_BASELINES4]
+    if name == "followup_p50":       # 5 Nov feedback: p_stay 0.5; attention structures only (no MoE)
+        ctrl = ["dense"] + ATTN_BASELINES + ATTN_BASELINES4
+        out = [trial(s, "dyn_p50", "none", sd) for sd in (seeds or [0, 1, 2]) for s in ctrl]
+        out += [trial(s, "dyn_p50", "lb", sd, v) for sd in (seeds or [0, 1, 2])
+                for s, v in (("moh", "default"), ("moh", "shared2"), ("moa", "default"), ("momha", "default"))]
+        return out
+    if name == "followup_shared":    # 5 Nov feedback: MoH with always-on (shared) heads on the other datasets
+        return [trial("moh", d, "lb", sd, "shared2") for sd in (seeds or [0, 1, 2])
+                for d in (datasets or ["dyn", "dyn_fast", "fact", "mod"])]
+    if name == "followup_modlong":   # 5 Nov feedback: mod with 10x training and weight decay 1.0
+        return [trial("dense", "mod", "none", 0, "long"), trial("moh", "mod", "lb", 0, "long")]
     if name == "dyn_main_lb":        # routed structures only: Dense / Dense-wide have no router (reuse the 'none' runs)
         return [trial(s, d, "lb", sd) for sd in (seeds or [0, 1, 2]) for d in (datasets or DYN_DATASETS)
                 for s in DYN_STRUCTURES if s not in ("dense", "dense_wide")]

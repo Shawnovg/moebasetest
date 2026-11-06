@@ -69,7 +69,7 @@ def load_run_config(structure: str, variant: str = "default", overrides: Optiona
     return apply_task(cfg)
 
 
-DYNAMICS_DATASETS = ("dyn", "dyn_fast")
+DYNAMICS_DATASETS = ("dyn", "dyn_fast", "dyn_p50")
 
 
 def apply_task(cfg: Dict[str, Any]) -> Dict[str, Any]:

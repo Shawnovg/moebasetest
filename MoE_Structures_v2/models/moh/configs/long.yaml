@@ -1,0 +1,6 @@
+# 5 Nov follow-up: mod in the grokking regime (10x longer, strong weight decay).
+base: default.yaml
+train:
+  steps: 30000
+  weight_decay: 1.0
+  eval_every: 2500
