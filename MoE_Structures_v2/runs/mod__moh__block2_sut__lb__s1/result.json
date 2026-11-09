@@ -1,0 +1,61 @@
+{
+ "run": "mod__moh__block2_sut__lb__s1",
+ "dataset": "mod",
+ "structure": "moh",
+ "variant": "block2_sut",
+ "balance": "lb",
+ "seed": 1,
+ "steps": 3000,
+ "params": 561152,
+ "params_total": 734627,
+ "valid_acc": 0.926125,
+ "valid_loss": 0.34876200103759764,
+ "test_acc": 0.2863125,
+ "test_loss": 3.8607289428710936,
+ "test_seq_acc": 0.006,
+ "test_per_task": {
+  "mod": 0.2863125
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.21016,
+    0.18576,
+    0.35083,
+    0.25325
+   ],
+   "entropy": 0.978,
+   "max_load": 0.35083,
+   "dead": 0,
+   "per_task": {
+    "mod": [
+     40351,
+     35666,
+     67359,
+     48624
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.18823,
+    0.25,
+    0.24446,
+    0.31731
+   ],
+   "entropy": 0.98791,
+   "max_load": 0.31731,
+   "dead": 0,
+   "per_task": {
+    "mod": [
+     36140,
+     48000,
+     46937,
+     60923
+    ]
+   }
+  }
+ },
+ "train_time_s": 357.08657121658325,
+ "device": "cpu"
+}

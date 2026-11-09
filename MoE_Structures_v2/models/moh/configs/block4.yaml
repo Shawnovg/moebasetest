@@ -1,0 +1,5 @@
+base: default.yaml
+# MoMHA-style MoH: 2 groups of 4 heads, router picks 1 group (= 4 active heads)
+structure_params:
+  head_group: 4
+  routed_head: 4

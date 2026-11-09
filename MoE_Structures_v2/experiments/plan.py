@@ -14,6 +14,8 @@ Switching-dynamics study (datasets dyn / dyn_fast; MoE, MoH, MoA, MoMHA only; no
 * dyn_main      Dense, Dense-wide, MoE, MoH, MoA, MoMHA (default configs) x {dyn, dyn_fast} x seeds 0-2.
 * dyn_variants  on dyn: MoE top1; MoH k6, k8; MoA k6, k8, renorm_detached; MoMHA top1 x seeds 0-2.
                 (MoE hash needs token ids and MoH shared2 uses shared heads: not run on dyn.)
+* matched_k  fact: MoH k8, MoA k6, MoMHA k3/k4 x {lb, none, warmup} x seeds 0-1; dyn: MoMHA k3/k4 x {lb, none} x seeds 0-2.
+* moh_block  MoH block2 / block4 / block2_sut (MoMHA's router + gates + switch loss) (routes groups of heads, like MoMHA) x {dyn, dyn_fast, dyn_p50, fact, mod} x lb x seeds 0-2.
 * attn_baselines  MHA-8 / MQA-8 / GQA-8 (router-free attention controls) x {dyn, dyn_fast, fact, mod} x seeds 0-2.
 * attn_baselines4 MQA-4 / GQA-4 (4 query heads = the routed models' active width) x same datasets/seeds.
 * dyn_main_lb, dyn_variants_lb  the same routed runs with the load-balance loss (balance 'lb').
@@ -71,6 +73,16 @@ def phase(name, datasets=None, seeds=None):
                         for b in balances_for(s, v):
                             out.append(trial(s, d, b, sd, v))
         return out
+    if name == "matched_k":   # same active-head counts across MoH / MoA / MoMHA (4, 6, 8 of 8 heads)
+        missing = [("moh", "k8"), ("moa", "k6"), ("momha", "k3"), ("momha", "k4")]
+        fact = [trial(s, "fact", b, sd, v) for b in ("lb", "none", "warmup") for sd in (seeds or [0, 1])
+                for s, v in missing]
+        dyn = [trial("momha", "dyn", b, sd, v) for b in ("lb", "none") for sd in (seeds or [0, 1, 2])
+               for v in ("k3", "k4")]
+        return fact + dyn
+    if name == "moh_block":   # MoMHA-style MoH: route groups of heads (block2: 2 of 4 groups x 2, block4: 1 of 2 x 4)
+        return [trial("moh", d, "lb", sd, v) for v in ("block2", "block4", "block2_sut") for sd in (seeds or [0, 1, 2])
+                for d in (datasets or ["dyn", "dyn_fast", "dyn_p50", "fact", "mod"])]
     if name == "dyn_main":
         return [trial(s, d, "none", sd) for sd in (seeds or [0, 1, 2]) for d in (datasets or DYN_DATASETS)
                 for s in DYN_STRUCTURES]

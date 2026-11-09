@@ -1,0 +1,4 @@
+base: default.yaml
+# 3 of 4 blocks x 2 heads = 6 of 8 heads active (matches MoH k6 / MoA k6)
+structure_params:
+  k: 3

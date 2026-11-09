@@ -49,7 +49,20 @@ def save(fig, name):
 MODELS = [("dense", "default", "none"), ("mha8", "default", "none"), ("moh", "default", "lb")]
 
 
-def fig_pred_compare(ds="dyn", idx=0, t_max=64):
+FAMILIES = {"moh": [("dense", "default", "none"), ("mha8", "default", "none"), ("moh", "default", "lb")],
+            "moa": [("mqa4", "default", "none"), ("mqa8", "default", "none"), ("moa", "default", "lb")],
+            "momha": [("gqa4", "default", "none"), ("gqa8", "default", "none"), ("momha", "default", "lb")]}
+
+
+def fam_colors(fam):
+    """Distinct colours inside one family: 4-head control blue, 8-head control grey, routed model its own colour."""
+    m = [x[0] for x in FAMILIES[fam]]
+    return dict(C) if fam == "moh" else {**C, m[0]: "#2a78d6", m[1]: "#6b6b6b"}
+
+
+def fig_pred_compare(ds="dyn", idx=0, t_max=64, fam="moh"):
+    MODELS = FAMILIES[fam]
+    C = fam_colors(fam)
     data = P.DynamicsDataset(ds, "test")
     X, R = data.raw[idx].numpy(), data.regimes[idx].numpy()
     bay = P.bayes(data, idx)
@@ -82,7 +95,7 @@ def fig_pred_compare(ds="dyn", idx=0, t_max=64):
     ax.set_xlabel("time step  (background = hidden regime;  vertical line = first state after a switch;  "
                   "predictions = mean of 3 seeds)", fontsize=12)
     fig.tight_layout()
-    save(fig, f"pred_compare_{ds}")
+    save(fig, f"pred_compare_{ds}" + ("" if fam == "moh" else f"_{fam}"))
 
 
 def fig_pred_each(ds="dyn"):
@@ -230,8 +243,133 @@ def fig_shared():
     print(t.to_string())
 
 
+
+# ------------------------------------------------------------------ where the MSE difference comes from (9 Nov)
+DEC_MODELS = ["mha8", "moh", "moa", "momha"]
+AGES = ["0", "1", "2", "3", "4-7", "8+"]
+
+
+def fig_dev_seq(ds="dyn", idx=0, t_max=64, seed=0, fam="moh"):
+    """Prediction minus the Bayes prediction on one sequence: the part of each model's output that differs."""
+    z = np.load(ROOT / "reports" / "cache" / f"dyn_preds_{ds}.npz")
+    R = z["regimes"][idx]; b = z["bayes"][idx]
+    models = [m[0] for m in FAMILIES[fam]]
+    C = fam_colors(fam)
+    fig, axes = plt.subplots(2, 1, figsize=(17, 7.6), sharex=True, gridspec_kw={"height_ratios": [1.3, 1]})
+    tn = np.arange(t_max)
+    sw = np.nonzero(R[1:t_max] != R[:t_max - 1])[0] + 1
+    for ax in axes:
+        for t in range(t_max):
+            ax.axvspan(t - 0.5, t + 0.5, color=REG[R[t]], alpha=0.09, lw=0)
+        for t in sw:
+            ax.axvline(t - 0.5, color=INK2, lw=0.8, alpha=0.6)
+        ax.axhline(0, color=INK, lw=1.0)
+        ax.axvspan(-0.5, 7.5, color="white", alpha=0.6, lw=0)
+    for s in models:
+        d = z[f"{s}_s{seed}"][idx].astype(float) - b
+        axes[0].plot(tn[1:], d[1:t_max, 0], "o-", ms=3.5, lw=1.6, color=C[s], label=L[s])
+        r = np.sqrt((d ** 2).mean(-1))
+        axes[1].plot(tn[1:], r[1:t_max], "o-", ms=3.5, lw=1.6, color=C[s],
+                     label=f"{L[s]}  (mean square over t ≥ 8: {np.mean(r[8:] ** 2) * 1e3:.3f}×10⁻³)")
+    axes[0].set_ylabel("prediction − Bayes\n(coordinate $x_1$)", fontsize=13)
+    axes[1].set_ylabel("distance to Bayes\n(RMS over $x_1..x_4$)", fontsize=13)
+    axes[0].legend(ncol=3, fontsize=12, loc="lower left", bbox_to_anchor=(0, 1.0), frameon=False)
+    axes[1].legend(fontsize=11.5, loc="upper right")
+    axes[1].set_ylim(0, None)
+    axes[1].set_xlim(-0.5, t_max - 0.5)
+    axes[1].set_xlabel(f"time step  (background = hidden regime; vertical line = switch; seed {seed}; "
+                       f"t = 0 left out; grey = first 8 steps, not scored; noise sd = 0.08 for comparison)", fontsize=12)
+    for ax in axes:
+        ax.grid(axis="x", visible=False)
+    fig.tight_layout()
+    save(fig, f"dev_bayes_{ds}" + ("" if fam == "moh" else f"_{fam}"))
+
+
+def fig_decomp():
+    """Contribution of each regime-age bin to (model MSE - Dense MSE); the bars of one model add up to its total."""
+    d = pd.read_csv(TAB / "dyn_error_decomp.csv")
+    fig, axes = plt.subplots(1, 3, figsize=(20, 5.6), sharey=False)
+    for ax, ds in zip(axes, ["dyn", "dyn_fast", "dyn_p50"]):
+        x = d[d.dataset == ds]
+        share = x[x.structure == "dense"][[f"share_{a}" for a in AGES]].mean().values
+        w = 0.19
+        for j, s in enumerate(DEC_MODELS):
+            q = x[x.structure == s]
+            m = q[[f"diff_{a}" for a in AGES]].mean().values * 1e3
+            sd = q[[f"diff_{a}" for a in AGES]].std().values * 1e3
+            tot = q.diff_vs_dense.mean() * 1e3
+            ax.bar(np.arange(len(AGES)) + (j - 1.5) * w, m, width=w * 0.95, yerr=sd, capsize=2.5, color=C[s],
+                   error_kw={"lw": 0.9, "ecolor": INK2}, label=f"{L[s]}  (total {tot:+.3f})")
+        ax.axhline(0, color=INK, lw=1)
+        ax.set_xticks(range(len(AGES)), [f"{a}\n({p * 100:.0f}%)" for a, p in zip(AGES, share)], fontsize=11)
+        ax.set_xlabel("steps since the last regime switch (0 = the switch step; % of scored steps)", fontsize=12)
+        ax.set_title(f"{ds}  (p_stay {dict(dyn=0.95, dyn_fast=0.80, dyn_p50=0.50)[ds]})", fontsize=14)
+        ax.legend(fontsize=10.5, loc="lower left")
+        ax.grid(axis="x", visible=False)
+    axes[0].set_ylabel("contribution to MSE − MSE(Dense)  (×10⁻³)\nbelow 0 = better than Dense",
+                       fontsize=12)
+    fig.tight_layout()
+    save(fig, "mse_decomp_age")
+
+
+def fig_dev_age():
+    """RMS distance to the Bayes prediction by regime age; its square, averaged, is the excess."""
+    d = pd.read_csv(TAB / "dyn_pred_distance.csv")
+    fig, axes = plt.subplots(1, 3, figsize=(20, 5.2))
+    for ax, ds in zip(axes, ["dyn", "dyn_fast", "dyn_p50"]):
+        x = d[(d.dataset == ds) & (d.age != "all")]
+        for s in ["dense", "mha8", "moh", "moa", "momha"]:
+            q = x[(x.a == s) & (x.b == "bayes")].set_index("age").loc[AGES]
+            ax.plot(range(len(AGES)), q.rms, "o-", color=C[s], lw=2, ms=6, label=L[s])
+        q = x[(x.a == "dense") & (x.b == "(other seed)")].set_index("age").loc[AGES]
+        ax.plot(range(len(AGES)), q.rms, ":", color=INK2, lw=1.6, label="Dense seed vs Dense seed")
+        ax.set_xticks(range(len(AGES)), AGES)
+        ax.set_xlabel("steps since the last regime switch", fontsize=12)
+        ax.set_title(ds, fontsize=14)
+        ax.set_ylim(0, None)
+        ax.grid(axis="x", visible=False)
+    axes[0].set_ylabel("RMS distance between predictions", fontsize=12)
+    axes[0].legend(fontsize=10.5)
+    fig.tight_layout()
+    save(fig, "dev_bayes_age")
+
+
+def fig_decomp_family():
+    """Each routed model minus its own 4-head router-free control (MoH-MHA-4, MoA-MQA-4, MoMHA-GQA-4), by age."""
+    d = pd.read_csv(TAB / "dyn_error_decomp.csv").set_index(["dataset", "structure", "seed"])
+    pairs = [("moh", "dense", "MoH − MHA-4 (Dense)"), ("moa", "mqa4", "MoA − MQA-4"),
+             ("momha", "gqa4", "MoMHA − GQA-4")]
+    fig, axes = plt.subplots(1, 3, figsize=(20, 5.6))
+    rows = []
+    for ax, ds in zip(axes, ["dyn", "dyn_fast", "dyn_p50"]):
+        share = d.loc[(ds, "dense")][[f"share_{a}" for a in AGES]].mean().values
+        w = 0.26
+        for j, (r, c, lab) in enumerate(pairs):
+            cols = [f"diff_{a}" for a in AGES]
+            q = (d.loc[(ds, r)][cols] - d.loc[(ds, c)][cols]) * 1e3          # paired by seed
+            tot = (d.loc[(ds, r)].diff_vs_dense - d.loc[(ds, c)].diff_vs_dense).mean() * 1e3
+            ax.bar(np.arange(len(AGES)) + (j - 1) * w, q.mean().values, width=w * 0.95, yerr=q.std().values,
+                   capsize=2.5, color=C[r], error_kw={"lw": 0.9, "ecolor": INK2}, label=f"{lab}  (total {tot:+.3f})")
+            rows += [dict(dataset=ds, pair=lab, age=a, contrib_e3=v) for a, v in zip(AGES, q.mean().values)]
+            rows.append(dict(dataset=ds, pair=lab, age="total", contrib_e3=tot))
+        ax.axhline(0, color=INK, lw=1)
+        ax.set_xticks(range(len(AGES)), [f"{a}\n({p * 100:.0f}%)" for a, p in zip(AGES, share)], fontsize=11)
+        ax.set_xlabel("steps since the last regime switch (0 = the switch step; % of scored steps)", fontsize=12)
+        ax.set_title(f"{ds}  (p_stay {dict(dyn=0.95, dyn_fast=0.80, dyn_p50=0.50)[ds]})", fontsize=14)
+        ax.legend(fontsize=10.5, loc="lower left")
+        ax.grid(axis="x", visible=False)
+    axes[0].set_ylabel("contribution to MSE(routed) − MSE(its 4-head control)\n(×10⁻³, below 0 = routing better)",
+                       fontsize=12)
+    fig.tight_layout()
+    save(fig, "mse_decomp_family")
+    pd.DataFrame(rows).to_csv(TAB / "dyn_error_decomp_family.csv", index=False)
+
+
 if __name__ == "__main__":
     fns = {"pred": lambda: (fig_pred_compare("dyn"), fig_pred_compare("dyn_fast"), fig_pred_each("dyn")),
-           "mod": fig_mod, "dyn3": fig_dyn3, "shared": fig_shared}
+           "mod": fig_mod, "dyn3": fig_dyn3, "shared": fig_shared,
+           "decomp": lambda: (fig_dev_seq("dyn"), fig_decomp(), fig_dev_age()),
+           "family": lambda: (fig_decomp_family(), fig_dev_seq("dyn", fam="moa"), fig_dev_seq("dyn", fam="momha"),
+                              fig_pred_compare("dyn", fam="moa"), fig_pred_compare("dyn", fam="momha"))}
     for w in sys.argv[1:] or fns:
         fns[w]()

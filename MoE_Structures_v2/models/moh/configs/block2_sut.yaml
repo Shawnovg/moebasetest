@@ -1,0 +1,9 @@
+base: default.yaml
+# MoH-block2 with MoMHA's router: 4 groups of 2 heads, MLP router picks 2 groups (= 4 active heads),
+# selected gates renormalised to sum to 1, switch loss 0.01 per layer. Only difference to MoMHA: own K/V per head.
+structure_params:
+  head_group: 2
+  routed_head: 4
+  router: mlp
+  gate_scale: sum1
+  lb_type: switch

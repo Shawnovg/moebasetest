@@ -186,14 +186,30 @@ def fig_fact_ablation(balance="none"):
     d0 = _acc()
     d0 = d0[d0.dataset == "fact"]
     d = d0[d0.balance == balance]
-    rows = ([] if ATT else [("moe", "default", "top-2 of 8 (default)"), ("moe", "top1", "top-1"), ("moe", "hash", "hash routing")]) + [
+    if ATT:   # grouped by the number of active heads, so MoH / MoA / MoMHA are compared at the same width
+        rows = [("g4", "moh", "default", "4 of 8 heads (default)"), ("g4", "moa", "default", "4 of 8 heads (default)"),
+                ("g4", "momha", "default", "2 of 4 blocks × 2 heads (default)"),
+                ("g6", "moh", "k6", "6 of 8 heads"), ("g6", "moa", "k6", "6 of 8 heads"), ("g6", "momha", "k3", "3 of 4 blocks × 2 heads"),
+                ("g8", "moh", "k8", "8 of 8 heads"), ("g8", "moa", "k8", "8 of 8 heads"), ("g8", "momha", "k4", "4 of 4 blocks × 2 heads")]
+        rows = [(g, s, v, lab) for g, s, v, lab in rows if len(d0[(d0.structure == s) & (d0.variant == v)])]
+        gname = {"g4": "4 active heads", "g6": "6 active heads", "g8": "8 active heads (all)"}
+    else:
+        rows = [(s, s, v, lab) for s, v, lab in [
+            ("moe", "default", "top-2 of 8 (default)"), ("moe", "top1", "top-1"), ("moe", "hash", "hash routing"),
             ("moh", "default", "4 of 8 heads (default)"), ("moh", "k6", "6 of 8 heads"), ("moh", "shared2", "2 shared + 2 of 6"),
             ("moa", "default", "4 of 8 heads (default)"), ("moa", "k8", "8 of 8 heads"), ("moa", "renorm_detached", "detached renorm"),
-            ("momha", "default", "top-2 of 4 blocks (default)"), ("momha", "top1", "top-1")]
-    fig, ax = plt.subplots(figsize=(13, 6.2))
+            ("momha", "default", "top-2 of 4 blocks (default)"), ("momha", "top1", "top-1")]]
+        gname = {}
+    fig, ax = plt.subplots(figsize=(13, 0.5 * len(rows) + 1.6))
     y, ticks, labs, prev = 0, [], [], None
-    for s, v, lab in rows:
-        if prev is not None and s != prev:
+    for g, s, v, lab in rows:
+        if g != prev and g in gname:
+            if prev is not None:
+                y += 0.4
+            ax.text(-0.01, y - 0.15, gname[g], transform=ax.get_yaxis_transform(), ha="right", va="center",
+                    fontsize=12.5, fontweight="bold", color=INK)
+            y += 0.9
+        elif prev is not None and g != prev:
             y += 0.6
         r = d[(d.structure == s) & (d.variant == v)]
         if not len(r):                       # hash routing is fixed: only run without balancing
@@ -204,7 +220,7 @@ def fig_fact_ablation(balance="none"):
                 capsize=3, error_kw={"lw": 1, "ecolor": INK2})
         ax.text(r["mean"] + r["std"] + 0.012, y, f"{r['mean']:.2f}", va="center", fontsize=11.5, color=INK)
         ticks.append(y); labs.append(f"{L[s]}  ·  {lab}")
-        y += 1; prev = s
+        y += 1; prev = g
     for s, ls in ((("dense", "--"), ("mha8", ":")) if ATT else (("dense", "--"), ("dense_wide", ":"))):
         if s == "mha8":
             ab = pd.read_csv(TAB / "attn_baselines.csv")
@@ -294,7 +310,9 @@ def fig_matched_k(main):
     d = main[main.dataset == "dyn"]
     get = lambda s, v: d[(d.structure == s) & (d.variant == v)].iloc[0]
     fig, ax = plt.subplots(figsize=(8.5, 5))
-    for s, vs in (("moh", ["default", "k6", "k8"]), ("moa", ["k4" if False else "default", "k6", "k8"])):
+    for s, vs in (("moh", ["default", "k6", "k8"]), ("moa", ["default", "k6", "k8"]), ("momha", ["default", "k3", "k4"])):
+        if not all(len(d[(d.structure == s) & (d.variant == v)]) for v in vs):
+            continue
         e = np.array([get(s, v).excess for v in vs]) * 1e3
         sd = np.array([get(s, v).excess_sd for v in vs]) * 1e3
         ax.errorbar([4, 6, 8], e, yerr=sd, fmt="o-", color=C[s], lw=2.2, ms=8, capsize=4, label=L[s])
