@@ -420,3 +420,113 @@ if __name__ == "__main__":
     fig_memory_tasks(); fig_memory_heatmap(); fig_fact_mod_balance(); fig_fact_ablation()
     fig_markov(); fig_causal()
     dynamics()
+
+
+def fig_fact_matched(balance="lb"):
+    """fact accuracy at matched active heads: routed models (load-balance loss) next to their router-free
+    attention controls (MHA / MQA / GQA). Read straight from runs/*/result.json."""
+    import json
+    runs = Path(__file__).resolve().parents[2] / "runs"
+
+    def vals(s, v, b):
+        out = []
+        for sd in range(5):
+            p = runs / f"fact__{s}__{v}__{b}__s{sd}" / "result.json"
+            if p.exists():
+                out.append(json.loads(p.read_text())["test_acc"])
+        return np.array(out)
+
+    # (label, structure for colour, variant, balance, routed?)
+    # families: own K/V (MHA), 1 shared K/V (MQA), 2 shared K/V (GQA); "|" starts a new family
+    SUT = "MoH\nblock2\nSUT"
+    groups = [
+        ("4 active heads", [("MHA-4\n(Dense)", "dense", "default", "none", 0), ("MoH", "moh", "default", balance, 1),
+                            (SUT, "moh", "block2_sut", balance, 2), "|",
+                            ("MQA-4", "mqa4", "default", "none", 0), ("MoA", "moa", "default", balance, 1), "|",
+                            ("GQA-4", "gqa4", "default", "none", 0), ("MoMHA", "momha", "default", balance, 1)]),
+        ("6 active heads", [("MoH", "moh", "k6", balance, 1), (SUT, "moh", "block2_sut_k3", balance, 2), "|",
+                            ("MoA", "moa", "k6", balance, 1), "|", ("MoMHA", "momha", "k3", balance, 1)]),
+        ("8 active heads (all)", [("MHA-8", "mha8", "default", "none", 0), ("MoH", "moh", "k8", balance, 1),
+                                  (SUT, "moh", "block2_sut_k4", balance, 2), "|",
+                                  ("MQA-8", "mqa8", "default", "none", 0), ("MoA", "moa", "k8", balance, 1), "|",
+                                  ("GQA-8", "gqa8", "default", "none", 0), ("MoMHA", "momha", "k4", balance, 1)]),
+    ]
+    groups = [(t, [r for r in rows if r == "|" or len(vals(*r[1:4]))]) for t, rows in groups]
+    widths = [sum(0.6 if r == "|" else 1 for r in g[1]) + 0.6 for g in groups]
+    fig, axes = plt.subplots(1, 3, figsize=(17, 5.6), sharey=True, gridspec_kw={"width_ratios": widths})
+    dense, mha8 = vals("dense", "default", "none").mean(), vals("mha8", "default", "none").mean()
+    for ax, (title, rows) in zip(axes, groups):
+        x = 0
+        xs = []
+        for i, r in enumerate(rows):
+            if r == "|":
+                x += 0.6
+                continue
+            lab, s, v, b, kind = r
+            a = vals(s, v, b)
+            col = C[s]
+            ax.bar(x, a.mean(), 0.78, yerr=a.std(ddof=1) if len(a) > 1 else 0, color=col,
+                   alpha=0.55 if kind == 2 else 1.0, hatch="//" if kind == 0 else None, edgecolor="white" if kind == 0 else col,
+                   lw=0, capsize=3, error_kw={"lw": 1, "ecolor": INK2})
+            ax.scatter([x] * len(a), a, s=10, color=INK, zorder=3)
+            ax.text(x, min(a.mean() + (a.std(ddof=1) if len(a) > 1 else 0), 0.98) + 0.025, f"{a.mean():.2f}",
+                    ha="center", fontsize=11, color=INK)
+            xs.append((x, lab)); x += 1
+        ax.set_xticks([p for p, _ in xs], [l for _, l in xs], fontsize=10)
+        ax.set_title(title, fontsize=13, fontweight="bold", loc="left")
+        ax.axhline(dense, color=C["dense"], ls="--", lw=1.4)
+        ax.axhline(mha8, color=C["mha8"], ls=":", lw=1.8)
+        ax.set_xlim(-0.6, x - 0.4)
+        ax.grid(axis="x", visible=False)
+    axes[0].set_ylim(0, 1.05)
+    axes[0].set_ylabel("fact test accuracy", fontsize=12)
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Patch
+    axes[-1].legend(handles=[Line2D([], [], color=C["dense"], ls="--", label=f"Dense (MHA-4) {dense:.2f}"),
+                             Line2D([], [], color=C["mha8"], ls=":", lw=1.8, label=f"MHA-8 {mha8:.2f}"),
+                             Patch(facecolor="#bbbbbb", hatch="//", edgecolor="white", label="no router (all heads on)")],
+                    fontsize=11, loc="upper center", bbox_to_anchor=(-0.9, -0.2), ncol=3, frameon=False)
+    save(fig, "memory_ablation_fact_lb")
+
+
+def fig_task_heatmap_lb():
+    """Test accuracy on every task. fact and mod: routed models with the load-balance loss (as on the
+    matched-heads slide), 3 seeds. Other tasks were only run without balancing (2 seeds); all structures
+    are at the same level there."""
+    import json
+    runs = Path(__file__).resolve().parents[2] / "runs"
+    d = pd.read_csv(TAB / "acc_by_config.csv")
+    rows = [("dense", "default", "Dense (MHA-4)"), ("moh", "default", "MoH"), ("moh", "block2_sut", "MoH-block2-SUT"),
+            ("moa", "default", "MoA"), ("momha", "default", "MoMHA")]
+    cols = F.DS_ORDER
+    M = np.full((len(rows), len(cols)), np.nan)
+    for i, (s, v, _) in enumerate(rows):
+        for j, ds in enumerate(cols):
+            b = "lb" if (ds in ("fact", "mod") and s != "dense") else "none"
+            a = [json.loads((runs / f"{ds}__{s}__{v}__{b}__s{k}" / "result.json").read_text())["test_acc"]
+                 for k in range(5) if (runs / f"{ds}__{s}__{v}__{b}__s{k}" / "result.json").exists()]
+            if a:
+                M[i, j] = np.mean(a)
+    fig, ax = plt.subplots(figsize=(11, 4.9))
+    im = ax.imshow(np.nan_to_num(M, nan=-1), cmap="Blues", vmin=0, vmax=1, aspect="auto")
+    for i in range(M.shape[0]):
+        for j in range(M.shape[1]):
+            v = M[i, j]
+            if np.isnan(v):
+                ax.add_patch(plt.Rectangle((j - .5, i - .5), 1, 1, color="#f0efec"))
+                ax.text(j, i, "not run", ha="center", va="center", fontsize=10, color=INK2)
+            else:
+                ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontsize=13, color="white" if v > 0.6 else INK)
+    ax.set_xticks(range(len(cols)), [c + ("*" if c in ("fact", "mod") else "") for c in cols], fontsize=13)
+    ax.set_yticks(range(len(rows)), [r[2] for r in rows], fontsize=13)
+    for k in (1, 2):                      # outline the two load-balance columns
+        pass
+    j0 = cols.index("fact")
+    ax.add_patch(plt.Rectangle((j0 - .5, -.5), 2, len(rows), fill=False, ec=INK, lw=1.6))
+    ax.grid(False)
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    cb = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
+    cb.set_label("test accuracy", fontsize=12); cb.outline.set_visible(False)
+    ax.tick_params(length=0)
+    save(fig, "memory_heatmap_lb")

@@ -15,6 +15,8 @@ Kept as in the reference:
   ``reduce``: output expert of each slot, multiplied by its gate, summed per token;
 * balancing ('lb'): switchloss 0.01 * switch_loss + zloss 0.001 * z_loss (MoA ``run.sh``).
 
+Variant ``sut`` (10 Nov, unified router): SUT/MoMHA MLP router with default random init, selected gates
+renormalised to sum to 1 (with gradient), switch loss 0.01 only (no z-loss).
 Variants: ``gate_norm: renorm_detached`` follows the paper text (gates renormalised over the
 selected experts with the denominator detached); ``k`` = 8 of 8 is the paper's base model.
 Changes for this study: RoPE on q/k (MoA used sinusoidal absolute positions), noisy gating off
@@ -35,17 +37,22 @@ from backbone.routing import random_topk, switch_loss, z_loss
 class MoAGate(nn.Module):
     """The q-projection MoE of MoA (map / reduce)."""
 
-    def __init__(self, input_size, head_size, num_experts, k, gate_norm="raw"):
+    def __init__(self, input_size, head_size, num_experts, k, gate_norm="raw", router="linear"):
         super().__init__()
         self.num_experts, self.input_size, self.head_size = num_experts, input_size, head_size
+        self.router = router
         self.experts = ParallelExperts(num_experts, input_size, head_size, bias=False)
         self.output_experts = ParallelExperts(num_experts, head_size, input_size, bias=False)
         self.k = min(k, num_experts)
         self.gate_norm = gate_norm
-        self.w_gate = nn.Parameter(torch.zeros(input_size, num_experts), requires_grad=True)
+        if router == "mlp":      # unified (SUT) router: Linear(d, d) -> Tanh -> Linear(d, E), PyTorch default init
+            self.w_gate_mlp = nn.Sequential(nn.Linear(input_size, input_size), nn.Tanh(),
+                                            nn.Linear(input_size, num_experts, bias=False))
+        else:
+            self.w_gate = nn.Parameter(torch.zeros(input_size, num_experts), requires_grad=True)
 
     def top_k_gating(self, x, skip_mask, state):
-        logits = x @ self.w_gate
+        logits = self.w_gate_mlp(x) if self.router == "mlp" else x @ self.w_gate
         probs = torch.softmax(logits, dim=1)
         if skip_mask is not None:
             probs = torch.masked_fill(probs, skip_mask, 0)
@@ -56,6 +63,8 @@ class MoAGate(nn.Module):
             top_k_gates, top_k_indices = probs.topk(self.k, dim=1)
         if self.gate_norm == "renorm_detached":
             top_k_gates = top_k_gates / top_k_gates.sum(dim=1, keepdim=True).detach().clamp_min(1e-9)
+        elif self.gate_norm == "renorm":        # as MoMHA / SUT: selected gates sum to 1, with gradient
+            top_k_gates = top_k_gates / (top_k_gates.sum(dim=1, keepdim=True) + 1e-6)
         (self.batch_gates, self.batch_index, self.expert_size, gates,
          self.index_sorted_experts) = compute_gating(self.k, probs, top_k_gates, top_k_indices)
         self.top_k_indices = top_k_indices
@@ -83,13 +92,13 @@ class MoAGate(nn.Module):
 
 class MoAAttention(nn.Module):
     def __init__(self, embed_dim, head_dim, num_expert, k, rope, state, gate_norm="raw",
-                 switchloss=0.01, zloss=0.001):
+                 switchloss=0.01, zloss=0.001, router="linear"):
         super().__init__()
         self.head_dim, self.k = head_dim, k
         self.scaling = head_dim ** -0.5
         self.k_proj = nn.Linear(embed_dim, head_dim, bias=False)
         self.v_proj = nn.Linear(embed_dim, head_dim, bias=False)
-        self.q_proj = MoAGate(embed_dim, head_dim, num_expert, k, gate_norm)
+        self.q_proj = MoAGate(embed_dim, head_dim, num_expert, k, gate_norm, router)
         nn.init.xavier_uniform_(self.k_proj.weight, gain=1 / math.sqrt(2))
         nn.init.xavier_uniform_(self.v_proj.weight, gain=1 / math.sqrt(2))
         self.rope = rope
@@ -120,7 +129,8 @@ class MoAAttention(nn.Module):
         if state.lb:
             aux = aux + self.switchloss * switch_loss(probs, self.q_proj.expert_size, self.q_proj.num_experts)
             valid = None if key_pad is None else (~key_pad).reshape(-1)
-            aux = aux + self.zloss * z_loss(logits if valid is None else logits[valid])
+            if self.zloss:
+                aux = aux + self.zloss * z_loss(logits if valid is None else logits[valid])
         if state.record:
             rec = self.q_proj.top_k_indices.clone()
             if key_pad is not None:

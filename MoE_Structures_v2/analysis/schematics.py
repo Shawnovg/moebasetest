@@ -181,3 +181,167 @@ def draw(structure, out=None):
 if __name__ == "__main__":
     for s in SPECS:
         print(draw(s))
+
+
+def kv_controls(out=None):
+    """MHA / MQA / GQA: 4 query heads, and how many K/V heads they read (no router)."""
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5.4))
+    specs = [("MHA-4  (= Dense)", 4, "dense", "MoH", "every query head has its own K, V"),
+             ("MQA-4", 1, "mqa4", "MoA", "all query heads share 1 K, V head"),
+             ("GQA-4", 2, "gqa4", "MoMHA", "query heads in groups of 2 share a K, V head")]
+    for ax, (name, nkv, c, routed, note) in zip(axes, specs):
+        ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis("off")
+        col = STRUCT_COLOR[c]
+        box(ax, 5, 9.2, 4, 0.6, "x (token)", fs=10)
+        qx = [1.6 + i * 2.27 for i in range(4)]
+        kx = qx if nkv == 4 else ([5.0] if nkv == 1 else [2.7, 7.3])
+        for i, x in enumerate(qx):
+            box(ax, x, 7.3, 1.8, 0.8, f"Q head {i + 1}", fc=ROUTE, ec=col, fs=10)
+            arrow(ax, 5, 8.9, x, 7.75)
+        for j, x in enumerate(kx):
+            box(ax, x, 4.9, 1.8 if nkv == 4 else 2.6, 0.8, f"K,V {j + 1}" if nkv > 1 else "K,V (one)", fs=10)
+        for i, x in enumerate(qx):
+            k = kx[i if nkv == 4 else (0 if nkv == 1 else i // 2)]
+            arrow(ax, x, 6.9, k, 5.32, color=col)
+        box(ax, 5, 3.0, 8.6, 0.7, "attention per Q head -> concat -> output proj.", fs=10)
+        ax.text(5, 1.9, note, ha="center", fontsize=11, color=INK)
+        ax.text(5, 1.0, f"routed counterpart: {routed}   |   8-head version: {name.split('-')[0]}-8",
+                ha="center", fontsize=10, color=INK2)
+        ax.set_title(name, fontsize=14, fontweight="bold", color=col)
+    fig.suptitle("Router-free attention controls: all heads are used for every token", fontsize=12, x=0.01,
+                 ha="left", color=INK2)
+    kw = {} if out is None else {"out": out}
+    return _save(fig, "schematic_kv_controls", **kw)
+
+
+def moh_blocks(out=None):
+    """MoH-block2 / MoH-block2-SUT vs MoMHA: same block routing, own vs shared K/V."""
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5.6))
+    c = STRUCT_COLOR["moh"]
+    for ax, sut in zip(axes, (False, True)):
+        ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis("off")
+        box(ax, 5, 9.3, 4, 0.6, "x (token)", fs=10)
+        box(ax, 5, 8.1, 9.6, 0.75, ("MLP router (128-128-tanh-4): top-2 of 4 blocks, gates sum to 1"
+                                     if sut else "linear router W_g: top-2 of 4 blocks, gates x 2"), fc=ROUTE, fs=10)
+        arrow(ax, 5, 9.0, 5, 8.5)
+        for b in range(4):
+            x = 1.35 + b * 2.43
+            on = b in (0, 2)
+            ax.add_patch(FancyBboxPatch((x - 1.05, 4.0), 2.1, 3.1, boxstyle="round,pad=0.02,rounding_size=0.1",
+                                        fc="#ffffff", ec=c if on else INK2, lw=1.3 if on else 1.0, ls="-" if on else ":"))
+            ax.text(x, 6.85, f"block {b + 1}", ha="center", fontsize=10, fontweight="bold" if on else "normal")
+            for h in range(2):
+                box(ax, x, 6.15 - h * 1.15, 1.75, 0.85, f"head {2 * b + h + 1}\nown Q, K, V", fs=8.5,
+                    fc=ROUTE if on else "#ffffff", ec=c if on else INK2, ls="-" if on else ":")
+            if on:
+                arrow(ax, x, 3.95, 5, 3.15, color=c)
+        box(ax, 5, 2.75, 8.8, 0.7, "sum over chosen blocks:  g_b x (heads of block b) -> output proj.", fs=10)
+        ax.text(5, 1.75, ("MoH-block2-SUT: MoMHA's router, gates and switch balance loss" if sut else
+                          "MoH-block2: MoH's router, gates and balance loss, heads grouped in pairs"),
+                ha="center", fontsize=11, color=INK)
+        ax.text(5, 0.95, ("only difference from MoMHA: K, V per head (8) instead of 2 shared by all blocks" if sut
+                          else "4 active heads per token, same as MoH, MoA and MoMHA"),
+                ha="center", fontsize=10, color=INK2)
+        ax.set_title("MoH-block2-SUT" if sut else "MoH-block2", fontsize=14, fontweight="bold", color=c)
+    kw = {} if out is None else {"out": out}
+    return _save(fig, "schematic_moh_blocks", **kw)
+
+
+# ------------------------------------------------------------- attention-only pair figures (Nov 10)
+LIGHT = "#b9b8b4"
+
+
+def attn_panel(ax, title, color, kv_of, n_kv, sel=None, blocks=None, block_name="block", router=None,
+               qlab="Q", out="", notes=("", ""), kv_label=None):
+    """One attention layer: 8 query heads (optionally grouped into blocks) reading n_kv K/V heads.
+    sel = set of chosen query heads (None: no router, all used)."""
+    ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis("off")
+    on = set(range(8)) if sel is None else set(sel)
+    box(ax, 5, 9.35, 3.6, 0.55, "x (token)", fs=10)
+    if router:
+        box(ax, 5, 8.35, 9.4, 0.7, router, fc=ROUTE, ec=color, fs=10)
+        arrow(ax, 5, 9.07, 5, 8.72)
+    else:
+        ax.text(5, 8.35, "no router: every head is used for every token", ha="center", va="center", fontsize=10,
+                color=INK2, style="italic")
+    qx = [0.75 + i * 1.214 for i in range(8)]
+    if blocks:
+        for b, hs in enumerate(blocks):
+            x0, x1 = qx[hs[0]] - 0.58, qx[hs[-1]] + 0.58
+            chosen = all(h in on for h in hs)
+            ax.add_patch(FancyBboxPatch((x0, 5.95), x1 - x0, 1.75, boxstyle="round,pad=0.02,rounding_size=0.1",
+                                        fc="none", ec=color if chosen else INK2, lw=1.4 if chosen else 1.0,
+                                        ls="-" if chosen else ":"))
+            ax.text((x0 + x1) / 2, 7.45, f"{block_name} {b + 1}", ha="center", va="center", fontsize=9,
+                    fontweight="bold" if chosen else "normal", color=INK)
+    for i, x in enumerate(qx):
+        c = i in on
+        box(ax, x, 6.5, 1.0, 0.75, f"{qlab}{i + 1}", fc=ROUTE if c else "#ffffff", ec=color if c else INK2,
+            fs=9.5, ls="-" if c else ":")
+    kx = []
+    for j in range(n_kv):
+        hs = [i for i in range(8) if kv_of[i] == j]
+        kx.append(sum(qx[i] for i in hs) / len(hs) if n_kv in (1, 8) or kv_label is None else 2.6 + j * 4.8)
+    for j, x in enumerate(kx):
+        w = 1.0 if n_kv == 8 else (3.9 if kv_label and len(kv_label[j]) > 16 else 2.4)
+        box(ax, x, 4.35, w, 0.75, (kv_label[j] if kv_label else ("K,V" if n_kv == 8 else f"K,V {j + 1}")),
+            fs=9 if n_kv == 8 else 10)
+    for i, x in enumerate(qx):
+        c = i in on
+        arrow(ax, x, 6.1, kx[kv_of[i]], 4.75, color=color if c else LIGHT, ls="-" if c else ":", lw=1.1 if c else 0.8)
+    box(ax, 5, 2.75, 9.4, 0.7, out, fs=10)
+    ax.text(5, 1.75, notes[0], ha="center", fontsize=11, color=INK)
+    ax.text(5, 0.95, notes[1], ha="center", fontsize=10, color=INK2)
+    ax.set_title(title, fontsize=15, fontweight="bold", color=color)
+
+
+def pair(name, left, right, out=None):
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6.0))
+    attn_panel(axes[0], **left); attn_panel(axes[1], **right)
+    fig.subplots_adjust(wspace=0.06, left=0.01, right=0.99)
+    kw = {} if out is None else {"out": out}
+    return _save(fig, f"pair_{name}", **kw)
+
+
+def draw_pairs(out=None):
+    C = STRUCT_COLOR
+    MO = list(range(8))
+    SEL4 = (0, 2, 3, 6)
+    p = []
+    p.append(pair("moh", dict(title="MHA-8 (no router)", color=C["mha8"], kv_of=MO, n_kv=8,
+                              out="concat 8 heads -> W_O", notes=("8 query heads, each with its own K, V",
+                                                                    "MHA-4 (= Dense): the same with 4 heads")),
+                  dict(title="MoH", color=C["moh"], kv_of=MO, n_kv=8, sel=SEL4,
+                       router="linear router: softmax over 8 heads, keep top-4, gates renormalised x 4",
+                       out="sum over chosen heads:  g_h x head_h W_O^h   (unchosen heads x 0)",
+                       notes=("same heads as MHA-8; the router keeps 4 per token", "MoH balance loss 0.01")), out))
+    gq = [i // 4 for i in range(8)]
+    p.append(pair("moa", dict(title="MQA-8 (no router)", color=C["mqa8"], kv_of=[0] * 8, n_kv=1,
+                              out="concat 8 heads -> W_O", notes=("8 query heads share one K, V head",
+                                                                    "MQA-4: the same with 4 query heads")),
+                  dict(title="MoA", color=C["moa"], kv_of=[0] * 8, n_kv=1, sel=(1, 2, 5, 7), qlab="E",
+                       router="linear router (zero-init): softmax over 8 experts, keep top-4, raw gates",
+                       out="sum over chosen experts:  g_e x attn(q_e, K, V) W_O,e",
+                       notes=("expert e = one query head with its own W_q and W_O",
+                              "switch loss 0.01 + z-loss 0.001")), out))
+    blocks = [[0, 1], [2, 3], [4, 5], [6, 7]]
+    mm = [i % 2 for i in range(8)]          # MoMHA: head h of every expert uses K/V head h
+    p.append(pair("momha", dict(title="GQA-8 (no router)", color=C["gqa8"], kv_of=gq, n_kv=2,
+                                kv_label=["K,V 1 (Q1-Q4)", "K,V 2 (Q5-Q8)"],
+                                out="concat 8 heads -> W_O", notes=("8 query heads, groups of 4 share a K, V head",
+                                                                      "GQA-4: 4 query heads, 2 K, V heads")),
+                  dict(title="MoMHA", color=C["momha"], kv_of=mm, n_kv=2, sel=(0, 1, 4, 5), blocks=blocks,
+                       block_name="expert", kv_label=["K,V 1 (1st head of each expert)", "K,V 2 (2nd head)"],
+                       router="MLP router (128-128-tanh-4): keep top-2 of 4 experts, gates sum to 1",
+                       out="sum over chosen experts:  g_e x MHA_e(x)   (own W_q, W_O; shared K, V)",
+                       notes=("expert = 2 query heads + own output projection", "switch loss 0.01")), out))
+    p.append(pair("sut", dict(title="grouped MHA-8 (no router)", color=C["mha8"], kv_of=MO, n_kv=8, blocks=blocks,
+                              out="sum over all 4 blocks:  (2 heads of block b) W_O",
+                              notes=("all blocks always on: the grouping changes nothing",
+                                     "so this is exactly MHA-8 (and MHA-4 with 2 blocks)")),
+                  dict(title="MoH-block2-SUT", color=C["moh"], kv_of=MO, n_kv=8, sel=(0, 1, 4, 5), blocks=blocks,
+                       router="MLP router (128-128-tanh-4): keep top-2 of 4 blocks, gates sum to 1",
+                       out="sum over chosen blocks:  g_b x (2 heads of block b) W_O",
+                       notes=("MoMHA's router, gates and switch loss, but every head has its own Q, K, V",
+                              "only difference from MoMHA: 8 K, V heads instead of 2 shared")), out))
+    return p

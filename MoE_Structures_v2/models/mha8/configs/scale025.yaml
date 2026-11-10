@@ -1,0 +1,6 @@
+# Scale control (10 Nov): MHA-8 with every head output multiplied by a constant 1/4 and no router.
+# MoH-block2-SUT with all 4 blocks on weights each block by router gates that sum to 1 (1/4 on average);
+# this checks whether that output scale alone explains its gain over MHA-8 on fact.
+base: default.yaml
+structure_params:
+  out_scale: 0.25

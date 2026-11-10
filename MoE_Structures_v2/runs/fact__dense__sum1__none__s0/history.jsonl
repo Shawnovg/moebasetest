@@ -1,0 +1,1 @@
+{"step": 500, "train_loss": 5.040511810302735, "train_aux": 0.0, "grad_norm": 0.6946845650672913, "valid_loss": 4.823351684570312, "valid_acc": 0.0150625, "valid_per_task": {"fact": 0.0150625}, "time": 59.13196325302124}

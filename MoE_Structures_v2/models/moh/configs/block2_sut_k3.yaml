@@ -1,0 +1,4 @@
+base: block2_sut.yaml
+# MoH-block2-SUT with 3 of 4 blocks (6 active heads); matches MoMHA k3.
+structure_params:
+  routed_head: 6

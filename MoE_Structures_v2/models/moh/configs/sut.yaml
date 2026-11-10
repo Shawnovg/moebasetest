@@ -1,0 +1,7 @@
+# Unified router (10 Nov): MoH (8 single heads, top-4, own K/V) with the SUT MLP router,
+# gates summing to 1 and switch loss 0.01 per layer -- same router setup as MoMHA and MoH-block2-SUT.
+base: default.yaml
+structure_params:
+  router: mlp
+  gate_scale: sum1
+  lb_type: switch

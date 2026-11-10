@@ -1,0 +1,6 @@
+# Unified router (10 Nov): SUT MLP router, random init, gates sum to 1, switch loss 0.01 only.
+base: default.yaml
+structure_params:
+  router: mlp
+  gate_norm: renorm
+  zloss: 0.0

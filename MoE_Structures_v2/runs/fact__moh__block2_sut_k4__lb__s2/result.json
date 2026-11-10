@@ -1,0 +1,61 @@
+{
+ "run": "fact__moh__block2_sut_k4__lb__s2",
+ "dataset": "fact",
+ "structure": "moh",
+ "variant": "block2_sut_k4",
+ "balance": "lb",
+ "seed": 2,
+ "steps": 3000,
+ "params": 561152,
+ "params_total": 734627,
+ "valid_acc": 0.8739375,
+ "valid_loss": 0.7876439132690429,
+ "test_acc": 0.8710625,
+ "test_loss": 0.7839534339904786,
+ "test_seq_acc": 0.32825,
+ "test_per_task": {
+  "fact": 0.8710625
+ },
+ "routing": {
+  "blocks.0.attn": {
+   "load": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+   ],
+   "entropy": 1.0,
+   "max_load": 0.25,
+   "dead": 0,
+   "per_task": {
+    "fact": [
+     132000,
+     132000,
+     132000,
+     132000
+    ]
+   }
+  },
+  "blocks.1.attn": {
+   "load": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+   ],
+   "entropy": 1.0,
+   "max_load": 0.25,
+   "dead": 0,
+   "per_task": {
+    "fact": [
+     132000,
+     132000,
+     132000,
+     132000
+    ]
+   }
+  }
+ },
+ "train_time_s": 837.4928450584412,
+ "device": "cpu"
+}

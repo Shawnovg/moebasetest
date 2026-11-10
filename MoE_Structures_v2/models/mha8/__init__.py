@@ -6,5 +6,6 @@ from backbone.layers import DenseFFN, GroupedAttention
 def build_sublayers(cfg, rope, state, layer_idx):
     bb = cfg["backbone"]
     p = cfg.get("structure_params", {})
-    return (GroupedAttention(bb["d_model"], p.get("n_heads", 8), p.get("n_kv_heads", 8), bb["head_dim"], rope),
+    return (GroupedAttention(bb["d_model"], p.get("n_heads", 8), p.get("n_kv_heads", 8), bb["head_dim"], rope,
+                           out_scale=p.get("out_scale", 1.0)),
             DenseFFN(bb["d_model"], bb["d_ff"], bb.get("activation", "gelu")))

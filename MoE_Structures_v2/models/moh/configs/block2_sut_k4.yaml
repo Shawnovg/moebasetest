@@ -1,0 +1,4 @@
+base: block2_sut.yaml
+# MoH-block2-SUT with 4 of 4 blocks (all 8 heads); matches MoMHA k4.
+structure_params:
+  routed_head: 8

@@ -66,8 +66,10 @@ def masked_softmax_attention(q: torch.Tensor, k: torch.Tensor, v: torch.Tensor,
 class DenseAttention(nn.Module):
     """Standard multi-head self-attention (the unit every attention variant is measured against)."""
 
-    def __init__(self, d_model: int, n_heads: int, head_dim: int, rope: Rotary, bias: bool = False):
+    def __init__(self, d_model: int, n_heads: int, head_dim: int, rope: Rotary, bias: bool = False,
+                 out_scale: float = 1.0):
         super().__init__()
+        self.out_scale = out_scale     # constant factor on the head outputs (scaled controls, 10 Nov); 1.0 = plain
         self.n_heads, self.head_dim = n_heads, head_dim
         self.q_proj = nn.Linear(d_model, n_heads * head_dim, bias=bias)
         self.k_proj = nn.Linear(d_model, n_heads * head_dim, bias=bias)
@@ -85,6 +87,8 @@ class DenseAttention(nn.Module):
         out = masked_softmax_attention(q, k, v, key_pad, self.head_dim ** -0.5,
                                        causal=bool(getattr(state, "causal", False)))
         out = out.transpose(1, 2).reshape(B, T, self.n_heads * self.head_dim)
+        if self.out_scale != 1.0:
+            out = out * self.out_scale
         return self.o_proj(out), x.new_zeros(())
 
 
@@ -95,9 +99,11 @@ class GroupedAttention(nn.Module):
     attention (GQA). Query head h uses key/value head h // (n_heads / n_kv_heads). These are the
     router-free counterparts of MoH (own K/V per head), MoA (1 shared K/V head) and MoMHA (2 shared)."""
 
-    def __init__(self, d_model: int, n_heads: int, n_kv_heads: int, head_dim: int, rope: Rotary, bias: bool = False):
+    def __init__(self, d_model: int, n_heads: int, n_kv_heads: int, head_dim: int, rope: Rotary, bias: bool = False,
+                 out_scale: float = 1.0):
         super().__init__()
         assert n_heads % n_kv_heads == 0
+        self.out_scale = out_scale     # constant factor on the head outputs (scale control, 10 Nov); 1.0 = plain
         self.n_heads, self.n_kv, self.head_dim = n_heads, n_kv_heads, head_dim
         self.q_proj = nn.Linear(d_model, n_heads * head_dim, bias=bias)
         self.k_proj = nn.Linear(d_model, n_kv_heads * head_dim, bias=bias)
@@ -116,6 +122,8 @@ class GroupedAttention(nn.Module):
         out = masked_softmax_attention(q, k, v, key_pad, self.head_dim ** -0.5,
                                        causal=bool(getattr(state, "causal", False)))
         out = out.transpose(1, 2).reshape(B, T, self.n_heads * self.head_dim)
+        if self.out_scale != 1.0:
+            out = out * self.out_scale
         return self.o_proj(out), x.new_zeros(())
 
 

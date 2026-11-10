@@ -1,0 +1,4 @@
+# Scaled control (10 Nov): GQA-8 as 4 blocks of 2 heads weighted 1/4 each (block weights sum to 1), as MoMHA.
+base: default.yaml
+structure_params:
+  out_scale: 0.25

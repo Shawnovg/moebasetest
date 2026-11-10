@@ -1,0 +1,4 @@
+# Scaled control (10 Nov): MQA-4 with head outputs weighted 1/4 each (weights sum to 1), as MoA-SUT.
+base: default.yaml
+structure_params:
+  out_scale: 0.25

@@ -1,0 +1,4 @@
+# Scaled control (10 Nov): MQA-8 with head outputs weighted 1/8 each.
+base: default.yaml
+structure_params:
+  out_scale: 0.125

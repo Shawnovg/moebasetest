@@ -1,0 +1,4 @@
+# Scaled control (10 Nov): MHA-8 with the 8 head outputs weighted 1/8 each (weights sum to 1).
+base: default.yaml
+structure_params:
+  out_scale: 0.125
