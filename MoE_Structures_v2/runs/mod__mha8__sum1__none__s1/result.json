@@ -1,0 +1,22 @@
+{
+ "run": "mod__mha8__sum1__none__s1",
+ "dataset": "mod",
+ "structure": "mha8",
+ "variant": "sum1",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 526848,
+ "params_total": 700323,
+ "valid_acc": 0.999875,
+ "valid_loss": 0.02210657024383545,
+ "test_acc": 0.305,
+ "test_loss": 5.652577087402344,
+ "test_seq_acc": 0.0045,
+ "test_per_task": {
+  "mod": 0.305
+ },
+ "routing": {},
+ "train_time_s": 314.36721301078796,
+ "device": "cpu"
+}

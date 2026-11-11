@@ -1,0 +1,22 @@
+{
+ "run": "mod__dense__bsum1__none__s1",
+ "dataset": "mod",
+ "structure": "dense",
+ "variant": "bsum1",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 395776,
+ "params_total": 569251,
+ "valid_acc": 0.970875,
+ "valid_loss": 0.10190244579315186,
+ "test_acc": 0.3158125,
+ "test_loss": 5.410686965942383,
+ "test_seq_acc": 0.0065,
+ "test_per_task": {
+  "mod": 0.3158125
+ },
+ "routing": {},
+ "train_time_s": 223.88372588157654,
+ "device": "cpu"
+}

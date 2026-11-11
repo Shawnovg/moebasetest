@@ -1,0 +1,22 @@
+{
+ "run": "mod__gqa4__sum1__none__s2",
+ "dataset": "mod",
+ "structure": "gqa4",
+ "variant": "sum1",
+ "balance": "none",
+ "seed": 2,
+ "steps": 3000,
+ "params": 363008,
+ "params_total": 536483,
+ "valid_acc": 0.929125,
+ "valid_loss": 0.2740727119445801,
+ "test_acc": 0.3184375,
+ "test_loss": 4.355595336914062,
+ "test_seq_acc": 0.00625,
+ "test_per_task": {
+  "mod": 0.3184375
+ },
+ "routing": {},
+ "train_time_s": 216.94741702079773,
+ "device": "cpu"
+}

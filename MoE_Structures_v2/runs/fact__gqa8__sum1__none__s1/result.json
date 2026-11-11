@@ -1,0 +1,22 @@
+{
+ "run": "fact__gqa8__sum1__none__s1",
+ "dataset": "fact",
+ "structure": "gqa8",
+ "variant": "sum1",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 428544,
+ "params_total": 602019,
+ "valid_acc": 0.8411875,
+ "valid_loss": 0.927487060546875,
+ "test_acc": 0.8410625,
+ "test_loss": 0.927630573272705,
+ "test_seq_acc": 0.252,
+ "test_per_task": {
+  "fact": 0.8410625
+ },
+ "routing": {},
+ "train_time_s": 417.7912976741791,
+ "device": "cpu"
+}

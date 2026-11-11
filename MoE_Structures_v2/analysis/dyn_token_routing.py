@@ -31,7 +31,16 @@ from analysis.dyn_predictions import load_model  # noqa: E402
 from backbone.data import DynamicsDataset  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-STRUCTS = ["moh", "moa", "momha"]
+STRUCTS = ["moh", "moh_b2sut", "moa", "momha"]
+SV = {"moh": ("moh", "default"), "moh_b2sut": ("moh", "block2_sut"), "moa": ("moa", "default"),
+      "momha": ("momha", "default")}
+COL = {"moh_b2sut": "#9c5b12"}
+LABX = {"moh_b2sut": "MoH-block2-SUT"}
+
+
+def _load(key, ds, seed, balance="lb"):
+    s, v = SV[key]
+    return load_model(s, ds, seed, variant=v, balance=balance)
 AGES = [0, 1, 2, 3, 4, 6, 8, 16]
 
 
@@ -96,6 +105,17 @@ def analyse(H, r, rng):
         out[f"decode_age{lo}"] = hit[m].mean() if m.any() else np.nan
     # P(unit | regime)
     P = np.stack([flat[rf == q].mean(0) for q in range(3)])
+    J = np.stack([flat[rf == q].sum(0) for q in range(3)]).astype(float)       # picks per (regime, unit)
+    J /= J.sum()
+    pr, pu = J.sum(1, keepdims=True), J.sum(0, keepdims=True)
+    nz = J > 0
+    # MI between the whole set of picked units (one pattern per token) and the regime
+    keys, kinv = np.unique(key, return_inverse=True)
+    Js = np.zeros((len(keys), 3)); np.add.at(Js, (kinv, rf), 1); Js /= Js.sum()
+    ps, prr = Js.sum(1, keepdims=True), Js.sum(0, keepdims=True)
+    nz2 = Js > 0
+    out["mi_set"] = float((Js[nz2] * np.log(Js[nz2] / (ps @ prr)[nz2])).sum() / np.log(3))
+    out["mi_unit"] = float((J[nz] * np.log(J[nz] / (pr @ pu)[nz])).sum() / np.log(3))
     return out, P
 
 
@@ -110,7 +130,7 @@ def main(datasets=("dyn", "dyn_fast", "dyn_p50"), balance="lb", seeds=(0, 1, 2))
         for s in STRUCTS:
             for sd in seeds:
                 try:
-                    m = load_model(s, ds, sd, balance=balance)
+                    m = _load(s, ds, sd, balance=balance)
                 except FileNotFoundError:
                     continue
                 recs, units = record(m, d.inputs)
@@ -139,7 +159,7 @@ def fig_sequence(ds="dyn", idx=None, seed=0, balance="lb", t0=0, t1=64):
     R = d.regimes.numpy(); r_obs = np.concatenate([R[:, :1], R[:, :-1]], 1)
     if idx is None:                                   # a sequence with several switches
         idx = int(np.argmax([(np.diff(r) != 0).sum() if (np.diff(r) != 0).sum() <= 6 else 0 for r in r_obs]))
-    fig, axes = plt.subplots(len(STRUCTS) + 1, 1, figsize=(11, 6.4), sharex=True,
+    fig, axes = plt.subplots(len(STRUCTS) + 1, 1, figsize=(11, 7.6), sharex=True,
                              gridspec_kw={"height_ratios": [0.5] + [1] * len(STRUCTS)})
     ax = axes[0]
     for t in range(t0, t1):
@@ -149,7 +169,7 @@ def fig_sequence(ds="dyn", idx=None, seed=0, balance="lb", t0=0, t1=64):
     ax.set_title(f"{ds}, test sequence {idx}: which heads / blocks layer 2 picks for each token "
                  f"(seed {seed}, background = observed regime)", fontsize=10, fontweight="bold", loc="left")
     for ax, s in zip(axes[1:], STRUCTS):
-        m = load_model(s, ds, seed, balance=balance)
+        m = _load(s, ds, seed, balance=balance)
         recs, units = record(m, d.inputs[idx:idx + 1])
         n = list(recs)[1]; U = units[n]
         H = onehot(recs[n], U)[0]
@@ -159,7 +179,7 @@ def fig_sequence(ds="dyn", idx=None, seed=0, balance="lb", t0=0, t1=64):
         ax.scatter(tt + t0, uu, s=14, marker="s", color=INK)
         ax.set_yticks(range(U)); ax.set_yticklabels([str(u) for u in range(U)], fontsize=7)
         ax.set_ylim(-.6, U - .4)
-        ax.set_ylabel(f"{STRUCT_LABEL[s]}\n{'block' if s == 'momha' else 'head'}", fontsize=8,
+        ax.set_ylabel(f"{LABX.get(s, STRUCT_LABEL.get(s))}\n{'block' if s in ('momha', 'moh_b2sut') else 'head'}", fontsize=8,
                       rotation=0, ha="right", va="center")
         for sp in ("top", "right"):
             ax.spines[sp].set_visible(False)
@@ -167,31 +187,71 @@ def fig_sequence(ds="dyn", idx=None, seed=0, balance="lb", t0=0, t1=64):
     return _save(fig, f"dyn_token_routing_seq_{ds}")
 
 
-def fig_decode(df=None):
+def _bars(col, ylabel, title, name, ylim=(0, 1.05), base=None, fmt="{:.2f}"):
     from analysis.figures import INK2, STRUCT_COLOR, STRUCT_LABEL, _save, plt
-    if df is None:
-        df = pd.read_csv(ROOT / "reports" / "tables" / "dyn_token_routing.csv")
+    df = pd.read_csv(ROOT / "reports" / "tables" / "dyn_token_routing.csv")
     dss = ["dyn", "dyn_fast", "dyn_p50"]
     lab = {"dyn": "dyn (stay 0.95)", "dyn_fast": "dyn_fast (0.80)", "dyn_p50": "dyn_p50 (0.50)"}
-    fig, axes = plt.subplots(1, 2, figsize=(11, 3.6), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(12.5, 3.9), sharey=True)
+    w = 0.2
     for ax, layer in zip(axes, (1, 2)):
-        g = df[df.layer == layer].groupby(["dataset", "structure"])["decode"].agg(["mean", "std"])
+        g = df[df.layer == layer].groupby(["dataset", "structure"])[col].agg(["mean", "std"])
         for i, s in enumerate(STRUCTS):
-            x = np.arange(len(dss)) + (i - 1) * 0.26
+            x = np.arange(len(dss)) + (i - 1.5) * w
             mu = [g.loc[(ds, s), "mean"] for ds in dss]; sd = [g.loc[(ds, s), "std"] for ds in dss]
-            ax.bar(x, mu, 0.24, yerr=sd, color=STRUCT_COLOR[s], label=STRUCT_LABEL[s], capsize=2,
-                   error_kw={"lw": .8})
+            ax.bar(x, mu, w * 0.92, yerr=sd, color=COL.get(s, STRUCT_COLOR.get(s)), label=LABX.get(s, STRUCT_LABEL.get(s)),
+                   capsize=2, error_kw={"lw": .8})
             for xx, m in zip(x, mu):
-                ax.text(xx, m + .03, f"{m:.2f}", ha="center", fontsize=7)
-        ax.axhline(1 / 3, color=INK2, ls="--", lw=1)
-        ax.text(-0.42, 1 / 3 - .05, "chance 1/3", fontsize=7, color=INK2, ha="left")
+                ax.text(xx, m + ylim[1] * .025, fmt.format(m), ha="center", fontsize=6.5)
+        if base is not None:
+            b = df[df.layer == layer].groupby("dataset")[base].mean()
+            for k, ds in enumerate(dss):
+                ax.hlines(b[ds], k - 0.45, k + 0.45, color=INK2, ls="--", lw=1)
+            ax.text(-0.45, b["dyn"] - .06, "guess the most\nfrequent regime", fontsize=6.5, color=INK2, ha="left")
         ax.set_xticks(range(len(dss))); ax.set_xticklabels([lab[d] for d in dss], fontsize=8)
         ax.set_title(f"layer {layer}", fontsize=9, loc="left")
-        ax.set_ylim(0, 1.05)
+        ax.set_ylim(*ylim)
         for sp in ("top", "right"):
             ax.spines[sp].set_visible(False)
-    axes[0].set_ylabel("regime guessed from the\nrouter's pick alone (accuracy)")
+    axes[0].set_ylabel(ylabel)
     axes[1].legend(frameon=False, fontsize=8, loc="upper right")
-    fig.suptitle("How much the router's choice reveals the hidden regime (mean ± sd over 3 seeds)",
-                 fontsize=10, fontweight="bold", x=0.01, ha="left")
-    return _save(fig, "dyn_token_routing_decode")
+    fig.suptitle(title, fontsize=10, fontweight="bold", x=0.01, ha="left")
+    return _save(fig, name)
+
+
+def fig_decode(df=None):
+    return _bars("decode", "regime guessed from the\nrouter's pick alone (accuracy)",
+                 "How much the router's choice reveals the hidden regime (mean ± sd over 3 seeds)",
+                 "dyn_token_routing_decode", base="chance")
+
+
+def fig_mi():
+    return _bars("mi_unit", "normalised MI(picked unit;\nlast regime)",
+                 "Mutual information between the picked heads / blocks and the last regime (0 = none, 1 = "
+                 "fully determined; 3 seeds)", "dyn_token_routing_mi", ylim=(0, 0.4), fmt="{:.3f}")
+
+
+def fig_mi_l2():
+    """Slide 34 (11 Nov): layer-2 normalised MI(picked unit; last regime), one panel per switching rate, shared y."""
+    from analysis.figures import INK, INK2, STRUCT_COLOR, STRUCT_LABEL, _save, plt
+    df = pd.read_csv(ROOT / "reports" / "tables" / "dyn_token_routing.csv")
+    df = df[df.layer == 2]
+    dss = [("dyn", "dyn (p_stay 0.95)"), ("dyn_fast", "dyn_fast (p_stay 0.80)"), ("dyn_p50", "dyn_p50 (p_stay 0.50)")]
+    fig, axes = plt.subplots(1, 3, figsize=(13, 4.2), sharey=True)
+    for ax, (ds, t) in zip(axes, dss):
+        for i, s in enumerate(STRUCTS):
+            v = df[(df.dataset == ds) & (df.structure == s)].mi_unit.values
+            ax.bar(i, v.mean(), 0.75, yerr=v.std(), color=COL.get(s, STRUCT_COLOR.get(s)), capsize=3,
+                   error_kw={"lw": .9, "ecolor": INK2})
+            ax.scatter([i] * len(v), v, s=10, color=INK, zorder=3)
+            ax.text(i, v.max() + 0.012, f"{v.mean():.3f}", ha="center", fontsize=8.5, color=INK)
+        ax.set_xticks(range(len(STRUCTS)), [LABX.get(s, STRUCT_LABEL.get(s)).replace("-block2-SUT", "-block2\n-SUT")
+                                            for s in STRUCTS], fontsize=9)
+        ax.set_title(t, fontsize=10.5, loc="left")
+        ax.grid(axis="x", visible=False)
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+    axes[0].set_ylabel("normalised MI(picked unit; last regime)\nlayer 2", fontsize=10)
+    axes[0].set_ylim(0, 0.38)
+    fig.tight_layout()
+    return _save(fig, "dyn_token_routing_mi_l2")

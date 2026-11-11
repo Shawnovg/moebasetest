@@ -1,0 +1,22 @@
+{
+ "run": "mod__mha8__scale025__none__s1",
+ "dataset": "mod",
+ "structure": "mha8",
+ "variant": "scale025",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 526848,
+ "params_total": 700323,
+ "valid_acc": 0.99975,
+ "valid_loss": 0.029609643936157226,
+ "test_acc": 0.308,
+ "test_loss": 5.218408203125,
+ "test_seq_acc": 0.00775,
+ "test_per_task": {
+  "mod": 0.308
+ },
+ "routing": {},
+ "train_time_s": 312.69683384895325,
+ "device": "cpu"
+}

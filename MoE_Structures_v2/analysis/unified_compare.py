@@ -113,3 +113,41 @@ def main():
 
 if __name__ == "__main__":
     print(main())
+
+
+def fig_router_ab():
+    """Original router vs SUT router, same structure (11 Nov): MoH and MoA, 5 tasks, lb, 3 seeds."""
+    from analysis.figures import INK, INK2, STRUCT_COLOR, _save, plt
+    fl = floors()
+    rows = [("moh", "default", "MoH\nlinear"), ("moh", "sut", "MoH\nSUT"),
+            ("moa", "default", "MoA\nlinear 0-init"), ("moa", "sut", "MoA\nSUT")]
+    titles = {"fact": "fact · accuracy ↑", "mod": "mod · accuracy ↑", "dyn": "dyn (0.95) · excess ×1e-3 ↓",
+              "dyn_fast": "dyn_fast (0.80) · excess ×1e-3 ↓", "dyn_p50": "dyn_p50 (0.50) · excess ×1e-3 ↓"}
+    fig, axes = plt.subplots(1, 5, figsize=(19, 4.4))
+    out = []
+    for ax, ds in zip(axes, DS):
+        for i, (s, v, lab) in enumerate(rows):
+            x = np.array(vals(s, v, "lb", ds, fl))
+            pos = i + (i // 2) * 0.5
+            ax.bar(pos, x.mean(), 0.85, yerr=x.std(), color=STRUCT_COLOR[s], alpha=0.45 if v == "default" else 1,
+                   hatch="..." if v == "default" else None, edgecolor=STRUCT_COLOR[s], capsize=2.5,
+                   error_kw={"lw": .8, "ecolor": INK2})
+            ax.scatter([pos] * len(x), x, s=8, color=INK, zorder=3)
+            ax.text(pos, 1.0, f"{x.mean():.3f}" if ds.startswith("dyn") else f"{x.mean():.2f}",
+                    transform=ax.get_xaxis_transform(), ha="center", va="bottom", fontsize=8.5)
+            out.append(dict(dataset=ds, model=lab.replace("\n", " "), mean=x.mean(), sd=x.std()))
+        ax.set_xticks([i + (i // 2) * 0.5 for i in range(4)], [r[2] for r in rows], fontsize=8, rotation=0)
+        ax.set_title(titles[ds], fontsize=10, loc="left", pad=16)
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+        ax.grid(axis="x", visible=False)
+        if ds.startswith("dyn"):
+            ax.set_ylim(0.07 if ds == "dyn_p50" else 0.14, None)
+        else:
+            ax.set_ylim(0, 0.7)
+    fig.suptitle("Same structure, different router (load-balance loss, 4 active heads, 3 seeds; dotted = original "
+                 "router, solid = SUT router: MLP, random init, gates sum to 1, switch loss only)", fontsize=10.5,
+                 fontweight="bold", x=0.01, ha="left")
+    fig.tight_layout()
+    print(pd.DataFrame(out).round(3).to_string())
+    return _save(fig, "router_ab", ROOT / "reports" / "slides" / "figures" / "att")

@@ -1,0 +1,22 @@
+{
+ "run": "mod__mqa8__sum1__none__s1",
+ "dataset": "mod",
+ "structure": "mqa8",
+ "variant": "sum1",
+ "balance": "none",
+ "seed": 1,
+ "steps": 3000,
+ "params": 412160,
+ "params_total": 585635,
+ "valid_acc": 0.99125,
+ "valid_loss": 0.11988484191894531,
+ "test_acc": 0.167,
+ "test_loss": 5.968825241088867,
+ "test_seq_acc": 0.00025,
+ "test_per_task": {
+  "mod": 0.167
+ },
+ "routing": {},
+ "train_time_s": 268.12806582450867,
+ "device": "cpu"
+}
