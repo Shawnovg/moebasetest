@@ -1,0 +1,22 @@
+{
+ "run": "fact__gqa8__h6__none__s0",
+ "dataset": "fact",
+ "structure": "gqa8",
+ "variant": "h6",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 395776,
+ "params_total": 569251,
+ "valid_acc": 0.682375,
+ "valid_loss": 1.4809010314941407,
+ "test_acc": 0.681625,
+ "test_loss": 1.4814853744506835,
+ "test_seq_acc": 0.0485,
+ "test_per_task": {
+  "fact": 0.681625
+ },
+ "routing": {},
+ "train_time_s": 273.0375645160675,
+ "device": "cpu"
+}

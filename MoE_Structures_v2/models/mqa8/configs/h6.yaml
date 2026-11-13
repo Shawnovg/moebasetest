@@ -1,0 +1,4 @@
+# MQA-6: 6 query heads x 32 sharing ONE key/value head, no router (active-width control for MoA at k=6)
+structure_params:
+  n_heads: 6
+  n_kv_heads: 1

@@ -1,0 +1,4 @@
+# MHA-6: 6 query heads x 32 with own keys/values, no router (active-width control at 6 active heads)
+structure_params:
+  n_heads: 6
+  n_kv_heads: 6
