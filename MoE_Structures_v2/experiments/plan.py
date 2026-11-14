@@ -88,6 +88,11 @@ def phase(name, datasets=None, seeds=None):
     if name == "unified":     # same router for all (10 Nov): SUT MLP router, random init, gates sum to 1, switch 0.01
         return [trial(s, d, "lb", sd, "sut") for sd in (seeds or [0, 1, 2])
                 for d in (datasets or ["fact", "dyn", "dyn_fast", "dyn_p50", "mod"]) for s in ("moh", "moa")]
+    if name == "heads16":  # 16 heads x 32: MoA and MoH-block2-SUT at k = 4..16 active, MHA/MQA controls at 10..16
+        cfgs = [(s, f"{v}{k}") for k in (4, 8, 12, 16, 10, 14) for s, v in (("moa", "e16_k"), ("moh", "b2sut_e16_k"))]
+        ctrl = [(s, f"h{k}") for k in (12, 16, 10, 14) for s in ("mha8", "mqa8")]
+        return [trial(s, d, "lb" if s in ("moa", "moh") else "none", sd, v) for sd in (seeds or [0, 1, 2])
+                for d in (datasets or ["fact"]) for s, v in cfgs + ctrl]
     if name == "scaled_ctrl":  # router-free controls with head (or 2-head block) weights summing to 1, like the
         # unified-router models; mha8 scale025 = grouped MHA-8 (4 blocks x 1/4), already run on fact
         cfgs = [("dense", "sum1"), ("dense", "bsum1"), ("mha8", "sum1"), ("mha8", "scale025"), ("mqa4", "sum1"),

@@ -1,0 +1,4 @@
+# MQA-16: 16 query heads x 32 sharing one K/V head, no router (control for MoA in the 16-head sweep)
+structure_params:
+  n_heads: 16
+  n_kv_heads: 1

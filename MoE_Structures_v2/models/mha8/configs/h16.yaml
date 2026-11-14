@@ -1,0 +1,4 @@
+# MHA-16: 16 heads x 32 with own K/V, no router (control for the 16-head sweep)
+structure_params:
+  n_heads: 16
+  n_kv_heads: 16

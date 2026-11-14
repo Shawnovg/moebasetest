@@ -1,0 +1,5 @@
+# MoH-block2-SUT with 16 heads x 32 = 8 blocks of 2, router picks 4 blocks (= 8 active heads); 16-head sweep (14 Nov)
+base: block2_sut.yaml
+structure_params:
+  num_heads: 16
+  routed_head: 8

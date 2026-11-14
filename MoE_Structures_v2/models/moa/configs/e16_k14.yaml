@@ -1,0 +1,5 @@
+# MoA with 16 single-head experts x 32 (twice the pool of default), top-14, shared K/V head; 16-head sweep (14 Nov)
+base: default.yaml
+structure_params:
+  num_experts: 16
+  k: 14

@@ -1,0 +1,22 @@
+{
+ "run": "fact__mha8__h12__none__s0",
+ "dataset": "fact",
+ "structure": "mha8",
+ "variant": "h12",
+ "balance": "none",
+ "seed": 0,
+ "steps": 3000,
+ "params": 657920,
+ "params_total": 831395,
+ "valid_acc": 0.887125,
+ "valid_loss": 0.7192220916748047,
+ "test_acc": 0.8908125,
+ "test_loss": 0.7082944393157959,
+ "test_seq_acc": 0.39775,
+ "test_per_task": {
+  "fact": 0.8908125
+ },
+ "routing": {},
+ "train_time_s": 611.3831169605255,
+ "device": "cpu"
+}

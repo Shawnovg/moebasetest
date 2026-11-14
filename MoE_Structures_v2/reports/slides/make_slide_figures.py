@@ -466,7 +466,7 @@ def fig_fact_matched(balance="lb"):
                 continue
             lab, s, v, b, kind = r
             a = vals(s, v, b)
-            col = C[s]
+            col = C[{"mha8": "dense", "mqa4": "mqa8", "gqa4": "gqa8"}.get(s, s)]  # one colour per model family in every panel
             ax.bar(x, a.mean(), 0.78, yerr=a.std(ddof=1) if len(a) > 1 else 0, color=col,
                    alpha=0.55 if kind == 2 else 1.0, hatch="//" if kind == 0 else None, edgecolor="white" if kind == 0 else col,
                    lw=0, capsize=3, error_kw={"lw": 1, "ecolor": INK2})
@@ -477,7 +477,7 @@ def fig_fact_matched(balance="lb"):
         ax.set_xticks([p for p, _ in xs], [l for _, l in xs], fontsize=10)
         ax.set_title(title, fontsize=13, fontweight="bold", loc="left")
         ax.axhline(dense, color=C["dense"], ls="--", lw=1.4)
-        ax.axhline(mha8, color=C["mha8"], ls=":", lw=1.8)
+        ax.axhline(mha8, color=C["dense"], ls=":", lw=1.8)
         ax.set_xlim(-0.6, x - 0.4)
         ax.grid(axis="x", visible=False)
     axes[0].set_ylim(0, 1.05)
@@ -485,7 +485,7 @@ def fig_fact_matched(balance="lb"):
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
     axes[-1].legend(handles=[Line2D([], [], color=C["dense"], ls="--", label=f"Dense (MHA-4) {dense:.2f}"),
-                             Line2D([], [], color=C["mha8"], ls=":", lw=1.8, label=f"MHA-8 {mha8:.2f}"),
+                             Line2D([], [], color=C["dense"], ls=":", lw=1.8, label=f"MHA-8 {mha8:.2f}"),
                              Patch(facecolor="#bbbbbb", hatch="//", edgecolor="white", label="no router (all heads on)")],
                     fontsize=11, loc="upper center", bbox_to_anchor=(-0.9, -0.2), ncol=3, frameon=False)
     save(fig, "memory_ablation_fact_lb")
@@ -532,3 +532,50 @@ def fig_task_heatmap_lb():
     cb.set_label("test accuracy", fontsize=12); cb.outline.set_visible(False)
     ax.tick_params(length=0)
     save(fig, "memory_heatmap_lb")
+
+
+def fig_heads16():
+    """fact accuracy vs active heads k for a pool of 8 vs 16 heads (head width 32 in both), next to the
+    router-free control with exactly k heads (MHA-k for MoH-block2-SUT, MQA-k for MoA)."""
+    import json
+    runs = ROOT / "runs"
+
+    def vals(s, v, b):
+        return np.array([json.loads((runs / f"fact__{s}__{v}__{b}__s{sd}" / "result.json").read_text())["test_acc"]
+                         for sd in range(5) if (runs / f"fact__{s}__{v}__{b}__s{sd}" / "result.json").exists()])
+
+    mha = {4: ("dense", "default"), 6: ("mha8", "h6"), 8: ("mha8", "default"),
+           **{k: ("mha8", f"h{k}") for k in (10, 12, 14, 16)}}
+    mqa = {4: ("mqa4", "default"), 6: ("mqa8", "h6"), 8: ("mqa8", "default"),
+           **{k: ("mqa8", f"h{k}") for k in (10, 12, 14, 16)}}
+    K16 = (4, 8, 10, 12, 14, 16)
+    panels = [
+        ("Own K/V per head:  MoH-block2-SUT vs MHA-k", "moh", "dense", "MHA-k (no router)", mha,
+         {4: "block2_sut", 6: "block2_sut_k3", 8: "block2_sut_k4"}, {k: f"b2sut_e16_k{k}" for k in K16}, "MoH-block2-SUT"),
+        ("One shared K/V:  MoA vs MQA-k", "moa", "mqa8", "MQA-k (no router)", mqa,
+         {4: "default", 6: "k6", 8: "k8"}, {k: f"e16_k{k}" for k in K16}, "MoA"),
+    ]
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5.4), sharey=True)
+    for ax, (title, rs, cs, clab, ctrl, v8, v16, rlab) in zip(axes, panels):
+        lines = [(clab, cs, ctrl, "none", "-", "s", 1.0), (f"{rlab}, 8 to choose from", rs, v8, "lb", "--", "o", 0.55),
+                 (f"{rlab}, 16 to choose from", rs, v16, "lb", "-", "o", 1.0)]
+        for lab, s, vmap, b, ls, mk, al in lines:
+            ks, m, sd = [], [], []
+            for k, v in sorted(vmap.items()):
+                st, vv = v if isinstance(v, tuple) else (s, v)
+                a = vals(st, vv, b)
+                if len(a):
+                    ks.append(k); m.append(a.mean()); sd.append(a.std(ddof=1) if len(a) > 1 else 0)
+            col = C[cs] if b == "none" else C[rs]
+            if b == "none":
+                col = "#8a8985"
+            ax.errorbar(ks, m, yerr=sd, color=col, ls=ls, marker=mk, ms=8, lw=2, alpha=al, capsize=3,
+                        markeredgecolor="white", markeredgewidth=1.5, label=lab)
+        ax.set_title(title, fontsize=13, fontweight="bold", loc="left")
+        ax.set_xticks([4, 6, 8, 10, 12, 14, 16])
+        ax.set_xlabel("active heads per token (k)", fontsize=12)
+        ax.legend(fontsize=11, loc="lower right", frameon=False)
+        ax.grid(axis="x", visible=False)
+    axes[0].set_ylim(0.3, 1.0)
+    axes[0].set_ylabel("fact test accuracy", fontsize=12)
+    save(fig, "heads16_fact")
