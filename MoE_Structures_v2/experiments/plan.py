@@ -88,6 +88,15 @@ def phase(name, datasets=None, seeds=None):
     if name == "unified":     # same router for all (10 Nov): SUT MLP router, random init, gates sum to 1, switch 0.01
         return [trial(s, d, "lb", sd, "sut") for sd in (seeds or [0, 1, 2])
                 for d in (datasets or ["fact", "dyn", "dyn_fast", "dyn_p50", "mod"]) for s in ("moh", "moa")]
+    if name == "probe_fact":  # retrain (saving model.pt) for the frozen-model probes that test why routing
+        # overtakes its control as k grows: MHA-k, MQA-k, MoA and MoH-block2-SUT at k = 4/6/8 (+ MoA 16-pool k4/k8)
+        ctrl = [("dense", "default"), ("mha8", "h6"), ("mha8", "default"),
+                ("mqa4", "default"), ("mqa8", "h6"), ("mqa8", "default")]
+        routed = [("moa", "default"), ("moa", "k6"), ("moa", "k8"),
+                  ("moh", "block2_sut"), ("moh", "block2_sut_k3"), ("moh", "block2_sut_k4"),
+                  ("moa", "e16_k4"), ("moa", "e16_k8")]
+        return [trial(s, d, "lb" if s in ("moa", "moh") else "none", sd, v) for sd in (seeds or [0, 1, 2])
+                for d in (datasets or ["fact"]) for s, v in routed + ctrl]
     if name == "heads16":  # 16 heads x 32: MoA and MoH-block2-SUT at k = 4..16 active, MHA/MQA controls at 10..16
         cfgs = [(s, f"{v}{k}") for k in (4, 8, 12, 16, 10, 14) for s, v in (("moa", "e16_k"), ("moh", "b2sut_e16_k"))]
         ctrl = [(s, f"h{k}") for k in (12, 16, 10, 14) for s in ("mha8", "mqa8")]
